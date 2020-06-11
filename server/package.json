@@ -1,0 +1,19 @@
+{
+  "name": "e31-7-combo-2020-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app-combo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wreilly/e31-7-combo-2020.git"
+  },
+  "author": "wreilly2001@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wreilly/e31-7-combo-2020/issues"
+  },
+  "homepage": "https://github.com/wreilly/e31-7-combo-2020#readme"
+}
