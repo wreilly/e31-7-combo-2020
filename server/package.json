@@ -1,10 +1,14 @@
 {
   "name": "e31-7-combo-2020-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "2020 Re-Visit of 2018 'combination' class project (server & client). Node/Express server, app, with Pug U/I, but also (and primarily) used for API to Angular client; Data Service to MongoDB on Atlas (cloud)",
   "main": "app-combo.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/www",
+    "start-dev": "nodemon --inspect ./bin/www",
+    "start-combo": "node ./bin/www-combo",
+    "start-dev-combo": "nodemon --inspect ./bin/www-combo"
   },
   "repository": {
     "type": "git",
@@ -15,5 +19,13 @@
   "bugs": {
     "url": "https://github.com/wreilly/e31-7-combo-2020/issues"
   },
-  "homepage": "https://github.com/wreilly/e31-7-combo-2020#readme"
+  "homepage": "https://github.com/wreilly/e31-7-combo-2020#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mkdirp": "^1.0.4",
+    "multer": "^1.4.2",
+    "pug": "^3.0.0"
+  }
 }
