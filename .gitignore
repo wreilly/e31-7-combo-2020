@@ -75,6 +75,10 @@ nohup.out
 
 # 2020-06-11. Good: Node Server ".env" is kept OUT of Git. (since 2018. bueno)
 .env
+# https://www.npmjs.com/package/dotenv
+8.2.0
+# Q. "Should I commit my .env file?
+# A. No. We strongly recommend against committing your .env file to version control."
 # 2020-06-11. Let's today (2020) emulate that for the Angular Client /environments too, n'est-ce pas?
 # /client/src/app/environments << actual location, but covered off by just environments/, e crois
 # Q. Which one of these four? Yeesh.
