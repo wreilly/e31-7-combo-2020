@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+const appFromAppJs = require('../app');
+
+const port = 8089;
+
+const appName = 'wr-app-some-times-rest-api-2020';
+
+appFromAppJs.listen(port, () => {
+  console.log(appName + ' is listening on: ' + port);
+//  console.log('ADD\'L INFO: btw you should type \n nohup npm run start & \n to run this server continuously (even after closing the terminal window). Cheers \n Also, remember to start your Angular Client separately: \n npm run start --> ng serve (:4206)...')');
+  });
