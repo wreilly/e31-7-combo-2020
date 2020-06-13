@@ -8,7 +8,8 @@ const apiArticleControllerHereInApi = require('.././../controllers/api/api-artic
 - GET '/' ==> '/api/v1/articles/'
 - GET '/:id' ==> '/api/v1/articles/123456'
 - POST '/'  ==> '/api/v1/articles'
-*
+- DELETE '/:id' ==> '/api/v1/articles/123456'
+
 "Skinny Router" here - fire and forget
 Go see "Fat Controller" for return value etc.
  */
@@ -64,5 +65,16 @@ apiArticlesRouter.post('/',
         apiArticleControllerHereInApi.apiCreateArticle(req, res, next);
     }
 ) // /POST '/'
+
+apiArticlesRouter.delete('/:idToDeleteInRouter',
+    function (req, res, next) {
+        console.log('Router: Delete - about to. id: ', req.params.idToDeleteInRouter);
+        /* OK:
+        Router: Delete - about to. id:  5ee4c5facc58cf6657c96c17
+         */
+
+        apiArticleControllerHereInApi.apiDeleteArticle(req, res, next);
+    }
+) // /DELETE '/:id'
 
 module.exports = apiArticlesRouter;

@@ -12,6 +12,7 @@ const articleModelHereInService = require('../models/articleModel');
 - .get('/') ==> findAllArticles
 - .get('/:id') ==> findArticleById
 - .post('/') ==> saveArticle
+- .delete('/:id') ==> deleteArticle
 
  */
 
@@ -87,10 +88,14 @@ class articleService {
          */
 
         const articleForDatabase = new articleModelHereInService(articleToSave);
-        articleForDatabase.save(function(err, articleConfirmationWeGot) {
-            if (err) {
-                console.log(err);
-            } else {
+
+        /*
+**** !!!!  Don't Forget!!! ***
+* You need *RETURN* at top here!
+ */
+        return articleForDatabase.save()
+            .then(
+                (articleConfirmationWeGot) => {
                 console.log('articleConfirmationWeGot ', articleConfirmationWeGot);
                 /*
                 articleConfirmationWeGot  {
@@ -100,11 +105,50 @@ class articleService {
   __v: 0
 }
                  */
-            }
-        });
-
+                return articleConfirmationWeGot;
+            },
+                (problemo) => {
+                    console.log(problemo);
+                })
+            .catch(
+                (err) => {
+                    console.log('.catch err ', err);
+                }
+        );
 
     } // /saveArticle()
+
+    /* **************************** */
+    /* ****** Delete Article ****** */
+    /* **************************** */
+    static deleteArticle(idToDeleteInService) {
+        /*
+        **** !!!!  Don't Forget!!! ***
+        * You need *RETURN* at top here!
+         */
+        return articleModelHereInService.findByIdAndRemove(idToDeleteInService)
+            .then(
+                (whatIGotFromDeletion) => {
+                    // resolved
+                    console.log('Service: whatIGotFromDeletion ', whatIGotFromDeletion);
+                    /*
+                    Service: whatIGotFromDeletion  {
+  _id: 5ee4c5facc58cf6657c96c17,
+  articleUrl: 'https://nytimes.com',
+  articleTitle: 'Headline Today Be xyz1',
+  __v: 0
+}
+                     */
+
+                    return whatIGotFromDeletion;
+                },
+                (problemo) => {
+                    // rejected
+                    console.log('Service: problemo rejected ', problemo);
+                }
+            )
+            .catch((err) => console.log('Service .catch err ', err));
+} // /deleteArticle()
 
 } // /articleService
 

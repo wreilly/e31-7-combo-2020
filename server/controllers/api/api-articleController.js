@@ -7,7 +7,7 @@ const apiArticleController = {};
 - GET '/' = apiGetAllArticles
 - GET '/:id' = apiGetArticleById
 - POST '/' = apiCreateArticle
-
+- DELETE '/:id' = apiDeleteArticle
  */
 
 /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
@@ -176,6 +176,34 @@ headers: {
             (whatIGot) => {
                 // resolved
                 console.log('Controller: createArticle resolved whatIGot ', whatIGot);
+                /*
+                Controller: createArticle resolved whatIGot  {
+  _id: 5ee4d8c29b614f6c6d86230e,
+  articleUrl: 'https://nytimes.com',
+  articleTitle: 'Headline Today Be xyz119900aabb',
+  __v: 0
+}
+                 */
+
+                /* !!! N.B. !!!
+                O la.
+                From here in the Controller, on the Server,
+                you need to REMEMBER
+                to SEND SOMETHING BACK
+                to the calling/requesting Client !!!
+                It is not JavaScript 'return' No.
+                It is EXPRESS 'res.send'
+                The .send() method on the
+                RESPONSE object.
+                La!
+                (Without it, the calling client NEVER hears back and spins FOREVER)
+                 */
+/* NO Not the JavaScript 'return':
+                return whatIGot; // << don't forget !!!
+*/
+                // YES Express res.send()
+                res.send(whatIGot);
+                
             },
             (problemo) => {
                 // rejected
@@ -189,5 +217,27 @@ headers: {
         );
 
 } // /.apiCreateArticle()
+
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+/* !!!!!  apiArticleController
+          .apiDeleteArticle    !!!!! */
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+apiArticleController.apiDeleteArticle = function (req, res, next) {
+    const idToDeleteInController = req.params.idToDeleteInRouter;
+
+    articleDataServiceHereInApiController.deleteArticle(idToDeleteInController)
+        .then(
+            (whatIGot) => {
+                console.log('Controller: Delete confirmation ', whatIGot);
+            res.send(whatIGot); // << !! Don't Forget !! oi!
+                // Q. Where (to who/what) is this "sending" ?? ... o la
+            },
+            (problemo) => {
+                console.log('Controller: Delete. rejected . problemo ', problemo);
+            }
+        )
+        .catch((err) => console.log('Controller Delete .catch err ', err));
+}
+
 
 module.exports = apiArticleController;
