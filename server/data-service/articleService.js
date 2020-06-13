@@ -1,10 +1,15 @@
+/* HMM. NOT USED HERE. SEE ARTICLE MODEL
 const mongoose = require('mongoose');
+*/
 const articleModelHereInService = require('../models/articleModel');
 
 /* $$$$$$  TO BEGIN  $$$$$$$
 
-- API-only (not for Node/Express app)
+***  API-only  ***
+(not for Node/Express app)
+
 - .get('/')
+- .get('/:id')
 
  */
 
@@ -36,6 +41,36 @@ class articleService {
                 }
             )
     } // /findAllArticles()
+
+    /* **************************** */
+    /* *** Find One Article, By ID *** */
+    /* **************************** */
+    static findArticleById(idPassedIn) {
+        return articleModelHereInService.findById( idPassedIn )
+            .then(
+                (whatIGot) => {
+                    // resolved
+                    console.log('Article By ID - whatIGot ', whatIGot);
+                    /*
+                     {
+  _id: 5af746cea7008520ae732e2c,
+  articlePhotos: [ '"justsomestring"' ],
+  articleUrl: 'myhttp',
+  articleTitle: 'Trump’s WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers',
+  __v: 0
+}
+                     */
+
+                    return whatIGot;
+                },
+                (problemo) => {
+                    // rejected
+                    console.log('Data Service findArticleById() problemo: ', problemo);
+                }
+            )
+            .catch( (err) => console.log('Data Service findArticleById() CATCH err ', err));
+    } // /findArticleById()
+
 
 } // /articleService
 
