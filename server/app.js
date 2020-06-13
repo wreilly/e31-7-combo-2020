@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({
 }));
 */
 
-// For REST API
+// For REST API (POST, req.body)
 app.use(bodyParser.json());
 
 const mongoose = require('mongoose');

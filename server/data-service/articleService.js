@@ -3,13 +3,15 @@ const mongoose = require('mongoose');
 */
 const articleModelHereInService = require('../models/articleModel');
 
-/* $$$$$$  TO BEGIN  $$$$$$$
+/* $$$$$$  TOC  $$$$$$$$$$$$$$$$$$$$
+   $$$$  ARTICLE DATA SERVICE $$$$$$
 
 ***  API-only  ***
 (not for Node/Express app)
 
-- .get('/')
-- .get('/:id')
+- .get('/') ==> findAllArticles
+- .get('/:id') ==> findArticleById
+- .post('/') ==> saveArticle
 
  */
 
@@ -68,9 +70,41 @@ class articleService {
                     console.log('Data Service findArticleById() problemo: ', problemo);
                 }
             )
-            .catch( (err) => console.log('Data Service findArticleById() CATCH err ', err));
+            .catch((err) => console.log('Data Service findArticleById() CATCH err ', err));
     } // /findArticleById()
 
+    /* **************************** */
+    /* ****** Save Article ******** */
+    /* **************************** */
+
+    static saveArticle(articleToSave) {
+        console.log('Data Service: articleToSave: ', articleToSave);
+        /*
+        Data Service: articleToSave:  {
+  articleUrl: 'https://nytimes.com',
+  articleTitle: 'Headline Today Be xyz1'
+}
+         */
+
+        const articleForDatabase = new articleModelHereInService(articleToSave);
+        articleForDatabase.save(function(err, articleConfirmationWeGot) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log('articleConfirmationWeGot ', articleConfirmationWeGot);
+                /*
+                articleConfirmationWeGot  {
+  _id: 5ee4c5facc58cf6657c96c17,
+  articleUrl: 'https://nytimes.com',
+  articleTitle: 'Headline Today Be xyz1',
+  __v: 0
+}
+                 */
+            }
+        });
+
+
+    } // /saveArticle()
 
 } // /articleService
 

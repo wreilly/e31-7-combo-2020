@@ -2,6 +2,14 @@ const articleDataServiceHereInApiController = require('../../data-service/articl
 
 const apiArticleController = {};
 
+/* **********  TOC  *************
+   ********  API CONTROLLER  ****
+- GET '/' = apiGetAllArticles
+- GET '/:id' = apiGetArticleById
+- POST '/' = apiCreateArticle
+
+ */
+
 /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
 /* !!!!!  apiArticleController
           .apiGetAllArticles   !!!!! */
@@ -42,6 +50,7 @@ apiArticleController.apiGetAllArticles = function (req, res, next) {
         .catch( (err) => console.log('Err in Catch API Controller for GET all articles ', err));
 } // /.apiGetAllArticles()
 
+
 /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
 /* !!!!!  apiArticleController
           .apiGetArticleById   !!!!! */
@@ -80,7 +89,6 @@ apiArticleController.apiGetArticleById = function (req, res, next) {
                 // Send data back in Response to API Request
                 res.send(whatIGot); // Hmm. Seems to WORK FINE, TOO ( ? )
                 // res.send(JSON.stringify(whatIGot)); // << WORKS FINE :)
-
             },
             (problemo) => {
                 // rejected
@@ -90,5 +98,96 @@ apiArticleController.apiGetArticleById = function (req, res, next) {
         .catch((err) => console.log('Controller -getArticleById() .catch err: ', err));
 
 } // /.apiGetArticleById()
+
+
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+/* !!!!!  apiArticleController
+          .apiCreateArticle   !!!!! */
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+apiArticleController.apiCreateArticle = function (req, res, next) {
+
+    console.log('********************');
+    console.log('Controller: createArticle req ', req);
+    /*
+    Controller: createArticle req  IncomingMessage {
+  _readableState: ReadableState {
+    objectMode: false,
+    highWaterMark: 16384,
+    buffer: BufferList { head: null, tail: null, length: 0 },
+    length: 0,
+...
+headers: {
+    host: '0.0.0.0:8089',
+    'user-agent': 'insomnia/2020.2.1',
+    'content-type': 'application/json',
+    accept: '* /*',
+    'content-length': '94'
+},
+    ...
+      url: '/',
+  method: 'POST',
+  statusCode: null,
+  statusMessage: null,
+  ...
+    next: [Function: next],
+  baseUrl: '/api/v1/articles',
+  originalUrl: '/api/v1/articles',
+  _parsedUrl: Url {
+...
+    port: null,
+    hostname: null,
+    hash: null,
+    search: null,
+    query: null,
+    pathname: '/',
+    path: '/',
+    href: '/',
+    _raw: '/'
+  },
+  params: {},
+  query: {},
+  ...
+    body: {
+    articleUrl_name: 'https://nytimes.com',
+    articleTitle_name: 'Headline Today Be xyz1'
+  },
+  _body: true,
+  length: undefined,
+    route: Route { path: '/', stack: [ [Layer] ], methods: { post: true } },
+  [Symbol(kCapture)]: false
+  }
+     */
+    console.log('********************');
+    console.log('Controller: createArticle req.body ', req.body); // << undefined  :o(
+    /* Now Happy :o)  (now using BodyParser in app.js)
+    Controller: createArticle req.body  {
+  articleUrl_name: 'https://nytimes.com',
+  articleTitle_name: 'Headline Today Be xyz1'
+}
+     */
+    console.log('********************');
+
+    const articleToSave = {};
+    articleToSave.articleUrl = req.body.articleUrl_name;
+    articleToSave.articleTitle = req.body.articleTitle_name;
+
+    articleDataServiceHereInApiController.saveArticle(articleToSave)
+        .then(
+            (whatIGot) => {
+                // resolved
+                console.log('Controller: createArticle resolved whatIGot ', whatIGot);
+            },
+            (problemo) => {
+                // rejected
+                console.log('Controller: createArticle rejected problemo ', problemo);
+            }
+        )
+        .catch(
+            (err) => {
+                console.log('Controller: createArticle .catch err ', err);
+            }
+        );
+
+} // /.apiCreateArticle()
 
 module.exports = apiArticleController;
