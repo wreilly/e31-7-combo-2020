@@ -1,6 +1,10 @@
 # Client
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.8.
+This project was ***NOT*** generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.8.
+Well, it sort of *was*, but not in THIS directory.
+I am manually COPYING (parts, most) of it to This Directory.
+Q. Y?
+A. Because I wish to avoid the ".git" directory the CLI created in that other directory. I wish to simply have the new Angular app code/files join my existing Git repository I have already going, this one that contains my "combo" of /server and /client. Cheers.
 
 ## Development server
 
