@@ -1,14 +1,20 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-// ? Q. Do I need BrowserAnimationsModule ? Seems not yet.
-// A. YES. I do. (Though, for fun, will try the "Noop" version for awhile y not.)
+/* ? Q. Do I need BrowserAnimationsModule, with/for Material Design ? Seems not yet.
+     A. YES. I do. (Though, for fun, will try the "Noop" version for awhile y not.)
+     OK: Now I see examples of Where Needed (!).
+     - The MatSlideToggle moves too quickly with Noop.
+     - Click a button, no ripple etc.
+          - The click on a text link is too quick too. << hmm, unchanged ?
+ */
 /*
 core.js:6228 ERROR Error: Found the synthetic listener @transform.start. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.
  */
-// import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+// import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { SharedModule } from './shared/shared.module';
+import { CoreModule } from './core/core.module';
 
 // import { MyMaterialModule } from './my-material.module'; // << Now in SharedModule
 
@@ -25,9 +31,10 @@ import { WelcomeComponent } from './welcome/welcome.component';
   ],
   imports: [
     BrowserModule,
-    // BrowserAnimationsModule,
-    NoopAnimationsModule,
+    BrowserAnimationsModule,
+    // NoopAnimationsModule,
     SharedModule,
+    CoreModule,
     // MyMaterialModule,
     AppRoutingModule,
   ],

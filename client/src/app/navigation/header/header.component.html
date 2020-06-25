@@ -13,6 +13,7 @@
         flex-direction: row; // default
         -->
         <div>ahoy99</div>
+        <div><button mat-raised-button color="accent">Button fun!</button></div>
         <div>sharing overmuch</div>
         <div
                 fxFlex
@@ -40,9 +41,12 @@
                 <li>
                     <a routerLink="/articles" routerLinkActive="my-active">Articles</a>
                 </li>
+                <li>
+                    <mat-slide-toggle
+                            on-change="onThemeChange($event.checked)"
+                    ></mat-slide-toggle>
+                </li>
             </ul>
-
         </div>
-
     </div>
 </mat-toolbar>

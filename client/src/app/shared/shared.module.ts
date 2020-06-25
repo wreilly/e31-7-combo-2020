@@ -26,6 +26,4 @@ import { MyMaterialModule } from '../my-material.module';
 
     ],
 })
-export class SharedModule {
-
-}
+export class SharedModule { }
