@@ -7,4 +7,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'clienty-2020';
+  // isThemeDarkInApp = true;
+  isThemeDarkInApp = false;
 }

@@ -1,4 +1,15 @@
-<mat-sidenav-container>
+<div [ngClass]="{'dark-theme': isThemeDarkInApp}">
+  <mat-sidenav-container>
+<!--  Hmm, seem to be learning
+this 'mat-app-background' (below) is NOT needed.
+I guess that is the story when we have the
+'dark-theme' biz up above ... ?
+Appears that w. Material Design
+you automatically either get:
+background-color: '#fafafa' (light)
+background-color: '#303030' (dark)
+-->
+    <!--  <mat-sidenav-container class="mat-app-background">-->
   <mat-sidenav>
     <p>this is the sidenav</p>
   </mat-sidenav>
@@ -10,3 +21,4 @@
   </mat-sidenav-content>
 </mat-sidenav-container>
 
+</div>
