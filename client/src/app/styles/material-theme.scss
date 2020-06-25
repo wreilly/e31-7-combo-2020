@@ -1,0 +1,46 @@
+/* https://grensesnittet.computas.com/dynamic-themes-in-angular-material/
+
+As noted/used in my:
+4. /Users/william.reilly/dev/JavaScript/CSCI-E31/Assignments/07-e31-combo-2020/client/src/app/styles/material-theme.scss
+3. /Users/william.reilly/dev/JavaScript/CSCI-E31/Assignments/07-test-new-angular/client-mat/src/app/styles/material-theme.scss
+2. /Users/william.reilly/dev/Angular/projects/email-fabricator/src/styles/material-theme.scss
+1. /Users/william.reilly/dev/Angular/AngularMaterialDesign/eTallangDynamicThemes/from-scratch/wr-theme-dino
+*/
+
+@import '~@angular/material/theming';
+// _theming.scss
+/* N.B. The tilde ~
+The tilde ~ informs WebPack (engine for Angular CLI) that "the path should be treated
+as an aliased path, to be handled by WebPack,
+and not just a regular field path or URL."
+ */
+
+@include mat-core();
+
+/* Light Theme (default theme) */
+/* Special Note:
+You can:
+1) choose a 'pre-built' theme in /src/styles.scss
+or
+2) here in /src/app/styles/material-theme.scss define your own light/default theme
+Either way, you still do your Dark-Theme in this file (see below)
+ */
+$primary: mat-palette($mat-indigo);
+$accent: mat-palette($mat-pink, A200, A100, A400);
+$warn: mat-palette($mat-red);
+
+$theme: mat-light-theme($primary, $accent, $warn);
+
+@include angular-material-theme($theme);
+
+/* Dark Theme */
+.dark-theme {
+  color: $light-primary-text;
+  $dark-primary: mat-palette($mat-yellow);
+  $dark-accent: mat-palette($mat-amber, A400, A100, A700);
+  $dark-warn: mat-palette($mat-red);
+
+  $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
+
+  @include angular-material-theme($dark-theme);
+}

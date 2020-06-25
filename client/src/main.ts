@@ -10,3 +10,6 @@ if (environment.production) {
 
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.error(err));
+
+import 'hammerjs';
+// https://tudip.com/blog-post/how-to-install-angular-material/
