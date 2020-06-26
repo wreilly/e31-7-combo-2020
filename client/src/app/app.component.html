@@ -1,5 +1,9 @@
 <div [ngClass]="{'dark-theme': isThemeDarkInAppComponent}">
-  <mat-sidenav-container>
+  <!--suppress HtmlUnknownAttribute -->
+  <mat-sidenav-container
+          fullscreen
+          style="display: grid"
+  >
 <!--  Hmm, seem to be learning
 this 'mat-app-background' (below) is NOT needed.
 I guess that is the story when we have the
@@ -9,13 +13,18 @@ you automatically either get:
 background-color: '#fafafa' (light)
 background-color: '#303030' (dark)
 -->
-    <!--  <mat-sidenav-container class="mat-app-background">-->
+    <!--  <mat-sidenav-container class="mat-app-background"> << Not needed? -->
   <mat-sidenav>
     <p>this is the sidenav</p>
   </mat-sidenav>
-  <mat-sidenav-content>
+  <mat-sidenav-content
+          fxLayout="column"
+  >
     <app-header></app-header>
     <router-outlet></router-outlet>
+    <app-footer
+            fxFlexOffset="auto"
+    ></app-footer>
   </mat-sidenav-content>
 </mat-sidenav-container>
 
