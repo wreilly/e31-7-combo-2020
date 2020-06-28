@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 // https://grensesnittet.computas.com/dynamic-themes-in-angular-material/
 import {ThemeService} from "../../core/services/theme.service";
@@ -11,8 +11,12 @@ import {ThemeService} from "../../core/services/theme.service";
 export class HeaderComponent implements OnInit {
 
   isThemeDarkInComponent: boolean;
+  @Output('myToggleMatSidenavEventEmitterHeaderName') myToggleMatSidenavEventEmitterHeader: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(
+  @Input()
+  myIsMatSidenavOpenFromParentApp: boolean;
+
+    constructor(
       private myThemeService: ThemeService,
   ) { }
 
@@ -24,10 +28,14 @@ export class HeaderComponent implements OnInit {
               this.isThemeDarkInComponent = whatIGot;
             }
         )
-  }
+  } // /ngOnInit()
 
-  onThemeChange(checkedOrNot: boolean) {
-    this.myThemeService.setThemeToggle(checkedOrNot);
-  }
+    onThemeChange(checkedOrNot: boolean) {
+      this.myThemeService.setThemeToggle(checkedOrNot);
+    }
+
+    myToggleMatSidenavHeader() {
+        this.myToggleMatSidenavEventEmitterHeader.emit(null); // ? null o well
+    }
 
 }

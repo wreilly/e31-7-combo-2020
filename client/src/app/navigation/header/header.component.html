@@ -16,11 +16,20 @@
             <mat-icon class="my-mat-icon-smaller">house</mat-icon>
             <mat-icon>house</mat-icon>
             <mat-icon>done</mat-icon>
-            <mat-icon svgIcon="house"></mat-icon>
             ahoy
         </div>
-        <div><button mat-raised-button color="accent">Button fun!</button></div>
+        <div><button
+                mat-raised-button
+                color="accent"
+                on-click="myToggleMatSidenavHeader()"
+        >Button fun! <mat-icon>menu</mat-icon></button></div>
         <div>sharing overmuch</div>
+        <div
+                on-click="myToggleMatSidenavHeader()"
+                style="cursor: pointer; font-size: xx-small;"
+            >
+            {{ myIsMatSidenavOpenFromParentApp ? 'Close' : 'Open' }} the Sidenav!
+        </div>
         <div
                 fxFlex
                 fxLayout

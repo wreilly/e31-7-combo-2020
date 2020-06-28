@@ -14,13 +14,21 @@ background-color: '#fafafa' (light)
 background-color: '#303030' (dark)
 -->
     <!--  <mat-sidenav-container class="mat-app-background"> << Not needed? -->
-  <mat-sidenav>
-    <p>this is the sidenav</p>
+  <mat-sidenav
+          mode="side"
+          role="navigation"
+          ref-myMatSidenav_ref
+  >
+    <app-sidenav-list></app-sidenav-list>
   </mat-sidenav>
   <mat-sidenav-content
           fxLayout="column"
   >
-    <app-header></app-header>
+    <app-header
+            on-myToggleMatSidenavEventEmitterHeaderName="myMatSidenav_ref.toggle(); myTellStoreAboutSidenavToggle()"
+            bind-myIsMatSidenavOpenFromParentApp="isSidenavOpenInApp$ | async"
+    ></app-header>
+    <div>T/F? isSidenavOpenInApp$ ? |{{isSidenavOpenInApp$ | async}}|</div>
     <router-outlet></router-outlet>
     <app-footer
             fxFlexOffset="auto"

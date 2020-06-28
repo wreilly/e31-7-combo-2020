@@ -15,21 +15,26 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core/core.module';
-
 // import { MyMaterialModule } from './my-material.module'; // << Now in SharedModule
+
+import { StoreModule } from '@ngrx/store';
+// TODO store-devtools ...
+import * as fromRoot from './store/app.reducer';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './navigation/header/header.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { FooterComponent } from './navigation/footer/footer.component';
+import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     WelcomeComponent,
-    FooterComponent
+    FooterComponent,
+    SidenavListComponent
   ],
   imports: [
     BrowserModule,
@@ -38,6 +43,7 @@ import { FooterComponent } from './navigation/footer/footer.component';
     SharedModule,
     CoreModule,
     // MyMaterialModule,
+    StoreModule.forRoot(fromRoot.myRootReducersMap),
     AppRoutingModule,
   ],
   providers: [],
