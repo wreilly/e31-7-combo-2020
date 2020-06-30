@@ -50,10 +50,16 @@ export class AppComponent implements OnInit {
                 }
             );
 
-        // TRY 02 ?
+        // TRY 03 ? << YES WORKS :o)
+        this.isSidenavOpenInApp$ = this.myStore.select(fromRoot.getIsSidenavOpen);
+
+
+        // TRY 02 ? << YES WORKS
+/*
         this.isSidenavOpenInApp$ = this.myStore.select(
             stateWeGot => stateWeGot.uiPartOfStore.sidenavIsOpen
             );
+*/
         /* Boo hiss
         ERROR TypeError: Cannot read property 'sidenavIsOpen' of undefined
          */

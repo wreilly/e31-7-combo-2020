@@ -11,6 +11,7 @@ import {ThemeService} from "../../core/services/theme.service";
 export class HeaderComponent implements OnInit {
 
   isThemeDarkInComponent: boolean;
+
   @Output('myToggleMatSidenavEventEmitterHeaderName') myToggleMatSidenavEventEmitterHeader: EventEmitter<any> = new EventEmitter<any>();
 
   @Input()

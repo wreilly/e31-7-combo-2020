@@ -18,7 +18,8 @@ import { CoreModule } from './core/core.module';
 // import { MyMaterialModule } from './my-material.module'; // << Now in SharedModule
 
 import { StoreModule } from '@ngrx/store';
-// TODO store-devtools ...
+// TODONE store-devtools ...
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import * as fromRoot from './store/app.reducer';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -27,6 +28,7 @@ import { HeaderComponent } from './navigation/header/header.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { FooterComponent } from './navigation/footer/footer.component';
 import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.component';
+import {environment} from "../environments/environment";
 
 @NgModule({
   declarations: [
@@ -44,6 +46,12 @@ import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.com
     CoreModule,
     // MyMaterialModule,
     StoreModule.forRoot(fromRoot.myRootReducersMap),
+    // https://blog.angular-university.io/angular-ngrx-devtools/
+    !environment.production ? StoreDevtoolsModule.instrument({
+      maxAge: 10,
+      logOnly: environment.production, // value is false in dev...
+      // So: in Production, we are saying "logging only pls - not all that other stuff" thanks.
+      }) : [],
     AppRoutingModule,
   ],
   providers: [],
