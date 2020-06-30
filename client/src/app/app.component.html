@@ -19,7 +19,9 @@ background-color: '#303030' (dark)
           role="navigation"
           ref-myMatSidenav_ref
   >
-    <app-sidenav-list></app-sidenav-list>
+    <app-sidenav-list
+            on-myToggleMatSidenavEventEmitterSidenavName="myMatSidenav_ref.toggle(); myTellStoreAboutSidenavToggle()"
+    ></app-sidenav-list>
   </mat-sidenav>
   <mat-sidenav-content
           fxLayout="column"
