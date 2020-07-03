@@ -1,1 +1,58 @@
-<p>welcome works1111!</p>
+<div
+        fxFlex
+        fxLayout
+        fxLayoutAlign="center start"
+        fxLayoutGap="10px"
+>
+    <!--         style="margin: 0 0 0 20px" -->
+    <mat-card>
+        <mat-card-title>
+            {{ title }}
+        </mat-card-title>
+        <mat-card-subtitle>
+            {{ subTitle }}
+        </mat-card-subtitle>
+        <mat-card-content>
+            <p><i>"Some of the Times that's fit to post."</i></p>
+            <mat-list>
+                <mat-list-item>
+                    <p>1. Find an article from <a href="http://www.nytimes.com" target="nyt_tab_blank">The New York Times</a> to reference here.</p>
+                </mat-list-item>
+                <mat-list-item>
+                    <p>2. Post <a routerLink="/articles/add" routerLinkActive="active">your selected article</a> on this Articles Reference site.</p>
+                </mat-list-item>
+            </mat-list>
+
+            <div>
+                <p>Four "CRUD" Functions:</p>
+                <ol>
+                    <li><b>C</b>REATE - Add Article Form on /articles page</li>
+                    <li><b>R</b>EAD - Button to List All Articles, on /articles page</li>
+                    <li><b>U</b>PDATE - From list, click on an Article. Edit from that page</li>
+                    <li><b>D</b>ELETE - From list, click on an Article. Delete from that page</li>
+                </ol>
+            </div>
+<!--
+            <p style="font-size: small;">Pointed to API at: {{ apiUrlStubInHome }}</p> TODO
+-->
+        </mat-card-content>
+    </mat-card>
+    <mat-divider
+            [vertical]="true"
+            style="height: 100%;"
+    ></mat-divider>
+    <!--
+    border-right-color: aqua; border-right-width: thin;
+    -->
+    <mat-card>
+        <mat-card-title>
+            Articles
+        </mat-card-title>
+        <mat-card-subtitle>
+            Enjoy & Etc.
+        </mat-card-subtitle>
+        <mat-card-content>
+
+        </mat-card-content>
+    </mat-card>
+</div>

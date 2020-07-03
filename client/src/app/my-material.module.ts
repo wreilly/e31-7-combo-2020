@@ -6,6 +6,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import {MatCardModule} from "@angular/material/card";
+import {MatDividerModule} from "@angular/material/divider";
 
 const myMaterialModulesImported = [
     MatSidenavModule,
@@ -14,6 +16,8 @@ const myMaterialModulesImported = [
     MatSlideToggleModule,
     MatIconModule,
     MatListModule,
+    MatCardModule,
+    MatDividerModule,
 ];
 
 @NgModule({
