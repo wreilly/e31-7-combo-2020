@@ -23,6 +23,9 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import * as fromRoot from './store/app.reducer';
 
 import { AppRoutingModule } from './app-routing.module';
+
+import { ArticlesModule } from './articles/articles.module';
+
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './navigation/header/header.component';
 import { WelcomeComponent } from './welcome/welcome.component';
@@ -53,6 +56,7 @@ import {environment} from "../environments/environment";
       // So: in Production, we are saying "logging only pls - not all that other stuff" thanks.
       }) : [],
     AppRoutingModule,
+    ArticlesModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

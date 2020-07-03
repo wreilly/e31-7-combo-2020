@@ -1,0 +1,23 @@
+<mat-nav-list role="navigation">
+    <!-- Oi! Thank God I found this solution:
+        "You can add mat-list-item as the directive to your app-car-item component..."
+        https://stackoverflow.com/questions/58477720/how-to-use-in-angular-material-list-an-item-component
+
+        As for WebStorm not recognizing mat-list-item as directive on my app-article, I simply "added as custom "HTML" attribute" (right-click). Warning goes away. Seems all totally benign, & Etc. Oi!
+>>  WebStorm Preferences | Editor | Inspections | HTML | Unknown HTML tag attribute
+        -->
+    <app-article
+            mat-list-item
+            *ngFor="let article of articles"
+            [articleToSendDownName]="article"
+    ></app-article>
+<!-- WAS *NOT* WORKING. See above instead.
+        <mat-list-item
+                *ngFor="let article of articles"
+        >
+            <app-article
+                    [articleToSendDownName]="article"
+            ></app-article>
+        </mat-list-item>
+-->
+</mat-nav-list>

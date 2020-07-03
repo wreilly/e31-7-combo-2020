@@ -30,7 +30,8 @@ background-color: '#303030' (dark)
             on-myToggleMatSidenavEventEmitterHeaderName="myMatSidenav_ref.toggle(); myTellStoreAboutSidenavToggle()"
             bind-myIsMatSidenavOpenFromParentApp="isSidenavOpenInApp$ | async"
     ></app-header>
-    <div>T/F? isSidenavOpenInApp$ ? |{{isSidenavOpenInApp$ | async}}|</div>
+<!-- Yes worked:
+    <div>T/F? isSidenavOpenInApp$ ? |{{isSidenavOpenInApp$ | async}}|</div>-->
     <router-outlet></router-outlet>
     <app-footer
             fxFlexOffset="auto"

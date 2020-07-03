@@ -2,10 +2,14 @@
         fxFlex
         fxLayout
         fxLayoutAlign="center start"
-        fxLayoutGap="10px"
 >
-    <!--         style="margin: 0 0 0 20px" -->
-    <mat-card>
+    <!--
+    fxLayoutGap="10px" << was overriding my style to control the left margin :o(
+    So below on the 3 columns, I need to fuss with style margins explicitly (re: left, right, etc.) Meh.
+    style="margin: 0 0 0 20px" -->
+    <mat-card
+            style="margin: 0 0 0 10px;"
+    >
         <mat-card-title>
             {{ title }}
         </mat-card-title>
@@ -39,20 +43,32 @@
     </mat-card>
     <mat-divider
             [vertical]="true"
-            style="height: 100%;"
+            style="height: 100%; margin: 0 0 0 10px;"
     ></mat-divider>
     <!--
     border-right-color: aqua; border-right-width: thin;
     -->
-    <mat-card>
-        <mat-card-title>
-            Articles
-        </mat-card-title>
-        <mat-card-subtitle>
-            Enjoy & Etc.
-        </mat-card-subtitle>
-        <mat-card-content>
+    <div
+            fxFlex
+            fxLayout="column"
+            style="height: 100%; margin: 0 10px 0 10px;"
+    >
+        <mat-card
 
-        </mat-card-content>
-    </mat-card>
+        >
+            <mat-card-title>
+                Articles
+            </mat-card-title>
+            <mat-card-subtitle>
+            Enjoy & Etc.
+            </mat-card-subtitle>
+            <mat-card-content>
+                <p>mat-card-content here in a paragraph. Below, outside the MatCard, is the app-article-list. Cheers.</p>
+            </mat-card-content>
+        </mat-card>
+        <app-article-list
+                fxFlexOffset="auto"
+        >
+        </app-article-list>
+    </div>
 </div>

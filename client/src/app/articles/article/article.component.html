@@ -1,0 +1,14 @@
+<div>
+    <h3 mat-line>
+        {{ articleToSendDown.articleTitle }}
+    </h3>
+    <p mat-line><a routerLink="{{articleToSendDown.articleId}}">{{articleToSendDown.articleId}}</a></p>
+    <p mat-line>{{ articleToSendDown.articleUrl}}</p>
+</div>
+
+<!-- Yes but, MatCard on MatList = not so good
+<mat-card>
+    <mat-card-title> {{ articleToSendDown.title }} </mat-card-title>
+</mat-card>
+-->
+
