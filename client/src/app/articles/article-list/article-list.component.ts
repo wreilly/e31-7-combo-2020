@@ -11,19 +11,19 @@ export class ArticleListComponent implements OnInit {
 
   testArticles = [
     {
-      articleId: 'article-list', // 'one_id',
-      articleTitle: 'Article One',
-      articleUrl: 'http://nytimes.com/one',
+      articleId_name: 'article-list', // 'one_id',
+      articleTitle_name: 'Article One',
+      articleUrl_name: 'http://nytimes.com/one',
     },
     {
-      articleId: 'two_id',
-      articleTitle: 'Article Two',
-      articleUrl: 'http://nytimes.com/two',
+      articleId_name: 'two_id',
+      articleTitle_name: 'Article Two',
+      articleUrl_name: 'http://nytimes.com/two',
     },
     {
-      articleId: 'three_id',
-      articleTitle: 'Article Three',
-      articleUrl: 'http://nytimes.com/three',
+      articleId_name: 'three_id',
+      articleTitle_name: 'Article Three',
+      articleUrl_name: 'http://nytimes.com/three',
     },
   ];
 

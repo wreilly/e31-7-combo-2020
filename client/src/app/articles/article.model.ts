@@ -1,5 +1,5 @@
 export interface Article {
-    articleId: string;
-    articleTitle: string;
-    articleUrl: string;
+    articleId_name: string;
+    articleTitle_name: string;
+    articleUrl_name: string;
 }

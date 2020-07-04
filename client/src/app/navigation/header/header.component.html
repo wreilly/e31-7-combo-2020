@@ -14,23 +14,31 @@
         flex-direction: row; // default
         -->
         <div>
+<!-- style="border-style: dotted; color: white;" << yuk
             <mat-icon class="my-mat-icon-smaller">house</mat-icon>
-            <mat-icon>house</mat-icon>
-            <mat-icon>done</mat-icon>
-            ahoy
+-->
+            <a routerLink="">
+                <mat-icon color="accent">house</mat-icon>
+            </a>
+<!--
+            <a routerLink="">
+                <mat-icon [ngStyle]="{'color':'aquamarine'}">house</mat-icon>
+            </a>
+-->
+<!--            <mat-icon>done</mat-icon>-->
         </div>
         <div><button
                 mat-raised-button
                 color="accent"
                 on-click="myToggleMatSidenavHeader()"
-        >Button fun! <mat-icon>menu</mat-icon></button></div>
-        <div><a routerLink="/article-list" routerLinkActive="active">article-list</a> sharing overmuch</div>
-        <div
+        >{{ myIsMatSidenavOpenFromParentApp ? 'Close' : 'Open' }} <mat-icon>menu</mat-icon></button></div>
+<!--        <div
                 on-click="myToggleMatSidenavHeader()"
-                style="cursor: pointer; font-size: xx-small;"
+                style="cursor: pointer; font-size: 12px;"
             >
             {{ myIsMatSidenavOpenFromParentApp ? 'Close' : 'Open' }} the Sidenav!
         </div>
+-->
         <div
                 fxFlex
                 fxLayout
@@ -46,17 +54,41 @@
                     fxLayoutGap="10px"
                     class="navigation-items"
             >
-                <li>
-                    <a routerLink="/" routerLinkActive="my-active">Home</a>
-                </li>
+<!--
                 <li>
                     <p>
-                        <a routerLink="/" routerLinkActive="my-active">Welcome</a>
+                    <a routerLink="/" routerLinkActive="my-active">Home</a>
+                    </p>
+                </li>
+-->
+                <li>
+                    <p>
+                        <a
+                                routerLink="/"
+                                routerLinkActive="my-active"
+                                bind-routerLinkActiveOptions="{ exact: true }"
+                        >Welcome</a>
+                        <!--
+                        https://stackoverflow.com/questions/37715465/angular-2-roots-route-is-always-active/40097185#40097185
+                        https://angular.io/api/router/RouterLinkActive
+                        -->
                     </p>
                 </li>
                 <li>
+                    <p>
+                    <a routerLink="/article-list" routerLinkActive="my-active">Articles List</a>
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <a routerLink="/articles/add" routerLinkActive="my-active">Add Article</a>
+                    </p>
+                </li>
+<!--
+                <li>
                     <a routerLink="/articles" routerLinkActive="my-active">Articles</a>
                 </li>
+-->
                 <li>
                     <mat-slide-toggle
                             on-change="onThemeChange($event.checked)"

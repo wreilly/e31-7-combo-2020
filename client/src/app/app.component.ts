@@ -16,8 +16,6 @@ import * as fromRoot from "./store/app.reducer";
 })
 export class AppComponent implements OnInit {
 
-    title = 'clienty-2020';
-
     public isThemeDarkInAppComponent: boolean; // = false;
 
     isSidenavOpenInApp$: Observable<boolean>;

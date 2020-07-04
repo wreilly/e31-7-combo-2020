@@ -1,14 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import {ArticleComponent} from "./article/article.component";
+// import {ArticleComponent} from "./article/article.component";
 import {ArticleListComponent} from "./article-list/article-list.component";
+import { ArticleAddComponent } from "./article-add/article-add.component";
 
 const myArticleRoutes: Routes = [
-/*    {
-        path: 'articles', // ? /articles ?
-        component: ArticleComponent, // temporary
-    },*/
+    {
+        path: 'articles/add',
+        component: ArticleAddComponent,
+    },
     {
         path: 'article-list',
         component: ArticleListComponent,

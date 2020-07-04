@@ -8,5 +8,21 @@
         <mat-icon>face</mat-icon>
         <span>Home</span>
     </a>
+    <mat-list-item>
+        <a
+                routerLink="/article-list"
+                on-click="myCloseSidenav()"
+        >
+            <mat-icon>wysiwyg</mat-icon>
+            <span>Articles</span></a>
+    </mat-list-item>
+    <mat-list-item>
+        <a
+                routerLink="/articles/add"
+                on-click="myCloseSidenav()"
+        >
+            <mat-icon>note_add</mat-icon>
+            <span>Add Article</span></a>
+    </mat-list-item>
 </mat-nav-list>
 
