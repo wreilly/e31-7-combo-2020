@@ -36,3 +36,7 @@ instead ...
 html, body {
   // height: 100%; // hmm. re: welcome.component.html
 }
+
+.component-label {
+  font-size: 10px; // xx-small; << still too large! ( ? )
+}
