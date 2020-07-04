@@ -1,5 +1,81 @@
-<div class="component-label">ARTICLE-ADD.COMPONENT</div>
-<form bind-formGroup="">
-    <h3>Add Article</h3>
-    <h6>(Angular Reactive Form)</h6>
-</form>
+<div class="component-label"
+fxLayout="column">ARTICLE-ADD.COMPONENT</div>
+<div
+        fxLayout="row"
+>
+    <mat-card style="margin: 0 10px 0 10px;">
+        <mat-card-title>
+            Add Article
+        </mat-card-title>
+        <mat-card-subtitle>
+            Post reference to N.Y. Times
+        </mat-card-subtitle>
+        <mat-card-content>
+            <p>Please obtain and fill in:</p>
+            <ul>
+                <li>Title</li>
+                <li>URL</li>
+                <li>Category</li>
+                <li>Photo(s)</li>
+                <ul>
+                    <li><i>(optional)</i></li>
+                    <li><i>(forthcoming)</i></li>
+                </ul>
+            </ul>
+        </mat-card-content>
+    </mat-card>
+<!--
+Hmm. Seems to have become invisible. O well.
+
+    <mat-divider
+            [vertical]="true"
+            style="height: 100%; margin: 0 0 0 10px; border-width: thick; border-style: solid;"
+    ></mat-divider>
+-->
+
+    <div
+            style="margin: 0 10px 0 10px;"
+    >
+        <h3>N.Y. Times Article : Reference Information</h3>
+        <form
+                bind-formGroup="addArticleFormGroup"
+        on-ngSubmit="processReactiveFormAdd()"
+                enctype="multipart/form-data"
+                fxLayout="column"
+                fxLayoutGap="10px"
+        >
+            <mat-form-field>
+                <mat-label>Label for Title</mat-label>
+                    <input
+                            type="text"
+                            matInput
+                            formControlName="articleTitle_formControlName"
+                    >
+                <!-- NOPE:
+                                <mat-input
+                               formControlName="articleTitle_formControlName"
+                                ></mat-input>
+                -->
+                <mat-hint>
+                    Hint for Title
+                </mat-hint>
+                <mat-error>Error for Title</mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Label for URL</mat-label>
+                <input
+                        type="text"
+                        matInput
+                        formControlName="articleUrl_formControlName"
+                >
+                <mat-hint>
+                    Hint for URL
+                </mat-hint>
+                <mat-error>Error for URL</mat-error>
+            </mat-form-field>
+
+        </form>
+
+    </div>
+</div>
