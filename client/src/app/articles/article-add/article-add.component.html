@@ -8,7 +8,7 @@ fxLayout="column">ARTICLE-ADD.COMPONENT</div>
             Add Article
         </mat-card-title>
         <mat-card-subtitle>
-            Post reference to N.Y. Times
+            Post a reference to the N.Y. Times
         </mat-card-subtitle>
         <mat-card-content>
             <p>Please obtain and fill in:</p>
@@ -51,7 +51,9 @@ Hmm. Seems to have become invisible. O well.
                             matInput
                             formControlName="articleTitle_formControlName"
                     >
-                <!-- NOPE:
+                <!-- NO.
+                You need <input matInput>, not <mat-input>
+                (However, see <mat-select> (not <select matSelect>, I believe). Sheesh.)
                                 <mat-input
                                formControlName="articleTitle_formControlName"
                                 ></mat-input>
@@ -75,7 +77,74 @@ Hmm. Seems to have become invisible. O well.
                 <mat-error>Error for URL</mat-error>
             </mat-form-field>
 
+            <mat-form-field>
+                <mat-label>Label for Category</mat-label>
+
+                <!--
+ YES Works:
+       -->
+                <mat-select
+                        formControlName='articleCategory_formControlName'
+                >
+
+           <!--
+    YES Works:
+                <mat-select
+                        bind-formControl='articleCategory_formControl'
+                >
+ -->                   <mat-option bind-value="'News'">News</mat-option>
+                    <mat-option
+                            *ngFor="let category of categories"
+                            bind-value="category.value"
+                    >
+                        {{ category.viewValue }}
+                    </mat-option>
+                </mat-select>
+                <mat-error>Error for Category</mat-error>
+            </mat-form-field>
+
+<!-- Takes Width of Form.
+Sometimes that's what you want.
+Sometimes it isn't.
+
+Hmm, on other hand, I think you "get"
+some stuff for "free"
+when using Angular's
+ngOnSubmit ...
+so, I'll revert to
+using it. cheers.
+-->
+            <div
+                    fxLayoutAlign="center"
+            >
+            <button
+                    type="submit" mat-raised-button
+                    color="accent"
+                    style="width: 6em;"
+            >
+                Post!
+            </button>
+            </div>
         </form>
+<!--
+LOOKED FINE.
+But as noted above I
+think you "get" some
+goodies for "free"
+adopting the Angular
+ngSubmit, rather than
+rolling your own here...
+
+        <div
+                fxLayoutAlign="center"
+        >
+            <button
+                    type="button"
+                    mat-raised-button
+                    on-click="processReactiveFormAdd()"
+            >Post!</button>
+        </div>
+-->
 
     </div>
 </div>

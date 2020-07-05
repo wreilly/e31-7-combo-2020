@@ -3,3 +3,8 @@ export interface Article {
     articleTitle_name: string;
     articleUrl_name: string;
 }
+
+export interface Category {
+    value: string;
+    viewValue: string;
+}

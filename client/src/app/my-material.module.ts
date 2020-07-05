@@ -9,6 +9,7 @@ import { MatListModule } from '@angular/material/list';
 import {MatCardModule} from "@angular/material/card";
 import {MatDividerModule} from "@angular/material/divider";
 import { MatInputModule } from '@angular/material/input';
+import {MatSelectModule} from "@angular/material/select";
 
 const myMaterialModulesImported = [
     MatSidenavModule,
@@ -25,6 +26,7 @@ const myMaterialModulesImported = [
     "MatFormFieldModule is included in MatInputModule, so you don't need to import it again"
     https://stackoverflow.com/questions/50328751/angular-6-error-show-to-mat-form-field-is-not-a-known-element
      */
+    MatSelectModule,
 ];
 
 @NgModule({
