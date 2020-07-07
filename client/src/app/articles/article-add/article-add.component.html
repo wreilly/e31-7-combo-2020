@@ -44,8 +44,37 @@ Hmm. Seems to have become invisible. O well.
                 fxLayout="column"
                 fxLayoutGap="10px"
         >
+<!-- Hmm. removing this didn't change things o well. onward. we'll put Multer in after all....
+
+THIS is what drives need for "MULTER" etc.
+Going to be WONDERFUL for photo(s) and ALL THAT.
+But for NOW, let's try withOUT, hey?
+            enctype="multipart/form-data"
+-->
             <mat-form-field>
                 <mat-label>Label for Title</mat-label>
+                <!-- Note re: <input>
+                - Below we see:
+                formControlName="articleTitle_formControlName" O.K.
+                - We do NOT see/use:
+                name="articleTitle_name"  Also O.K.
+
+                - With Material Design you do not need (seems)
+                the 'name' attribute.
+
+                - However, my BACK-END Server API & Database *does* ultimately require:
+    articleToSave.articleUrl = req.body.articleUrl_name
+    articleToSave.articleTitle = req.body.articleTitle_name
+    /Users/william.reilly/dev/JavaScript/CSCI-E31/Assignments/07-final-CODE-CLEAN-UP/server/controllers/api/api-articleController.js
+
+                - Ergo, I (somewhere) DO need to employ the string 'articleTitle_name', enroute to that Back-End.
+
+                - And, I do so here: prepareToAddArticleReactiveForm() at:
+                src/app/articles/article-add/article-add.component.ts:110
+
+                - So in sum, I do NOT need to have
+                the 'name' attribute here on the form input. cheers.
+                -->
                     <input
                             type="text"
                             matInput
@@ -54,9 +83,9 @@ Hmm. Seems to have become invisible. O well.
                 <!-- NO.
                 You need <input matInput>, not <mat-input>
                 (However, see <mat-select> (not <select matSelect>, I believe). Sheesh.)
-                                <mat-input
-                               formControlName="articleTitle_formControlName"
-                                ></mat-input>
+              <mat-input
+                formControlName="articleTitle_formControlName"
+              ></mat-input>
                 -->
                 <mat-hint>
                     Hint for Title
@@ -103,9 +132,9 @@ Hmm. Seems to have become invisible. O well.
                 <mat-error>Error for Category</mat-error>
             </mat-form-field>
 
-<!-- Takes Width of Form.
+<!-- Button Below Takes Width of Form. Hmm.
 Sometimes that's what you want.
-Sometimes it isn't.
+Sometimes it isn't. <<<<
 
 Hmm, on other hand, I think you "get"
 some stuff for "free"
@@ -113,6 +142,7 @@ when using Angular's
 ngOnSubmit ...
 so, I'll revert to
 using it. cheers.
+(we wound up controlling width by CSS "hard-coding-ish")
 -->
             <div
                     fxLayoutAlign="center"

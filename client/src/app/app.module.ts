@@ -12,6 +12,7 @@ core.js:6228 ERROR Error: Found the synthetic listener @transform.start. Please 
  */
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http';
 
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core/core.module';
@@ -45,6 +46,7 @@ import {environment} from "../environments/environment";
     BrowserModule,
     BrowserAnimationsModule,
     // NoopAnimationsModule,
+    HttpClientModule,
     SharedModule,
     CoreModule,
     // MyMaterialModule,
