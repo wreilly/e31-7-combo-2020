@@ -6,6 +6,8 @@ import { ArticlesRoutingModule } from './articles-routing.module';
 import { ArticleComponent } from './article/article.component';
 import { ArticleListComponent } from './article-list/article-list.component';
 import { ArticleAddComponent } from './article-add/article-add.component';
+import { ArticleDetailComponent } from './article-detail/article-detail.component';
+import { ArticlesComponent } from './articles.component';
 
 
 @NgModule({
@@ -13,6 +15,8 @@ import { ArticleAddComponent } from './article-add/article-add.component';
     ArticleComponent,
     ArticleListComponent,
     ArticleAddComponent,
+    ArticleDetailComponent,
+    ArticlesComponent,
   ],
   exports: [ // << I needed to EXPORT these; they are used in other Module scope (e.g. WelcomeComponent)
     ArticleComponent,

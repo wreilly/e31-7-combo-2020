@@ -25,11 +25,13 @@ from the back-end server & database, they (of course)
 come with the back-end property names.
 Q. Should the client *re-convert* those to the front-end
 property names, for display & Etc. ?
-Doing so would permit continued use of the Typescript
+- Doing so would permit continued use of the Typescript
 interface 'Article' seen here.
-But on the other hand, it seems kinda crazy.
-N.B. I did *not* do these machinations in the 2018 iteration
+- But on the other hand, it seems kinda crazy.
+- N.B. I did *not* do these machinations in the 2018 iteration
 of this client-server-combo biz.
+
+A. Well, bit tricky, but I did it. So, we'll give it a whirl, see if we keep it or not. T.B.D.
  */
 
 export interface Category {

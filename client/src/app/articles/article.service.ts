@@ -28,4 +28,10 @@ export class ArticleService {
     );
   }
 
+  getArticle(idPassedIn) { // TODO
+    return this.myHttp.get(
+        `http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`
+    )
+  }
+
 }

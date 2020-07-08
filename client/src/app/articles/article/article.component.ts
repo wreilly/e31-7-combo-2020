@@ -9,6 +9,9 @@ import { Article } from '../article.model';
 export class ArticleComponent {
 
     @Input('articleToSendDownName')
+    articleHere: Article;
+/* Better name above ^^
     articleToSendDown: Article;
+*/
 
 }

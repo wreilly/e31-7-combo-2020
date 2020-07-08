@@ -1,25 +1,38 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-// import {ArticleComponent} from "./article/article.component";
+// import {ArticleComponent} from "./article/article.component"; // << Nope.
+import {ArticlesComponent} from "./articles.component";
 import {ArticleListComponent} from "./article-list/article-list.component";
 import { ArticleAddComponent } from "./article-add/article-add.component";
+import { ArticleDetailComponent } from './article-detail/article-detail.component';
+
 
 const myArticleRoutes: Routes = [
     {
-        path: 'articles/add',
-        component: ArticleAddComponent,
-    },
-    {
-        path: 'article-list',
-        component: ArticleListComponent,
-    },
+        // path: 'article-list',
+        // path: 'articles/', // << Very Fussy! No! final '/'. boo-hiss.
+        path: 'articles',
+        // path: '', // << ?
+        // pathMatch: 'full',
+        component: ArticlesComponent,
+        children: [
+            {
+                path: 'list',
+                component: ArticleListComponent,
+            },
+            {
+                path: 'add',
+                component: ArticleAddComponent,
+            },
 /*
-    {
-        path: ':article_id', // << ?
-        component: ArticleComponent,
-    },
+            {
+                path: ':article_id',
+                component: ArticleDetailComponent,
+            },
 */
+        ]
+    },
 ];
 
 @NgModule({
@@ -36,6 +49,4 @@ const myArticleRoutes: Routes = [
 
     ],
 })
-export class ArticlesRoutingModule {
-
-}
+export class ArticlesRoutingModule { }

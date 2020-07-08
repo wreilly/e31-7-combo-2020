@@ -8,7 +8,7 @@ import {WelcomeComponent} from "./welcome/welcome.component";
 const routes: Routes = [
   {
     path: '',
-    pathMatch: 'full',
+    // pathMatch: 'full',
     component: WelcomeComponent,
   },
 ];
