@@ -1,13 +1,22 @@
 import { Component, OnInit } from '@angular/core';
+import { ArticleService } from '../article.service';
+// import {Observable} from "rxjs"; // << not needed here after all
+import {Article} from "../article.model";
 
 @Component({
   selector: 'app-article-list',
   templateUrl: './article-list.component.html',
-  styleUrls: ['./article-list.component.css']
+  styleUrls: ['./article-list.component.scss']
 })
 export class ArticleListComponent implements OnInit {
 
-  articles = [];
+  articles: Article[]; // empty to begin
+  // articles: [Article]; // empty to begin
+  /*
+  Property '0' is missing in type 'Article[]' but required in type '[Article]'
+   */
+  // articles: []; // empty to begin
+  // articles = []; // empty to begin
 
   testArticles = [
     {
@@ -28,11 +37,42 @@ export class ArticleListComponent implements OnInit {
   ];
 
 
-  constructor() { }
+  constructor(
+      private myArticleService: ArticleService,
+  ) { }
 
   ngOnInit(): void {
+    // TEST TIME!
+/*
     this.articles = [ ...this.testArticles ];
     console.log('this.(test)Articles! ', this.articles);
+*/
+
+    // REAL TIME!
+    // Service returns 'Observable<Object>', to which we .subscribe()
+    this.myArticleService.listArticles()
+        .subscribe(
+            (allArticlesWeGot: []) => {
+              // this.articles = allArticlesWeGot; // whamma-jamma? << No! << Well, mebbe? (I mean, I did in 2018.)
+              this.articles = allArticlesWeGot.map(
+                  (eachPseudoArticleFromApi: {
+                    _id: string,
+                    articleTitle: string,
+                    articleUrl: string,
+                  }) => {
+
+                    let eachRealArticleToReturn: Article = {
+                      articleId_name: eachPseudoArticleFromApi._id,
+                      articleTitle_name: eachPseudoArticleFromApi.articleTitle,
+                      articleUrl_name: eachPseudoArticleFromApi.articleUrl,
+                    }
+
+                    return eachRealArticleToReturn;
+                  }
+              )
+            }
+        );
+
   }
 
 }
