@@ -131,6 +131,12 @@ apiArticlesRouter.post(
     function (req, res, next) {
 
         console.log('REST API ROUTER POST / req.body: ', req.body);
+        /*
+        REST API ROUTER POST / req.body:  [Object: null prototype] {
+  articleTitle_name: 'Will the REAL 2020 pls what have you',
+  articleUrl_name: 'http://nytimes.com/oboywhatdoeslogginglooklike'
+}
+         */
 
         apiArticleControllerHereInApi.apiCreateArticle(req, res, next);
     }

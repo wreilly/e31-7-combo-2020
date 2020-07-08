@@ -107,7 +107,9 @@ apiArticleController.apiGetArticleById = function (req, res, next) {
 apiArticleController.apiCreateArticle = function (req, res, next) {
 
     console.log('********************');
+/* All Right Already! Stop logging this monster.
     console.log('Controller: createArticle req ', req);
+*/
     /*
     Controller: createArticle req  IncomingMessage {
   _readableState: ReadableState {

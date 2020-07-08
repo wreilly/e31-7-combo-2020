@@ -30,7 +30,7 @@ class articleService {
             .then(
                 (whatIGot) => { // all new2020articles!
                     // resolved
-                    console.log('articleService resolved whatIGot[0]', whatIGot[0]);
+                    console.log('articleService. finaAllArticles. resolved whatIGot[0]', whatIGot[0]);
                     return whatIGot;
                 },
                 (problemo) => {
@@ -79,7 +79,7 @@ class articleService {
     /* **************************** */
 
     static saveArticle(articleToSave) {
-        console.log('Data Service: articleToSave: ', articleToSave);
+        console.log('Article Data Service: articleToSave: ', articleToSave);
         /*
         Data Service: articleToSave:  {
   articleUrl: 'https://nytimes.com',
@@ -96,7 +96,7 @@ class articleService {
         return articleForDatabase.save()
             .then(
                 (articleConfirmationWeGot) => {
-                console.log('articleConfirmationWeGot ', articleConfirmationWeGot);
+                console.log('Article Service. Save. articleConfirmationWeGot ', articleConfirmationWeGot);
                 /*
                 articleConfirmationWeGot  {
   _id: 5ee4c5facc58cf6657c96c17,
