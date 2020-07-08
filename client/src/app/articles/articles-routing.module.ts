@@ -25,12 +25,11 @@ const myArticleRoutes: Routes = [
                 path: 'add',
                 component: ArticleAddComponent,
             },
-/*
             {
                 path: ':article_id',
                 component: ArticleDetailComponent,
             },
-*/
+
         ]
     },
 ];

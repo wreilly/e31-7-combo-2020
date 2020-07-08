@@ -1,5 +1,79 @@
 <div class="component-label"
      fxLayout="column">ARTICLE-DETAIL.COMPONENT</div>
+
+<!--<div *ngIf="articleAsObservableHereInDetailPage$">-->
+<!--<div *ngIf="articleAsOneItemArrayHereInDetailPage">  Apparently not needed! << WAAL no. -->
+<!--<div>-->
+<div *ngIf="articleHereInDetailPage">
+<!--
+    <div>
+        {{articleHereInDetailPage}} [object Object]
+    </div>
+-->
+    <div>
+        {{articleHereInDetailPage.articleTitle}}
+<!--        {{articleHereInDetailPage.articleTitle_name}}-->
+    </div>
+    <!--
+    <h3>ONE {{articleAsObservableHereInDetailPage$ | async}}</h3>
+    [object Object]
+-->
+
+    <!--
+        <h3>TWO {{articleAsObservableHereInDetailPage$.articleTitle | async}}</h3>
+
+        TS2339: Property 'articleTitle' does not exist on type 'Observable<Object>'.
+    -->
+<!--
+    <h3>THREE {{articleAsObservableHereInDetailPage$ | async}}.articleTitle</h3>
+-->
+<!--    WORKS FINE (but does not need to be <li>)
 <div>
+        <ul>
+            <li *ngFor="let theOne of articleAsOneItemArrayHereInDetailPage">
+&lt;!&ndash;with _name|                {{ theOne.articleTitle_name}}&ndash;&gt;
+                {{ theOne.articleTitle}}
+            </li>
+        </ul>
+    </div>
+-->
+<!-- NO NO WAY
+    <mat-card
+            *ngFor="let theArticle of articleAsObservableHereInDetailPage$ | async"
+    >
+        <mat-card-title>
+         $OBS   {{ theArticle.articleTitle}} $OBS2 {{articleAsObservableHereInDetailPage$ | async}}
+        </mat-card-title>
+        <mat-card-subtitle>
+            {{ theArticle.articleUrl}}
+        </mat-card-subtitle>
+        <mat-card-content>
+&lt;!&ndash;            {{ theArticle.articleTitle}}&ndash;&gt;
+        </mat-card-content>
+    </mat-card>
+
+-->
+    <mat-card
+            *ngFor="let theOne of articleAsOneItemArrayHereInDetailPage"
+    >
+        <mat-card-title>
+         ARR   {{ theOne.articleTitle}}
+        </mat-card-title>
+        <mat-card-subtitle>
+            {{ theOne.articleUrl}}
+        </mat-card-subtitle>
+        <mat-card-content>
+            {{ theOne.articleTitle}}
+            {{ theOne.articleTitle}}
+            {{ theOne.articleTitle}}
+        </mat-card-content>
+    </mat-card>
+<!-- WORKS FINE
+    <div *ngFor="let theOne of articleAsOneItemArrayHereInDetailPage">
+        {{ theOne.articleTitle}}
+    </div>
+-->
+<!--
     <h3>{{articleHereInDetailPage.articleTitle_name}}</h3>
+-->
 </div>
