@@ -1,15 +1,26 @@
 <div class="component-label">ARTICLE.COMPONENT</div>
+<!--
 <div>
     <h3 mat-line>
-        {{ articleHere.articleTitle_name }}
+        <a routerLink="/articles/{{articleHere.articleId_name}}">
+            {{ articleHere.articleTitle_name }}</a>
     </h3>
-    <p mat-line><a routerLink="/articles/{{articleHere.articleId_name}}">{{articleHere.articleId_name}}</a></p>
-    <p mat-line>{{ articleHere.articleUrl_name}}</p>
+    <p mat-line class="tiny">articles/{{articleHere.articleId_name}}</p>
+&lt;!&ndash;    <p mat-line>{{ articleHere.articleUrl_name}}</p>&ndash;&gt;
 </div>
-
-<!-- Yes but, MatCard on MatList = not so good
-<mat-card>
-    <mat-card-title> {{ articleToSendDown.title }} </mat-card-title>
-</mat-card>
 -->
+
+<!-- Yes but, MatCard on MatList = not so good << ?? -->
+<mat-card
+class="gap-between"
+>
+    <mat-card-subtitle><a routerLink="/articles/{{articleHere.articleId_name}}">{{ articleHere.articleTitle_name }}</a> </mat-card-subtitle>
+    <mat-card-content>
+<!--
+        <p mat-line class="tiny">articles/{{articleHere.articleId_name}}</p>
+-->
+        <p class="tiny">articles/{{articleHere.articleId_name}}</p>
+    </mat-card-content>
+</mat-card>
+<!-- -->
 

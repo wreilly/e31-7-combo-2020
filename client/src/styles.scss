@@ -37,6 +37,34 @@ html, body {
   // height: 100%; // hmm. re: welcome.component.html
 }
 
+/*
 .component-label {
-  font-size: 10px; // xx-small; << still too large! ( ? )
+  font-size: 10px;
+   // xx-small; << still too large! ( ? )
+}
+*/
+/* Below to use for HIDING these... */
+.component-label {
+  font-size: 10px;
+  display: none;
+}
+
+
+a {
+  color: #00B7FF;
+  text-decoration: none;
+}
+
+a.my-active {
+  /* color: red; */
+  color: blue;
+  font-weight: bolder;
+  //text-decoration: underline;
+  //text-decoration-line: overline underline;
+  text-decoration-style: solid;
+}
+
+.tiny {
+  font-size: 11px;
+  // font-size: xx-small;
 }
