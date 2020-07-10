@@ -5,10 +5,11 @@ import {CommonModule} from '@angular/common'; // Kind of subset of BrowserModule
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MyMaterialModule } from '../my-material.module';
+import { InputFocusDirective } from './input-focus/input-focus.directive';
 
 @NgModule({
     declarations: [
-
+        InputFocusDirective
     ],
     imports: [
         CommonModule,
@@ -21,6 +22,7 @@ import { MyMaterialModule } from '../my-material.module';
         FlexLayoutModule,
         ReactiveFormsModule,
         MyMaterialModule,
+        InputFocusDirective,
     ],
     providers: [
 

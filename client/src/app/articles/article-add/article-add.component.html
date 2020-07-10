@@ -82,7 +82,14 @@ But for NOW, let's try withOUT, hey?
                             type="text"
                             matInput
                             formControlName="articleTitle_formControlName"
+                            appInputFocus
                     >
+                <!--
+                FOCUS:
+See shared/input-focus DIRECTIVE
+                https://stackoverflow.com/questions/50006888/set-focus-on-input-element
+                -->
+
                 <!-- NO.
                 You need <input matInput>, not <mat-input>
                 (However, see <mat-select> (not <select matSelect>, I believe). Sheesh.)
