@@ -30,7 +30,12 @@ class articleService {
             .then(
                 (whatIGot) => { // all new2020articles!
                     // resolved
-                    console.log('articleService. finaAllArticles. resolved whatIGot[0]', whatIGot[0]);
+
+                    /* Let's STOP logging this monster.
+                    It's the WHOLE MODEL (Too Much).
+                                            console.log('articleService runModelPromises resolved whatIGot[0]', whatIGot[0])
+                    */
+                    console.log('articleService. finaAllArticles. resolved whatIGot[0].articleTitle', whatIGot[0].articleTitle);
                     return whatIGot;
                 },
                 (problemo) => {
@@ -108,7 +113,10 @@ class articleService {
                 return articleConfirmationWeGot;
             },
                 (problemo) => {
-                    console.log(problemo);
+                    // rejected
+                    console.log('articleService SAVE rejected Promise from Mongoose .save() ', problemo)
+                    // E.g. { ValidationError: Newarticle validation failed: articleUrl: Path `articleUrl` is required.
+                    throw new Error(`articleServiceSAVERejected: ${problemo}`);
                 })
             .catch(
                 (err) => {

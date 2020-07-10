@@ -19,16 +19,24 @@ apiArticleController.apiGetAllArticles = function (req, res, next) {
         .then(
             (whatIGot) => {
                 // resolved
-                console.log('1. Controller getAllArticles - whatIGot[0] (from data service) ', whatIGot[0]);
+                /* Let's STOP logging this monster.
+               (It is the whole MODEL. Too much.
+                               console.log('1. Controller getAllArticles - whatIGot[0] (from data service) ', whatIGot[0]);
+ */
+                console.log('1.A. Controller - getAllArticles - whatIGot[0].articleTitle (from data service) ', whatIGot[0].articleTitle);
                 /*
-                {
-  _id: 5af746cea7008520ae732e2c,
-  articlePhotos: [ '"justsomestring"' ],
-  articleUrl: 'myhttp',
-  articleTitle: 'Trump’s WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers',
-  __v: 0
-}
+                Yes:
+                Trump’s WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers
                  */
+                /*
+                               {
+                 _id: 5af746cea7008520ae732e2c,
+                 articlePhotos: [ '"justsomestring"' ],
+                 articleUrl: 'myhttp',
+                 articleTitle: 'Trump’s WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers',
+                 __v: 0
+               }
+                                */
 
                 const strungWhatIGot = JSON.stringify(whatIGot);
                 console.log('2. strungWhatIGot for 500... ', strungWhatIGot.slice(0,500));
@@ -107,7 +115,8 @@ apiArticleController.apiGetArticleById = function (req, res, next) {
 apiArticleController.apiCreateArticle = function (req, res, next) {
 
     console.log('********************');
-/* All Right Already! Stop logging this monster.
+/* All Right Already! Stop logging this monster. It's the whole REQUEST. *WAY* Too Much.
+
     console.log('Controller: createArticle req ', req);
 */
     /*
@@ -177,8 +186,16 @@ headers: {
         .then(
             (whatIGot) => {
                 // resolved
-                console.log('Controller: createArticle resolved whatIGot ', whatIGot);
-                /*
+                console.log('Controller: 00 createArticle resolved whatIGot.articleTitle ', whatIGot.articleTitle);
+                console.log('Controller: 01 createArticle resolved whatIGot ', whatIGot);
+                /* TWO POINTS:
+                I can log the entire "whatIGot", and don't have to break it down to "whatIGot.articleTitle" etc.
+                Q.: Why is that?
+                A.:
+                1. Terminal console logging looks OK. More abbreviated (good thing). (See below).
+                2. Browser DevTools console logging is OK too, but does contain/show the Whole Model. Since it has the "collapse/expand" functionality, it's all right that way.
+
+              OK: Terminal logging:
                 Controller: createArticle resolved whatIGot  {
   _id: 5ee4d8c29b614f6c6d86230e,
   articleUrl: 'https://nytimes.com',
