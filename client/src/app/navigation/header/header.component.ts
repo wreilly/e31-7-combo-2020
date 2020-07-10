@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 // https://grensesnittet.computas.com/dynamic-themes-in-angular-material/
 import {ThemeService} from "../../core/services/theme.service";
+import { ScrollService } from '../../core/services/scroll.service';
 
 @Component({
   selector: 'app-header',
@@ -10,7 +11,8 @@ import {ThemeService} from "../../core/services/theme.service";
 })
 export class HeaderComponent implements OnInit {
 
-  isThemeDarkInComponent: boolean;
+    isThemeDarkInComponent: boolean;
+    scrollOffsetWeJustGotToDisplay: number;
 
   @Output('myToggleMatSidenavEventEmitterHeaderName') myToggleMatSidenavEventEmitterHeader: EventEmitter<any> = new EventEmitter<any>();
 
@@ -19,6 +21,7 @@ export class HeaderComponent implements OnInit {
 
     constructor(
       private myThemeService: ThemeService,
+      private myScrollService: ScrollService,
   ) { }
 
   ngOnInit(): void {
@@ -29,6 +32,18 @@ export class HeaderComponent implements OnInit {
               this.isThemeDarkInComponent = whatIGot;
             }
         )
+
+
+      this.myScrollService.scrollOffsetInServiceObservable
+          .subscribe(
+              (scrollOffsetWeGot) => {
+                  console.log('HEADER 00 OnInit. Scroll Offset (of the moment) be: ', scrollOffsetWeGot);
+                  this.scrollOffsetWeJustGotToDisplay = scrollOffsetWeGot;
+                  console.log('HEADER 01 OnInit. this.scrollOffsetWeJustGotToDisplay ', this.scrollOffsetWeJustGotToDisplay);
+                  // this.showToTopIfScrolled(scrollOffsetWeGot);
+              }
+          )
+
   } // /ngOnInit()
 
     onThemeChange(checkedOrNot: boolean) {

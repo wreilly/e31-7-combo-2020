@@ -6,10 +6,12 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MyMaterialModule } from '../my-material.module';
 import { InputFocusDirective } from './input-focus/input-focus.directive';
+import { ScrollTopComponent } from './scroll-top/scroll-top.component';
 
 @NgModule({
     declarations: [
-        InputFocusDirective
+        InputFocusDirective,
+        ScrollTopComponent,
     ],
     imports: [
         CommonModule,
@@ -23,6 +25,7 @@ import { InputFocusDirective } from './input-focus/input-focus.directive';
         ReactiveFormsModule,
         MyMaterialModule,
         InputFocusDirective,
+        ScrollTopComponent,
     ],
     providers: [
 

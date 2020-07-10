@@ -19,7 +19,10 @@ export class InputFocusDirective implements OnInit { // "FocusOnShowDirective" f
 
   ngOnInit(): void {
     const input: HTMLInputElement = this.elementWithDirective.nativeElement as HTMLInputElement;
-    input.focus();
+    input.focus({preventScroll: true});
+    /*
+    https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/focus
+     */
     // input.select();
   }
 

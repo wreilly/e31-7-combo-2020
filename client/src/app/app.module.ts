@@ -14,6 +14,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 
+/*
+https://stackoverflow.com/questions/47528852/angular-material-sidenav-cdkscrollable/50812763#50812763
+ */
+import { ScrollingModule } from '@angular/cdk/scrolling';
+
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core/core.module';
 // import { MyMaterialModule } from './my-material.module'; // << Now in SharedModule
@@ -47,6 +52,7 @@ import {environment} from "../environments/environment";
     BrowserAnimationsModule,
     // NoopAnimationsModule,
     HttpClientModule,
+    ScrollingModule,
     SharedModule,
     CoreModule,
     // MyMaterialModule,

@@ -4,6 +4,12 @@
           fullscreen
           style="display: grid"
   >
+    <!-- re: fullscreen, viz. scroll
+    https://stackoverflow.com/questions/46996191/how-to-detect-scroll-events-in-mat-sidenav-container
+    -->
+
+
+
 <!--  Hmm, seem to be learning
 this 'mat-app-background' (below) is NOT needed.
 I guess that is the story when we have the
@@ -23,9 +29,21 @@ background-color: '#303030' (dark)
             on-myToggleMatSidenavEventEmitterSidenavName="myMatSidenav_ref.toggle(); myTellStoreAboutSidenavToggle()"
     ></app-sidenav-list>
   </mat-sidenav>
+
+    <!-- Note re: below, viz. "Scroll to Top"
+    The "top" concept, in Angular Material Design, comes to here: mat-sidenav-content. (Not 'body' nor 'html'). cheers.
+        /* Frank goodness: (footer.component.ts)
+    document.querySelector('mat-sidenav-content').scrollTop = 1500;
+    https://github.com/angular/components/issues/11552
+     */
+    -->
   <mat-sidenav-content
           fxLayout="column"
+          cdkScrollable
   >
+    <!-- re: above
+    https://stackoverflow.com/questions/47528852/angular-material-sidenav-cdkscrollable/50812763#50812763
+    -->
     <app-header
             on-myToggleMatSidenavEventEmitterHeaderName="myMatSidenav_ref.toggle(); myTellStoreAboutSidenavToggle()"
             bind-myIsMatSidenavOpenFromParentApp="isSidenavOpenInApp$ | async"
@@ -34,9 +52,11 @@ background-color: '#303030' (dark)
 <!-- Yes worked:
     <div>T/F? isSidenavOpenInApp$ ? |{{isSidenavOpenInApp$ | async}}|</div>-->
     <router-outlet></router-outlet>
+    <app-scroll-top></app-scroll-top>
     <app-footer
             fxFlexOffset="auto"
     ></app-footer>
+<!--    <app-scroll-top></app-scroll-top>-->
   </mat-sidenav-content>
 </mat-sidenav-container>
 

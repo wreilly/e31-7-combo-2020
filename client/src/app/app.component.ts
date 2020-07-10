@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import { Observable } from 'rxjs';
+import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Observable, Subscription} from 'rxjs';
 import { Store } from '@ngrx/store';
 import * as UIActions from './shared/store/ui.actions';
 
@@ -8,22 +8,32 @@ import {ThemeService} from "./core/services/theme.service";
 import {MyState} from "./shared/store/ui.reducer";
 // import {MyOverallState} from "./store/app.reducer";
 import * as fromRoot from "./store/app.reducer";
+import {CdkScrollable, ScrollDispatcher} from "@angular/cdk/overlay";
+import {ScrollService} from "./core/services/scroll.service";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
 
     public isThemeDarkInAppComponent: boolean; // = false;
 
     isSidenavOpenInApp$: Observable<boolean>;
 
+    lastOffset: number; // Scroll biz
+    scrollingSubscription: Subscription;
+
     constructor(
         private myThemeService: ThemeService,
         private myStore: Store<fromRoot.MyOverallState>,
+        public scroll: ScrollDispatcher,
+        private myScrollService: ScrollService,
     ) {
+        /* re: above scroll biz
+        https://stackoverflow.com/questions/47528852/angular-material-sidenav-cdkscrollable/50812763#50812763
+         */
         // DEBUGGING! (from email-fabricator)
         // This code does nothing; just exploring how to get at value in Observable.
         /* Boo hiss
@@ -36,6 +46,17 @@ export class AppComponent implements OnInit {
         Above emulates AppComponent code in:
         https://medium.com/@holtkam2/angular-ngrx-store-understanding-the-data-flow-28566a2d6b4b
          */
+
+        // SCROLL BIZ (see URL above)
+        this.scrollingSubscription = this.scroll
+            .scrolled()
+            .subscribe(
+                (dataWeGot: CdkScrollable) => {
+                    // this.myOnWindowScroll(dataWeGot) // << Yes!
+                    this.myScrollService.myOnWindowScroll(dataWeGot)
+                }
+            )
+
     } // /constructor()
 
     ngOnInit(): void {
@@ -97,6 +118,42 @@ export class AppComponent implements OnInit {
 
     } // /ngOnInit()
 
+    // NOW INSTEAD SEE CORE / SERVICE / SCROLL ... ...
+    myNOLONGERHEREOnWindowScroll(scrollData: CdkScrollable) {
+        // noinspection DuplicatedCode
+        const myScrollTop = scrollData.getElementRef().nativeElement.scrollTop || 0;
+
+        console.log('Scroll biz myScrollTop ', myScrollTop);
+        /* E.g.,
+        0, 278.66666453647, 280, 10994  etc.
+         */
+
+        console.log('Scroll biz scrollData ', scrollData);
+        /*
+        CdkScrollable {elementRef: ElementRef, scrollDispatcher: ScrollDispatcher, ngZone: NgZone, dir: Directionality, _destroyed: Subject, …}
+         */
+
+        console.log('Scroll biz scrollData.getElementRef() ', scrollData.getElementRef());
+        /*
+ElementRef {nativeElement: mat-sidenav-content.mat-drawer-content.mat-sidenav-content}
+         */
+
+        console.log('Scroll biz scrollData.getElementRef() ', scrollData.getElementRef().nativeElement.nodeName);
+        /*
+        MAT-SIDENAV-CONTENT
+         */
+
+        if (this.lastOffset > myScrollTop) {
+            console.log('Show toolbar');
+        } else if (myScrollTop < 10) {
+            console.log('Show toolbar');
+        } else if (myScrollTop > 100) {
+            console.log('Hide toolbar');
+        }
+
+        this.lastOffset = myScrollTop;
+    }
+
     myTellStoreAboutSidenavToggle() {
         console.log('this.isSidenavOpenInApp$ : ', this.isSidenavOpenInApp$); // Store object ... (!)
         /*
@@ -105,6 +162,12 @@ actionsObserver: ActionsSubject { ...
          */
 
         this.myStore.dispatch(new UIActions.SetSidenavToOppositeState());
+    }
+
+    ngOnDestroy(): void {
+        if(this.scrollingSubscription) {
+            this.scrollingSubscription.unsubscribe();
+        }
     }
 
 }
