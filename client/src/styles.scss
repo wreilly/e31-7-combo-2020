@@ -44,7 +44,25 @@ html, body {
 }
 */
 /* Below to use for HIDING these... */
+/*
+https://gist.github.com/jareware/4738651
+
+See also all this complexity:
+https://medium.com/@amcdnl/theming-angular-with-css-variables-3c78a5b20b24   O la!
+ */
+$wr__hide: true;
+//$wr__hide: false; // don't hide. Show!
+// Q. How to programmatically change above ?? ?? o well...
+
 .component-label {
+  font-size: 10px;
+  @if($wr__hide) {
+    display: none;
+  }
+}
+
+// No longer used:
+.component-label-hide {
   font-size: 10px;
   display: none;
 }

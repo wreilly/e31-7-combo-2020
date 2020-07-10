@@ -1,4 +1,7 @@
 <div class="component-label">WELCOME.COMPONENT</div>
+<!--
+<div bind-ngClass="showComponentLabel ? 'component-label' : 'component-label-hide'">WELCOME.COMPONENT</div>
+-->
 <!-- Needed above? seems not.
 fxLayout="column"
 -->
@@ -13,7 +16,7 @@ fxLayout="column"
     So below on the 3 columns, I need to fuss with style margins explicitly (re: left, right, etc.) Meh.
     style="margin: 0 0 0 20px" -->
     <mat-card
-            style="margin: 0 10px 0 10px;"
+            style="margin: 10px 5px 0 10px;"
     >
         <mat-card-title>
             {{ title }}
@@ -61,7 +64,7 @@ fxLayout="column"
     <div
             fxFlex
             fxLayout="column"
-            style="height: 100%; margin: 0 10px 0 10px;"
+            style="height: 100%; margin: 10px 10px 0 5px;"
     >
         <mat-card
 

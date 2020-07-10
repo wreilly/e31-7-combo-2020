@@ -9,6 +9,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class WelcomeComponent implements OnInit {
 
+  showComponentLabel = true; // false;
   title = 'Some Times 2020';
   subTitle = 'Newspaper Articles Reference Site';
   // apiUrlStubInWelcome = apiUrlStubInService; // TODO
