@@ -1,4 +1,8 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, NgZone } from '@angular/core';
+
+import {CdkScrollable, ScrollDispatcher} from "@angular/cdk/overlay";
+
+
 
 // https://grensesnittet.computas.com/dynamic-themes-in-angular-material/
 import {ThemeService} from "../../core/services/theme.service";
@@ -9,7 +13,7 @@ import { ScrollService } from '../../core/services/scroll.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, AfterViewInit {
 
     isThemeDarkInComponent: boolean;
     scrollOffsetWeJustGotToDisplay: number;
@@ -22,6 +26,8 @@ export class HeaderComponent implements OnInit {
     constructor(
       private myThemeService: ThemeService,
       private myScrollService: ScrollService,
+      private myScrollDispatcher: ScrollDispatcher,
+      private myZone: NgZone,
   ) { }
 
   ngOnInit(): void {
@@ -45,6 +51,27 @@ export class HeaderComponent implements OnInit {
           )
 
   } // /ngOnInit()
+
+    ngAfterViewInit() {
+        /* NEW   FROM SCROLL-TOP.COMPONENT. Kinda crazy to run there, and here.
+        https://stackoverflow.com/questions/46996191/how-to-detect-scroll-events-in-mat-sidenav-container
+         */
+        this.myScrollDispatcher.scrolled()
+            .subscribe(
+                (cdkScrollDataWeGot: CdkScrollable) => {
+                    this.myZone.run(
+                        (anything) => {
+                            console.log('? zone anything? ', anything);
+                            const scrollPosition = cdkScrollDataWeGot.getElementRef().nativeElement.scrollTop; // undefined for 'cdkScrollDataWeGot' :o(
+                            console.log('999888 HEADER YOWZA? scrollPosition ', scrollPosition);
+                            this.scrollOffsetWeJustGotToDisplay = scrollPosition; // whamma-jamma?
+                        }
+                    )
+                }
+            )
+    }
+
+
 
     onThemeChange(checkedOrNot: boolean) {
       this.myThemeService.setThemeToggle(checkedOrNot);

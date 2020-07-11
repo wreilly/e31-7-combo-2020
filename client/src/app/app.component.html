@@ -1,11 +1,45 @@
 <div [ngClass]="{'dark-theme': isThemeDarkInAppComponent}">
   <!--suppress HtmlUnknownAttribute -->
+<!--
+  <mat-sidenav-container
+
+          style="display: grid"
+  >
+-->
   <mat-sidenav-container
           fullscreen
           style="display: grid"
   >
-    <!-- re: fullscreen, viz. scroll
+    <!-- FULLSCREEN
+    1. WITH IT =
+    A.  *Needed* for "sticky footer"
+    B. ALSO NEEDED to get this to work:
+       The G.D. app.component scrollDispatcher.scrolled()
+        APP CdkStrollable dataWeGot
+        Scroll biz scrollData.getElementRef()  MAT-SIDENAV-CONTENT
+
+    2. WITHOUT IT = Only then will this work:
+    - "hide/show", "floating/positioned" "scroll-to-top" component (uurrgghh)
+    - And, window/document/body *do* "hear" scroll events...
+
+Also: over in scroll-top.component.ts:
+    *****************************************************
+    With <mat-sidenav-container fullscreen>, window/document/body "hear" nothing.
+    But with 'fullscreen' removed, they *do* hear scroll events. (sheesh)
+    ******************************************************
+
+
+    re: fullscreen, viz. scroll
     https://stackoverflow.com/questions/46996191/how-to-detect-scroll-events-in-mat-sidenav-container
+
+CSS:
+   fullscreen gets you:
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+
     -->
 
 
@@ -37,12 +71,43 @@ background-color: '#303030' (dark)
     https://github.com/angular/components/issues/11552
      */
     -->
-  <mat-sidenav-content
+
+    <!-- Below <div> is swapped in/out viz. <mat-sidenav-content> -->
+
+<!--
+  <div
           fxLayout="column"
           cdkScrollable
   >
+-->
+
+<!-- Hmm, above "works" sort of.
+Angular automagically does insert <mat-sidenav-content> above/around my <div>. OK.
+With 'fullscreen'
+- Scroll biz = Yes (nice). (cdkScrollable on <mat-sidenav-content> and on nested <div>)
+- But "sticky footer" gets lost (wtf).
+- Also footer's "back to top" click fails
+Without 'fullscreen'
+- Scroll biz = Yes (nice). (cdkScrollable on <mat-sidenav-content> and on nested <div>)
+- But "sticky footer" gets lost (wtf).
+- Also footer's "back to top" click fails
+- And/but, our buddy "scroll-top.component" does hide/show, correctly! (cwazy)
+-->
+<!-- Yeah below Works; above trying plain div -->
+
+
+    <mat-sidenav-content
+            fxLayout="column"
+            cdkScrollable
+    >
+
+
+
     <!-- re: above
     https://stackoverflow.com/questions/47528852/angular-material-sidenav-cdkscrollable/50812763#50812763
+
+    Also, re: fullscreen etc.
+    https://stackoverflow.com/questions/46996191/how-to-detect-scroll-events-in-mat-sidenav-container
     -->
     <app-header
             on-myToggleMatSidenavEventEmitterHeaderName="myMatSidenav_ref.toggle(); myTellStoreAboutSidenavToggle()"
@@ -57,7 +122,32 @@ background-color: '#303030' (dark)
             fxFlexOffset="auto"
     ></app-footer>
 <!--    <app-scroll-top></app-scroll-top>-->
-  </mat-sidenav-content>
+    <!-- below </div> was </mat-sidenav-content> - Experiment.
+
+    Update ????
+    https://stackoverflow.com/questions/46996191/how-to-detect-scroll-events-in-mat-sidenav-container
+    Will try the DIV instead, for moment
+
+**************************
+UPDATE TWO
+**************************
+No. Back to NOT just DIV.
+Q. Y?
+A. We lost (damned) sticky footer with just DIV. Putting back <mat-sidenav-content> made sticky footer work again.
+(Note that yes of course this was with FULLSCREEN set to ON/STUN.)
+**************************
+
+    Conclusion: going to stick with putting in <mat-sidenav-content> myself.
+    I believe that is helping me wherever I can access it via
+    document.querySelector('mat-sidenav-content').scrollTop
+
+    Findings such as they/it are:
+    Hmm, re: experiment, not seeing definitive difference(s)
+    using <div> in place of <mat-sidenav-content>
+    This page had couple opinions on that. Ho hum.
+    https://stackoverflow.com/questions/46996191/how-to-detect-scroll-events-in-mat-sidenav-container
+    -->
+    </mat-sidenav-content>
 </mat-sidenav-container>
 
 </div>

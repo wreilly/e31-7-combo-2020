@@ -47,13 +47,15 @@ export class AppComponent implements OnInit, OnDestroy {
         https://medium.com/@holtkam2/angular-ngrx-store-understanding-the-data-flow-28566a2d6b4b
          */
 
-        // SCROLL BIZ (see URL above)
+        // SCROLL BIZ (see URL up above)
         this.scrollingSubscription = this.scroll
             .scrolled()
             .subscribe(
                 (dataWeGot: CdkScrollable) => {
-                    // this.myOnWindowScroll(dataWeGot) // << Yes!
-                    this.myScrollService.myOnWindowScroll(dataWeGot)
+                    console.log('APP CdkStrollable dataWeGot');
+                    console.log('APP CdkStrollable dataWeGot ? ', dataWeGot);
+                   // this.myNOLONGERHEREOnWindowScroll(dataWeGot) // << Yes!
+                    // this.myScrollService.myOnWindowScroll(dataWeGot)
                 }
             )
 
@@ -122,8 +124,12 @@ export class AppComponent implements OnInit, OnDestroy {
     myNOLONGERHEREOnWindowScroll(scrollData: CdkScrollable) {
         // noinspection DuplicatedCode
         const myScrollTop = scrollData.getElementRef().nativeElement.scrollTop || 0;
+        /*
+        <mat-sidenav-container fullscreen> => Yes
+        <mat-sidenav-container           > => No. "scrollData" undefined.
+         */
 
-        console.log('Scroll biz myScrollTop ', myScrollTop);
+        console.log('APP - myNOLONGERHEREOnWindowScroll - Scroll biz myScrollTop ', myScrollTop);
         /* E.g.,
         0, 278.66666453647, 280, 10994  etc.
          */

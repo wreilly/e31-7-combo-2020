@@ -1,8 +1,10 @@
-import { Component, OnInit, AfterViewInit, Inject, HostListener } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Inject, HostListener, NgZone } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import {fromEvent} from "rxjs";
 import { tap, share } from 'rxjs/operators';
 import { ScrollService } from '../../core/services/scroll.service';
+import {CdkScrollable, ScrollDispatcher} from "@angular/cdk/overlay";
+
 
 @Component({
     selector: 'app-scroll-top',
@@ -13,19 +15,22 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
 
 
     myWindowScrolled: boolean;
+    scrollOffsetWeJustGotToDisplay: number;
 
     constructor(
         @Inject(DOCUMENT)
         private myDocument: Document,
         private myScrollService: ScrollService,
+        private myScrollDispatcher: ScrollDispatcher,
+        private myZone: NgZone,
     ) { }
 
     ngOnInit(): void {
         this.myScrollService.scrollOffsetInServiceObservable
             .subscribe(
                 (scrollOffsetWeGot) => {
-                    console.log('OnInit. Scroll Offset (of the moment) be: ', scrollOffsetWeGot);
-                    this.showToTopIfScrolled(scrollOffsetWeGot);
+                    console.log('OnInit. XX99 Scroll Offset (of the moment) be: ', scrollOffsetWeGot);
+                    // this.showToTopIfScrolled(scrollOffsetWeGot);
                 }
             )
     } // /ngOnInit()
@@ -50,30 +55,82 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
 }
 
     ngAfterViewInit() {
+        /* NEW
+        https://stackoverflow.com/questions/46996191/how-to-detect-scroll-events-in-mat-sidenav-container
+         */
+        this.myScrollDispatcher.scrolled()
+            .subscribe(
+                (cdkScrollDataWeGot: CdkScrollable) => {
+                    this.myZone.run(
+                        (anything) => {
+                            console.log('? zone anything? ', anything);
+                            const scrollPosition = cdkScrollDataWeGot.getElementRef().nativeElement.scrollTop; // undefined for 'cdkScrollDataWeGot' :o(
+                            console.log('999 YOWZA? scrollPosition ', scrollPosition);
+                            this.scrollOffsetWeJustGotToDisplay = scrollPosition; // TODO THROTTLE !!! :)
+                            this.showToTopIfScrolled(scrollPosition); // << ?? Acid Test, peu-t'etre? And YES (whoa) (OUI), it worked.
+                        }
+                    )
+                }
+            )
+    }
 
-        // Not gonna work:
-        const myWindowScrollObservable$ = fromEvent(window, 'scroll');
+    ngAfterViewInitOLD() {
+        /* OLD
+        https://netbasal.com/reactive-sticky-header-in-angular-12dbffb3f1d3
+        https://gist.github.com/zetsnotdead/08cc5632f3427d41254068d322807c51#file-ng-reactive-sticky-header-final-ts
+         */
 
-        // Hmm. Not seeming to work :o(
-        const myRealScrollObservable$ = fromEvent(document.querySelector('mat-sidenav-content'), 'scroll')
+        /* Not gonna work:
+        WITH 'FULLSCREEN' (over on app.component.html <mat-sidenav-container>)
+        (with Angular Material Design mat-sidenav-content,
+        we do not "see" window, body, document, viz. scroll event.)
+
+        Hmm, WITHOUT 'FULLSCREEN' ???
+         */
+        const myWindowScrollObservable$ = fromEvent(window, 'scroll')
             .pipe(
                 tap(
                     (whatIGot) => {
-                        console.log('whatIGot scroll pipe tap ', whatIGot);
+                        console.log('ZZZ "WINDOW" whatIGot scroll pipe tap ', whatIGot);
+                        // "Mai visto."
                     }
                 ),
                 share()
             );
 
-        console.log('YYY myWindowScrollObservable$ ', myWindowScrollObservable$);
+
+        // Hmm. Not working. :o(
+        const myRealScrollObservable$ = fromEvent(document.querySelector('mat-sidenav-content'), 'scroll')
+            .pipe(
+                tap(
+                    (whatIGot) => {
+                        console.log('ZZZ "REAL" whatIGot scroll pipe tap ', whatIGot);
+                        // "Mai visto."
+                    }
+                ),
+                share()
+            );
+
+        // console.log('YYY myWindowScrollObservable$ ', myWindowScrollObservable$); // << Nope
         console.log('ZZZ myRealScrollObservable$ ', myRealScrollObservable$);
     }
 
-
-    @HostListener("window:scroll", [])
-/* Nope:
-    @HostListener("document.querySelector('mat-sidenav-content'):scroll", [])
+/*
+******* !!!! *******
+Hmm turned OFF the HostListener for window scroll events. Seems that the CDK Scroll thing is doing the job instead = h'rrah ("Seems!") T.B.D.
+ ********* !!! ********
 */
+    // @HostListener("window:scroll", []) // okay, compiles, but "hears" nothing
+    // @HostListener("document:scroll", []) // okay, compiles, but "hears" nothing
+    // @HostListener("myDocument:scroll", []) // error, not okay
+/* Nope: error, not okay (with or without 'fullscreen') */
+    // @HostListener("document.querySelector('mat-sidenav-content'):scroll", [])
+    /* Hmm, "@HostListener" jazz/biz
+    *****************************************************
+    With <mat-sidenav-container fullscreen>, window/document/body "hear" nothing.
+    But with 'fullscreen' removed, they *do* hear scroll events. (sheesh)
+    ******************************************************
+     */
     /*
     Error: Unexpected global target 'document.querySelector('mat-sidenav-content')' defined for 'scroll' event.
         Supported list of global targets: window,document,body.
@@ -89,9 +146,26 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
         https://stackblitz.com/edit/angular-scrolling-goto-top?file=app%2Fapp.component.ts
          */
 
-        console.log('ZZ myOnWindowScroll()');
+        console.log('ZZZZ SCROLL-TOP.COMPONENT myOnWindowScroll()');
 
         if (
+/*
+            window.pageYOffset
+            ||
+            document.documentElement.scrollTop
+            ||
+            document.body.scrollTop
+            ||
+*/
+            // THIS IS ***NOT*** SEEN   sigh
+            document.querySelector('mat-sidenav-content').scrollTop
+            > 100
+        ) {
+            console.log('1111 MATSIDENAV !!!! AA .scrollTop > 100 - windowScrolled TRUE! ');
+        }
+
+
+            if (
             window.pageYOffset
             ||
             document.documentElement.scrollTop

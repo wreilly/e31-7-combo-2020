@@ -2,9 +2,7 @@
 <!--Scroll to top-->
 <!--<div class="show-scrollTop">-->
 <!--<div class="position-scrollTop">-->
-<!--
-<div class="position-scrollTop show-scrollTop">
--->
+<!--<div class="position-scrollTop show-scrollTop">-->
 
 
     <div class="position-scrollTop"
@@ -12,11 +10,17 @@
 
 
 <!--    <div>SCROLL TO TOP COMPONENT IS IN THE HOUSE</div>-->
-    <mat-list>
-        <mat-list-item>
             <button mat-raised-button color="accent" on-click="myScrollToTop()">
                 <mat-icon>arrow_circle_up</mat-icon>
+                {{scrollOffsetWeJustGotToDisplay}}
             </button>
-        </mat-list-item>
-    </mat-list>
+<!-- Yeah, "mat-list" was not needed here:
+        <mat-list>
+            <mat-list-item>
+                <button mat-raised-button color="accent" on-click="myScrollToTop()">
+                    <mat-icon>arrow_circle_up</mat-icon>
+                </button>
+            </mat-list-item>
+        </mat-list>
+-->
 </div>
