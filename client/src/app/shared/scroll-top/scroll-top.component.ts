@@ -16,6 +16,7 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
 
     myWindowScrolled: boolean;
     scrollOffsetWeJustGotToDisplay: number;
+    scrollPositionRounded: number;
 
     constructor(
         @Inject(DOCUMENT)
@@ -52,22 +53,35 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
             console.log('BB99 this.myWindowScrolled should be FALSE: ', this.myWindowScrolled);
         }
 
-}
+    } // /showToTopIfScrolled()
 
     ngAfterViewInit() {
         /* NEW
         https://stackoverflow.com/questions/46996191/how-to-detect-scroll-events-in-mat-sidenav-container
+        https://material.angular.io/cdk/scrolling/api
          */
-        this.myScrollDispatcher.scrolled()
+        this.myScrollDispatcher.scrolled(100) // auditTimeInMs
             .subscribe(
                 (cdkScrollDataWeGot: CdkScrollable) => {
                     this.myZone.run(
-                        (anything) => {
-                            console.log('? zone anything? ', anything);
+                        () => {
+                            // console.log('? zone anything? ', anything); // undefined. Okay.
                             const scrollPosition = cdkScrollDataWeGot.getElementRef().nativeElement.scrollTop; // undefined for 'cdkScrollDataWeGot' :o(
-                            console.log('999 YOWZA? scrollPosition ', scrollPosition);
-                            this.scrollOffsetWeJustGotToDisplay = scrollPosition; // TODO THROTTLE !!! :)
-                            this.showToTopIfScrolled(scrollPosition); // << ?? Acid Test, peu-t'etre? And YES (whoa) (OUI), it worked.
+                            console.log('999 YOWZA? scrollPosition ', scrollPosition); // e.g.,  996.7999877929688
+                            this.scrollOffsetWeJustGotToDisplay = scrollPosition; // TODONE THROTTLE !!! :) << auditTimeInMs. easy-peasy.
+
+                            // DO MATH ROUNDING BIT HERE (for now)
+                            let scrollOffsetWeJustGotToDisplayRounded = Math.round(this.scrollOffsetWeJustGotToDisplay); // hmm
+                            // this.scrollOffsetWeJustGotToDisplay = Math.round(this.scrollOffsetWeJustGotToDisplay); // whamma-self-jamma ? yeah
+
+                            console.log('scrollOffsetWeJustGotToDisplayRounded ', scrollOffsetWeJustGotToDisplayRounded);
+
+                            this.scrollPositionRounded = Math.round(scrollPosition);
+                            console.log('YYY this.scrollPositionRounded ', this.scrollPositionRounded);
+
+                            this.showToTopIfScrolled(this.scrollPositionRounded);
+                            // this.showToTopIfScrolled(scrollOffsetWeJustGotToDisplayRounded); // << ?? hmm buggy-ish? shows non-rounded numbers ??
+                            // this.showToTopIfScrolled(scrollPosition); // << ?? Acid Test, peu-t'etre? And YES (whoa) (OUI), it worked.
                         }
                     )
                 }

@@ -17,6 +17,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
     isThemeDarkInComponent: boolean;
     scrollOffsetWeJustGotToDisplay: number;
+    scrollPositionRounded: number;
 
   @Output('myToggleMatSidenavEventEmitterHeaderName') myToggleMatSidenavEventEmitterHeader: EventEmitter<any> = new EventEmitter<any>();
 
@@ -53,18 +54,23 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   } // /ngOnInit()
 
     ngAfterViewInit() {
-        /* NEW   FROM SCROLL-TOP.COMPONENT. Kinda crazy to run there, and here.
+        /* NEW   COPIED HERE FROM SCROLL-TOP.COMPONENT.
+        Kinda crazy to run there, and here.
         https://stackoverflow.com/questions/46996191/how-to-detect-scroll-events-in-mat-sidenav-container
          */
-        this.myScrollDispatcher.scrolled()
+        this.myScrollDispatcher.scrolled(100)
             .subscribe(
                 (cdkScrollDataWeGot: CdkScrollable) => {
                     this.myZone.run(
-                        (anything) => {
-                            console.log('? zone anything? ', anything);
+                        () => {
                             const scrollPosition = cdkScrollDataWeGot.getElementRef().nativeElement.scrollTop; // undefined for 'cdkScrollDataWeGot' :o(
                             console.log('999888 HEADER YOWZA? scrollPosition ', scrollPosition);
                             this.scrollOffsetWeJustGotToDisplay = scrollPosition; // whamma-jamma?
+
+                            // DO MATH ROUNDING BIT HERE (for now)
+                            this.scrollPositionRounded = Math.round(scrollPosition);
+                            console.log('YYY this.scrollPositionRounded ', this.scrollPositionRounded);
+
                         }
                     )
                 }
