@@ -1,6 +1,18 @@
 <div class="component-label">HEADER.COMPONENT</div>
 <mat-toolbar color="primary">
     <div
+            fxHide.gt-xs
+    >
+        <button
+                mat-raised-button
+                color="accent"
+                on-click="myToggleMatSidenavHeader()"
+        >{{ myIsMatSidenavOpenFromParentApp ? 'Close' : 'Open' }}
+            <mat-icon>menu</mat-icon>
+        </button>
+    </div>
+
+    <div
             fxFlex
             fxLayout
             fxLayoutGap="10px"
@@ -27,11 +39,15 @@
 -->
 <!--            <mat-icon>done</mat-icon>-->
         </div>
-        <div><button
-                mat-raised-button
-                color="accent"
+        <div
+                fxHide.xs
+        >
+            <span
                 on-click="myToggleMatSidenavHeader()"
-        >{{ myIsMatSidenavOpenFromParentApp ? 'Close' : 'Open' }} <mat-icon>menu</mat-icon></button></div>
+                style="cursor: pointer; font-size: xx-small"
+        >{{ myIsMatSidenavOpenFromParentApp ? 'Close' : 'Open' }}
+            </span>
+        </div>
         <div>
             Hey Offset?
             <!-- d'oh!      {{scrollOffsetWeJustGotToDisplay}}-->
@@ -57,6 +73,7 @@
             <ul
                     fxLayout
                     fxLayoutGap="10px"
+                    fxHide.xs
                     class="navigation-items"
             >
 <!--
