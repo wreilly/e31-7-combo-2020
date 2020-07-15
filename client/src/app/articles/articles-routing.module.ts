@@ -13,8 +13,8 @@ const myArticleRoutes: Routes = [
         // path: 'article-list',
         // path: 'articles/', // << Very Fussy! No! final '/'. boo-hiss.
         path: 'articles',
-        // path: '', // << ?
-        // pathMatch: 'full',
+        // path: '', // << ? No. o la.
+        // pathMatch: 'full', // << No. breaks the links below (e.g. /articles/list)
         component: ArticlesComponent,
         children: [
             {

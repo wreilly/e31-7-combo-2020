@@ -17,6 +17,9 @@ export class ArticleComponent implements OnInit {
     /* FINDING
     I'll use just ngOnChanges(), not ngOnInit(), for 'myDate'.
 
+    N.B.  "ngOnChanges() is called when any data-bound property of a directive changes"
+           https://angular.io/api/core/OnChanges
+
     For ONE scenario: ArticleAddComponent
     - ngOnInit() is TOO LATE. myDate not seen.
     - ngOnChanges() is OK. myDate works okay.
@@ -69,7 +72,7 @@ this.myDate be  Tue Jul 14 2020 15:51:12 GMT-0400 (Eastern Daylight Time)
 
             this.myDate = new Date( parseInt( myTimestamp, 16 ) * 1000 );
 
-            console.log('CHANGES this.myDate be ', this.myDate);
+            // console.log('CHANGES this.myDate be ', this.myDate);
             /*
             this.myDate be  Tue Jul 14 2020 15:51:12 GMT-0400 (Eastern Daylight Time)
              */

@@ -3,18 +3,41 @@
     <nav mat-tab-nav-bar>
         <a
                 mat-tab-link
-                routerLink="list">
+                routerLink="."
+                on-click="getArticleMostRecent()"
+        >
+<!-- Mini-Finding
+                routerLink="." // << YES. stays on :4200/articles  Good
+                routerLink="" // << NO. Goes to :4200/  Bad
+                routerLink="articles" // << NO. Goes to :4200/articles/articles   Bad
+-->
+            Articles Home
+        </a>
+        <a
+                mat-tab-link
+                routerLink="list"
+                on-click="hideArticleMostRecent()"
+        >
             Articles List
         </a>
         <a
                 mat-tab-link
-                routerLink="add">
+                routerLink="add"
+                on-click="hideArticleMostRecent()"
+        >
             Add Article
         </a>
     </nav>
     <div
 style="margin: 5px 10px 0 10px;"
     >
+<!--        <app-article bind-articleToSendDownName="articleMostRecentDisplayFE"></app-article>-->
+        <div
+                *ngIf="articleMostRecentDisplayFE"
+        >
+            <h2>Last Article Created...</h2>
+            <app-article bind-articleToSendDownName="articleMostRecentDisplayFE"></app-article>
+        </div>
         <router-outlet></router-outlet>
     </div>
 </section>
