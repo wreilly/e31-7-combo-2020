@@ -100,12 +100,57 @@ apiArticleController.apiGetArticleById = function (req, res, next) {
             },
             (problemo) => {
                 // rejected
-                console.log('Controller - rejected Promise ', problemo);
+                console.log('Controller - getArticleById() - rejected Promise ', problemo);
             }
         )
         .catch((err) => console.log('Controller -getArticleById() .catch err: ', err));
 
 } // /.apiGetArticleById()
+
+
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+/* !!!!!  apiArticleController
+          .apiGetArticleMostRecent   !!!!! */
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+apiArticleController.apiGetArticleMostRecent = function (req, res, next) {
+    console.log('API Controller - getArticleById - idHere is: ', req.params.idHere);
+    // YES: 5af746cea7008520ae732e2c
+
+    articleDataServiceHereInApiController.findArticleMostRecent()
+        .then(
+            (whatIGot) => {
+                // resolved
+                console.log('Controller - resolved Promise: articleMostRecent: whatIGot: ', whatIGot);
+                /*
+                  {
+  _id: 5af83649f2fffa14c4a22cd7,
+  articlePhotos: [
+    '["sometimes__1526216263665_051218krugman1-jumbo.png","sometimes__1526216263667_051218krugman2-superJumbo.png","sometimes__1526216263668_051218krugman3-superJumbo.png"]'
+  ],
+  articleUrl: 'https://www.nytimes.com/2018/05/12/opinion/whats-good-for-pharma-isnt-good-for-america-wonkish.html',
+  articleTitle: 'What’s Less Edit URL We Be EdiTiNG MORE toss it REACTIVELY Good for Pharma Isn’t Good for America (Wonkish)',
+  __v: 0
+}
+
+                 */
+
+                console.log('Controller - resolved Promise: articleMostRecent: JSON.stringify(whatIGot) ', JSON.stringify(whatIGot));
+                /*
+                  {"_id":"5af83649f2fffa14c4a22cd7","articlePhotos":["[\"sometimes__1526216263665_051218krugman1-jumbo.png\",\"sometimes__1526216263667_051218krugman2-superJumbo.png\",\"sometimes__1526216263668_051218krugman3-superJumbo.png\"]"],"articleUrl":"https://www.nytimes.com/2018/05/12/opinion/whats-good-for-pharma-isnt-good-for-america-wonkish.html","articleTitle":"What’s Less Edit URL We Be EdiTiNG MORE toss it REACTIVELY Good for Pharma Isn’t Good for America (Wonkish)","__v":0}
+                 */
+
+                // Send data back in Response to API Request
+                res.send(whatIGot); // Hmm. Seems to WORK FINE, TOO ( ? )
+                // res.send(JSON.stringify(whatIGot)); // << WORKS FINE :)
+            },
+            (problemo) => {
+                // rejected
+                console.log('Controller - getArticleMostRecent() - rejected Promise ', problemo);
+            }
+        )
+        .catch((err) => console.log('Controller -getArticleMostRecent() .catch err: ', err));
+
+} // /.apiGetArticleMostRecent()
 
 
 /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */

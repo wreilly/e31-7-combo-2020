@@ -80,6 +80,36 @@ class articleService {
     } // /findArticleById()
 
     /* **************************** */
+    /* *** Find MOST RECENTLY Added Article *** */
+    /* **************************** */
+    static findArticleMostRecent() {
+        return articleModelHereInService.find({}).sort({_id:-1}).limit(1)
+            .then(
+                (whatIGot) => {
+                    // resolved
+                    console.log('Most Recent Article - whatIGot ', whatIGot);
+                    /*
+                     {
+  _id: 5af746cea7008520ae732e2c,
+  articlePhotos: [ '"justsomestring"' ],
+  articleUrl: 'myhttp',
+  articleTitle: 'Trump’s WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers',
+  __v: 0
+}
+                     */
+
+                    return whatIGot;
+                },
+                (problemo) => {
+                    // rejected
+                    console.log('Data Service findArticleMostRecent() problemo: ', problemo);
+                }
+            )
+            .catch((err) => console.log('Data Service findArticleMostRecent() CATCH err ', err));
+    } // /findArticleMostRecent()
+
+
+    /* **************************** */
     /* ****** Save Article ******** */
     /* **************************** */
 

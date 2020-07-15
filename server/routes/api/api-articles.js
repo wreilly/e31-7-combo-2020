@@ -51,6 +51,7 @@ const apiArticleControllerHereInApi = require('.././../controllers/api/api-artic
 /* ***********  TOC  ********
    *****   API ROUTER  ******
 - GET '/' ==> '/api/v1/articles/'
+- GET '/' ==> '/api/v1/articles/recent' // 1, for now. NEW.
 - GET '/:id' ==> '/api/v1/articles/123456'
 - POST '/'  ==> '/api/v1/articles'
 - DELETE '/:id' ==> '/api/v1/articles/123456'
@@ -78,6 +79,23 @@ apiArticlesRouter.use(
         next();
     }
 );
+
+/* ************************************************** */
+/* ******** GET '/api/v1/articles/recent' ************ */
+/* ************************************************** */
+apiArticlesRouter.get('/recent',
+    function (req, res, next) {
+        console.log('API Router - getArticleMostRecent');
+
+        apiArticleControllerHereInApi.apiGetArticleMostRecent(req, res, next);
+        /* N.B.
+        - With Express server coding, we
+        simply pass the usual:
+          req, res, next
+         */
+    }
+) // /GET '/recent'  1, for now.
+
 
 /* ************************************************** */
 /* ******** GET '/api/v1/articles/12345' ************ */
