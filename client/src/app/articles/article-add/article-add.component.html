@@ -4,7 +4,7 @@ Needed above? seems not.
 fxLayout="column"
 -->
 <div
-        fxLayout="row"
+        fxLayout="row wrap"
 >
     <mat-card style="margin: 0 5px 0 5px;">
         <mat-card-title>
@@ -187,4 +187,25 @@ rolling your own here...
 -->
 
     </div>
+    <mat-card
+                       style="margin: 0 5px 0 5px;"
+    >
+        <mat-card-title>Recent...</mat-card-title>
+        <mat-card-subtitle>Last Article Created / <span style="text-decoration: line-through">Article Just Created</span></mat-card-subtitle>
+        <mat-card-content>
+            <div>
+                <app-article
+                    *ngIf="!articleIJustCreatedBoolean"
+                    bind-articleToSendDownName="articleMostRecentDisplayFE"
+                ></app-article>
+            </div>
+            <div
+              *ngIf="articleIJustCreatedBoolean"
+            >
+                <app-article
+                        bind-articleToSendDownName="articleIJustCreatedDisplayFE"
+                ></app-article>
+            </div>
+        </mat-card-content>
+    </mat-card>
 </div>

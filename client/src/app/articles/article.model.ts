@@ -3,6 +3,14 @@ export interface Article {
     articleTitle_name: string;
     articleUrl_name: string;
 }
+/* Note re: CATEGORY
+w-i-p
+Not yet in use.
+We are still mostly using 2018 server, doesn't have Category. sigh.
+ */
+/* Note re: Photos
+Ain't there, yet. cheers. looking forward to it.
+ */
 /*
 Note re: above.
 

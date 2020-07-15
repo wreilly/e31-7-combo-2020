@@ -14,12 +14,22 @@
 <mat-card
 class="gap-between"
 >
-    <mat-card-subtitle><a routerLink="/articles/{{articleHere.articleId_name}}">{{ articleHere.articleTitle_name }}</a> </mat-card-subtitle>
-    <mat-card-content>
-<!--
-        <p mat-line class="tiny">articles/{{articleHere.articleId_name}}</p>
--->
-        <p class="tiny">articles/{{articleHere.articleId_name}}</p>
+    <mat-card-title
+            *ngIf="articleHere"
+    >{{ articleHere.articleTitle_name }}</mat-card-title>
+    <mat-card-subtitle
+            *ngIf="articleHere"
+    >Subtitle
+        <a routerLink="/articles/{{articleHere.articleId_name}}">{{ articleHere.articleTitle_name }}</a>
+    </mat-card-subtitle>
+    <mat-card-content
+            *ngIf="articleHere"
+    >
+        <p class="tiny">Article ID: {{articleHere.articleId_name}}</p>
+        <p class="teeny">Article added: {{myDate}}</p>
+        <!-- Yep:
+        Tue Jul 14 2020 15:51:12 GMT-0400 (Eastern Daylight Time)
+        -->
     </mat-card-content>
 </mat-card>
 <!-- -->

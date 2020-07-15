@@ -28,10 +28,16 @@ export class ArticleService {
     );
   }
 
-  getArticle(idPassedIn) { // TODO
+  getArticle(idPassedIn) {
     return this.myHttp.get(
         `http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`
-    )
+    );
+  }
+
+  getArticleMostRecent() {
+    return this.myHttp.get(
+        `http://0.0.0.0:8089/api/v1/articles/recent`
+    );
   }
 
 }

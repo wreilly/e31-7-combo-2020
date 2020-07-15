@@ -54,6 +54,14 @@ export class ArticleListComponent implements OnInit {
         .subscribe(
             (allArticlesWeGot: []) => {
               // this.articles = allArticlesWeGot; // whamma-jamma? << No! << Well, mebbe? (I mean, I did in 2018.)
+                /*
+                BE-to-FE Converter
+                BE naming convention: articleTitle
+                FE naming convention: articleTitle_name
+
+                (and don't forget the FE FORM naming convention:
+                articleTitle_formControlName)
+                 */
               this.articles = allArticlesWeGot.map(
                   (eachPseudoArticleFromApi: {
                     _id: string,

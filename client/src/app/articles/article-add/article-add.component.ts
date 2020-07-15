@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
-import { Category } from '../article.model';
+import { Article, Category } from '../article.model';
 
 import { ArticleService } from '../article.service';
 
@@ -20,7 +20,22 @@ export class ArticleAddComponent implements OnInit {
   articleUrl_formControl: FormControl;
   articleCategory_formControl: FormControl;
 
-  categories: Category[] = [
+  articleIJustCreatedBoolean = false;
+  articleIJustCreatedDisplayBE: {
+    _id: string,
+    articleTitle: string,
+    articleUrl: string,
+  };
+  articleIJustCreatedDisplayFE: Article;
+
+  articleMostRecentDisplayBE: {
+    _id: string,
+    articleTitle: string,
+    articleUrl: string,
+  };
+  articleMostRecentDisplayFE: Article;
+
+  categories: Category[] = [ // New York Times categories
     {
       value: 'world',
       viewValue: 'World',
@@ -76,14 +91,73 @@ export class ArticleAddComponent implements OnInit {
       'articleUrl_formControlName': this.articleUrl_formControl,
       'articleCategory_formControlName': this.articleCategory_formControl,
     });
+
+    this.getArticleMostRecent();
+
   } // /ngOnInit()
 
-  processReactiveFormAdd() { // TODO
+  getArticleMostRecent() {
+    this.myArticleService.getArticleMostRecent()
+        .subscribe(
+            (whatIGot:{
+              _id: string,
+              articleTitle: string,
+              articleUrl: string,
+            }) => {
+              console.log('Most Recent. whatIGot BE ', whatIGot);
+              /* Huh. ARRAY (of one)
+              [{…}]
+              articlePhotos: []
+articleTitle: "sdfasdfasdf"
+articleUrl: "https://nytimes.com/necessarythecat"
+__v: 0
+_id: "5f0dd9c93c5a35425badb560"
+               */
+
+              this.articleMostRecentDisplayBE = whatIGot; // << whamma-jamma for BE flavor
+              console.log('fwiw, this.articleMostRecentDisplayBE ', this.articleMostRecentDisplayBE);
+/*
+ARRAY of one - same as above.
+ */
+
+/* =====================================
+   TIME TO "CONVERT" TO THE "FE NAMING CONVENTION" for an Article
+   =====================================
+*/
+              // 04  ** YES **  Object Literal Initializer << whoa
+              // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer
+              // N.B. 1st item off ARRAY[0] <<
+              this.articleMostRecentDisplayFE = {
+                articleId_name: whatIGot[0]._id,
+                articleTitle_name: whatIGot[0].articleTitle,
+                articleUrl_name: whatIGot[0].articleUrl
+              };
+              console.log('*MUCH* MORE BETTER fwiw, this.articleMostRecentDisplayFE $$$ :o) ', this.articleMostRecentDisplayFE);
+              /* "FE NAMING CONVENTION" = bueno
+              This is officially of 'Type' 'Article' - good.
+Hmm:
+{articleId_name: undefined
+articleTitle_name: undefined
+articleUrl_name: undefined}
+               */
+
+            }
+        );
+  } // getArticleMostRecent()
+
+  processReactiveFormAdd(): void { // TODO ?
 
     let myFormFieldsAndFiles: any;
     /*
     Phase I. Just FormFields
     Phase II. Files too (for Photo(s))
+
+    Note: I believe I use 'any' here
+    because either (a) too tricky etc.
+    to use HTML's 'FormData', or
+    (b) because in the end it really is
+    more than 'FormData' ( ? ). Not sure.
+    Either way, 'any' gets you there, seems.
      */
 
     console.log('this.addArticleFormGroup.value ', this.addArticleFormGroup.value);
@@ -96,8 +170,18 @@ export class ArticleAddComponent implements OnInit {
      */
 
     myFormFieldsAndFiles = this.prepareToAddArticleReactiveForm();
+    /*
+    Note that the above method does
+    'return FormData'.
+    We here assign that to type 'any'.
+    fwiw.
+    Phase I: Note also - just Form Fields now, no Files yet
+     */
 
     this.goAddArticle(myFormFieldsAndFiles);
+    /*
+        Phase I: Note also - just Form Fields now, no Files yet
+     */
 
     // Not Here
     // this.addArticleFormGroup.reset();
@@ -120,13 +204,14 @@ export class ArticleAddComponent implements OnInit {
     /* Note on above 'name'
     As discussed in comment in the HTML:
     -----
-    my BACK-END Server API & Database *does* ultimately require:
+    1. Right here, coming off the FE form, the field naming convention has that '_formControlName' on it, e.g., 'articleTitle_formControlName'
+    2. But my BACK-END Server API & Database *does* ultimately require the field naming convention ending in simply '_name':
 articleToSave.articleUrl = req.body.articleUrl_name
 articleToSave.articleTitle = req.body.articleTitle_name
 /Users/william.reilly/dev/JavaScript/CSCI-E31/Assignments/07-final-CODE-CLEAN-UP/server/controllers/api/api-articleController.js
     -----
 
-    So it is here (above) that I do employ that 'name' to be 'articleTitle_name' -- to match what the BE expects. cheers.
+    3. To address that, it is here (just above) that I do employ that 'name' attribute to change it from the FE convention, to the BE convention: 'articleTitle_name' -- to match what the BE expects. cheers.
      */
 
     this.myFormFieldsData.append(
@@ -176,15 +261,99 @@ articleUrl_name: http://nytimes.com/oboy
 
     this.myArticleService.createArticle(myFormFieldsAndFiles)
         .subscribe(
-            (whatIJustCreated) => {
+            (whatIJustCreated: {
+              _id: string,
+              articleTitle: string,
+              articleUrl: string,
+            }) => {
               console.log('whatIJustCreated: ', whatIJustCreated);
-              /*
+              /* FEATURES THE "BE NAMING CONVENTION" for an Article. Bueno.
               {articlePhotos: Array(0),
               _id: "5f032c5daf6229101f019065",
               articleUrl: "Are Protests Unsafe? What Experts Say May Depend on Who’s Protesting What",
               articleTitle: "https://www.nytimes.com/2020/07/06/us/Epidemiologists-coronavirus-protests-quarantine.html", __v: 0}
                */
-              // this.addArticleFormGroup.reset();
+
+              this.articleIJustCreatedBoolean = true;
+              this.articleIJustCreatedDisplayBE = whatIJustCreated; // << whamma-jamma? yeah, for this BE flavor
+
+              console.log('fwiw, this.articleIJustCreatedDisplayBE !!! ', this.articleIJustCreatedDisplayBE);
+              /* Yes
+              {articlePhotos: Array(0), _id: "5f0d89417cd8e02f304f4070", articleUrl: "http://nytimes.com/oboyasdf", articleTitle: "I did just create this, but who knows", __v: 0}
+               */
+
+              /* =====================================
+                 TIME TO "CONVERT" TO THE "FE NAMING CONVENTION" for an Article
+                 =====================================
+                 Below, I get it wrong 3 ways. Then it works.
+               */
+              // 01 WRONG. Not Object.assign()
+/*
+              this.articleIJustCreatedDisplayFE = Object.assign({
+                articleId_name: whatIJustCreated._id,
+                articleTitle_name: whatIJustCreated.articleTitle,
+                articleUrl_name: whatIJustCreated.articleUrl
+              }, whatIJustCreated)
+*/
+/*
+              console.log('fwiw, this.articleIJustCreatedDisplayFE !!! $$$ :o) ', this.articleIJustCreatedDisplayFE);
+*/
+              /* Hmm. No. (wassup?)
+              It is (now ?) keeping the original
+              properties too. hmm. TODO fix
+              articleId_name: "5f0daf9584c76c1887b06e14"
+articlePhotos: []
+articleTitle: "nononononoo"
+articleTitle_name: "nononononoo"
+articleUrl: "https://nytimes.com/focusissimo"
+articleUrl_name: "https://nytimes.com/focusissimo"
+__v: 0
+_id: "5f0daf9584c76c1887b06e14"
+
+               */
+
+
+              // 02 WRONG. Not Object.create()
+/*
+              this.articleIJustCreatedDisplayFE = Object.create({
+                articleId_name: whatIJustCreated._id,
+                articleTitle_name: whatIJustCreated.articleTitle,
+                articleUrl_name: whatIJustCreated.articleUrl
+              });
+*/
+/*
+              console.log('MORE BETTER fwiw, this.articleIJustCreatedDisplayFE !!! $$$ :o) ', this.articleIJustCreatedDisplayFE); // {} << empty. yucky
+*/
+
+              // 03  WRONG. NAH. new Object() has issues - see error below
+/*
+              this.articleIJustCreatedDisplayFE = new Object({
+                articleId_name: whatIJustCreated._id,
+                articleTitle_name: whatIJustCreated.articleTitle,
+                articleUrl_name: whatIJustCreated.articleUrl
+              });
+*/
+              /*
+              TS2696: The 'Object' type is assignable to very few other types. Did you mean to use the 'any' type instead?   Type 'Object' is missing the following properties from type 'Article': articleId_name, articleTitle_name, articleUrl_name
+               */
+
+              // 04  ** YES **  Object Literal Initializer << whoa
+              // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer
+              this.articleIJustCreatedDisplayFE = {
+                articleId_name: whatIJustCreated._id,
+                articleTitle_name: whatIJustCreated.articleTitle,
+                articleUrl_name: whatIJustCreated.articleUrl
+              };
+              console.log('*MUCH* MORE BETTER fwiw, this.articleIJustCreatedDisplayFE !!! $$$ :o) ', this.articleIJustCreatedDisplayFE);
+              /* "FE NAMING CONVENTION" = bueno
+              This is officially of 'Type' 'Article' - good.
+
+              {articleId_name: "5f0dd3a63c5a35425badb55f",
+              articleTitle_name: "texas hold em",
+              articleUrl_name: "https://nytimes.com/focusissimo99"}
+               */
+
+              this.addArticleFormGroup.reset();
             }
         );
 
