@@ -5,6 +5,7 @@ const apiArticleController = {};
 /* **********  TOC  *************
    ********  API CONTROLLER  ****
 - GET '/' = apiGetAllArticles
+- GET '/recent' ==> '/api/v1/articles/recent' // 1, for now. NEW.
 - GET '/:id' = apiGetArticleById
 - POST '/' = apiCreateArticle
 - DELETE '/:id' = apiDeleteArticle
@@ -75,6 +76,12 @@ apiArticleController.apiGetArticleById = function (req, res, next) {
         .then(
             (whatIGot) => {
                 // resolved
+                if(!whatIGot) {
+                    // empty document. found nothing. 0 results
+                    console.log("Controller 2020. ById. 404 sorry not for that id: " + idThisTime)
+                    res.status(404).send("sorry not for that id: " + idThisTime)
+                }
+
                 console.log('Controller - resolved Promise: articleById: whatIGot: ', whatIGot);
                 /*
                   {
@@ -113,8 +120,7 @@ apiArticleController.apiGetArticleById = function (req, res, next) {
           .apiGetArticleMostRecent   !!!!! */
 /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
 apiArticleController.apiGetArticleMostRecent = function (req, res, next) {
-    console.log('API Controller - getArticleById - idHere is: ', req.params.idHere);
-    // YES: 5af746cea7008520ae732e2c
+    console.log('API Controller 2020 - getArticleMostRecent - ');
 
     articleDataServiceHereInApiController.findArticleMostRecent()
         .then(

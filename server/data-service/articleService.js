@@ -10,6 +10,7 @@ const articleModelHereInService = require('../models/articleModel');
 (not for Node/Express app)
 
 - .get('/') ==> findAllArticles
+- .get('/recent') ==> findArticleMostRecent
 - .get('/:id') ==> findArticleById
 - .post('/') ==> saveArticle
 - .delete('/:id') ==> deleteArticle
