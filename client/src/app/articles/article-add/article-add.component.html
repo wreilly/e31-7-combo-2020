@@ -6,12 +6,16 @@ fxLayout="column"
 <div
         fxLayout="row wrap"
 >
-    <mat-card style="margin: 0 5px 0 5px;">
+    <mat-card
+            fxFlex.lt-md="100%"
+            fxFlex="200px"
+            style="margin: 0 5px 0 5px;"
+    >
         <mat-card-title>
             Add Article
         </mat-card-title>
         <mat-card-subtitle>
-            Post a reference to the N.Y. Times
+            Post a reference to the N.Y. Times  <span class="teeny"> | WIDTH: 200px</span>
         </mat-card-subtitle>
         <mat-card-content>
             <p>Please obtain and fill in:</p>
@@ -36,10 +40,14 @@ Hmm. Seems to have become invisible. O well.
     ></mat-divider>
 -->
 
-    <div
+    <mat-card
+            fxFlex.lt-md="100%"
+            fxFlex="400px"
             style="margin: 0 5px 0 5px;"
     >
-        <h3>N.Y. Times Article : Reference Information</h3>
+        <mat-card-title>N.Y. Times Article</mat-card-title>
+        <mat-card-subtitle>Reference Information  <span class="teeny"> | WIDTH: 400px</span></mat-card-subtitle>
+        <mat-card-content>
         <form
                 bind-formGroup="addArticleFormGroup"
         on-ngSubmit="processReactiveFormAdd()"
@@ -157,16 +165,30 @@ using it. cheers.
             <div
                     fxLayoutAlign="center"
             >
+<!--
             <button
                     type="submit" mat-raised-button
                     color="accent"
                     style="width: 6em;"
+                    bind-disabled="!addArticleFormGroup.valid"
             >
-                Post!
+&lt;!&ndash;                <mat-icon>note_add</mat-icon>&ndash;&gt;
+                <span style="margin-left: 5px;">Post!</span>
             </button>
+-->
+                <button
+                        mat-icon-button
+                        type="submit"
+                        bind-disabled="!addArticleFormGroup.valid"
+                >
+                        <mat-icon>note_add</mat-icon>
+                        <span style="margin-left: 5px;" class="tiny">Post Your Article</span>
+                </button>
             </div>
         </form>
-<!--
+        </mat-card-content>
+
+            <!--
 LOOKED FINE.
 But as noted above I
 think you "get" some
@@ -186,12 +208,15 @@ rolling your own here...
         </div>
 -->
 
-    </div>
+    </mat-card>
     <mat-card
-                       style="margin: 0 5px 0 5px;"
+            fxFlex.lt-md="100%"
+            fxFlex="610px"
+            style="margin: 0 5px 0 5px;"
     >
         <mat-card-title>Recent...</mat-card-title>
-        <mat-card-subtitle>Last Article Created / <span style="text-decoration: line-through">Article Just Created</span></mat-card-subtitle>
+        <mat-card-subtitle>Last Article Created <span class="teeny"> | WIDTH: 610px</span></mat-card-subtitle>
+<!--     Article Just Created   / <span style="text-decoration: line-through"-->
         <mat-card-content>
             <div>
                 <app-article
