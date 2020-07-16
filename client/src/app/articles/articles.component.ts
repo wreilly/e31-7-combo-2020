@@ -36,12 +36,13 @@ export class ArticlesComponent implements OnInit {
     https://nativescript.org/blog/how-to-extend-custom-router-reuse-strategy/
     "add the [above] to the constructor of a ***specific component***" << "ah-hah" moment. sheesh.
      */
+
 /* NO. This "Activated" biz is for params, queryparams. Not for "NavigationExtras.data"
+
     myActivatedRoute.data
         .subscribe(
             (dataWeGot) => {
               console.log('CONSTRUCTOR. ACTIVATED ROUTE. dataWeGot ', dataWeGot); // undefined   '.data' is not "it"
-
     )
 */
   } // /constructor()
@@ -59,7 +60,7 @@ https://medium.com/ableneo/how-to-pass-data-between-routed-components-in-angular
 https://angular.io/api/router/NavigationExtras#state
 */
 
-// Get routed data from Clicked button in Previous route
+// NOT USING - Get routed data from Clicked button in Previous route
 //    console.log(this.router.getCurrentNavigation().extras.state);
 
 // Get route data from Browser History
@@ -68,7 +69,7 @@ https://angular.io/api/router/NavigationExtras#state
     if (history.state.data) {
       // WIDER SET OF LINKS = HEADER, SIDENAV
       /* UPDATE.
-      Now is it ALL sets of these links:
+      Now is it **ALL** sets of these links:
       HEADER, SIDENAV, and yes also the (local) ARTICLES.COMPONENT
        */
       if (history.state.data.articleMostRecentHideRouterLinkState) {
