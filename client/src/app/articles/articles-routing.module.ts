@@ -36,7 +36,7 @@ const myArticleRoutes: Routes = [
 
 @NgModule({
     imports: [
-        RouterModule.forChild(myArticleRoutes),
+        RouterModule.forChild(myArticleRoutes)
     ],
     exports: [
         RouterModule,

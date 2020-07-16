@@ -98,19 +98,41 @@
                 </li>
                 <li>
                     <p>
-                    <a routerLink="/articles" routerLinkActive="my-active"
-                       bind-routerLinkActiveOptions="{ exact: true }"
+                        <!-- Very exciting. We shall see.
+                        https://medium.com/ableneo/how-to-pass-data-between-routed-components-in-angular-2306308d8255
+
+https://angular.io/api/router/NavigationExtras#state
+                        -->
+                    <a
+                            routerLink="/articles"
+                            routerLinkActive="my-active"
+                            bind-routerLinkActiveOptions="{ exact: true }"
+                            [state]="{data: {
+                            articleMostRecentHideRouterLinkState: false
+                            }}"
                     >Articles</a>
                     </p>
                 </li>
                 <li>
                     <p>
-                        <a routerLink="/articles/list" routerLinkActive="my-active">Articles List</a>
+                        <a
+                                routerLink="/articles/list"
+                                routerLinkActive="my-active"
+                                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: true
+                            }}"
+                        >Articles List</a>
                     </p>
                 </li>
                 <li>
                     <p>
-                        <a routerLink="/articles/add" routerLinkActive="my-active">Add Article</a>
+                        <a
+                                routerLink="/articles/add"
+                                routerLinkActive="my-active"
+                                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: true
+                            }}"
+                        >Add Article</a>
                     </p>
                 </li>
 <!--

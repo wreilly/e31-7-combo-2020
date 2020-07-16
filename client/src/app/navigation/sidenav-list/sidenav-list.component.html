@@ -10,7 +10,9 @@
     </a>
     <mat-list-item>
         <a
-                routerLink="/articles"
+                routerLink="/articles"                                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: false
+                            }}"
                 on-click="myCloseSidenav()"
         >
             <mat-icon>wysiwyg</mat-icon>
@@ -19,6 +21,9 @@
     <mat-list-item>
         <a
                 routerLink="/articles/list"
+                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: true
+                            }}"
                 on-click="myCloseSidenav()"
         >
             <mat-icon>toc</mat-icon>
@@ -27,6 +32,9 @@
     <mat-list-item>
         <a
                 routerLink="/articles/add"
+                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: true
+                            }}"
                 on-click="myCloseSidenav()"
         >
             <mat-icon>note_add</mat-icon>

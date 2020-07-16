@@ -4,8 +4,11 @@
         <a
                 mat-tab-link
                 routerLink="."
-                on-click="getArticleMostRecent()"
+                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: false
+                            }}"
         >
+<!--            on-click="getArticleMostRecent()"-->
 <!-- Mini-Finding
                 routerLink="." // << YES. stays on :4200/articles  Good
                 routerLink="" // << NO. Goes to :4200/  Bad
@@ -16,15 +19,21 @@
         <a
                 mat-tab-link
                 routerLink="list"
-                on-click="hideArticleMostRecent()"
+                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: true
+                            }}"
         >
+            <!-- on-click="hideArticleMostRecent()" -->
             Articles List
         </a>
         <a
                 mat-tab-link
                 routerLink="add"
-                on-click="hideArticleMostRecent()"
+                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: true
+                            }}"
         >
+<!--            on-click="hideArticleMostRecent()"-->
             Add Article
         </a>
     </nav>
