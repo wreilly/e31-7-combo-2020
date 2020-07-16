@@ -40,4 +40,18 @@ export class ArticleService {
     );
   }
 
+  /* **************************************************
+     *   DELETE (MANY) ARTICLES (BY DATE, DATE-RANGE) *
+     **************************************************
+   */
+  /* https://steveridout.github.io/mongo-object-time/
+
+  PRIMARY> db.newarticles.deleteMany({_id: {$lt: ObjectId("5f0e7f400000000000000000"), $gt: ObjectId("5f0dd6800000000000000000") }})
+{ "acknowledged" : true, "deletedCount" : 6 }
+
+PRIMARY> db.newarticles.find({_id: {$lt: ObjectId("5f0e7f400000000000000000"), $gt: ObjectId("5f0dd6800000000000000000") }}).count()
+6 documents
+July 14th P.M. from noon to midnight
+   */
+
 }
