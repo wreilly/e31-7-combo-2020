@@ -84,6 +84,59 @@ class articleService {
     /* *** Find MOST RECENTLY Added Article *** */
     /* **************************** */
     static findArticleMostRecent() {
+        console.log('Most Recent Article 2020');
+
+        /*
+        *****   DATE RANGE TEST ZONE  ***** :o)
+         */
+        console.log('Most Recent Article - HIJACKED for DATE RANGE ');
+        // https://steveridout.github.io/mongo-object-time/
+        // N.B. MONTHS ARE ZERO-BASED!  6 is July.
+        const lowDate = new Date(2020, 5, 13, 0);
+        console.log('lowDate ', lowDate);
+        // lowDate  Tue Jul 14 2020 12:00:00 GMT-0400 (Eastern Daylight Time)
+        console.log('typeof lowDate ', typeof lowDate); // object    ( ! )
+
+        const highDate = new Date(2020, 5, 14, 8, 17);
+        console.log('highDate ', highDate);
+        // highDate  Wed Jul 15 2020 11:59:00 GMT-0400 (Eastern Daylight Time)
+
+        function objectIdFromDate (myDate) {
+            return Math.floor(myDate.getTime() / 1000).toString(16) + "0000000000000000";
+        }
+
+        const lowObjectId = objectIdFromDate(lowDate);
+        console.log('lowObjectId ', lowObjectId);
+        // 5f0dd6800000000000000000
+        console.log('typeof lowObjectId ', typeof lowObjectId); // string   (of course)
+
+        const highObjectId = objectIdFromDate(highDate);
+        console.log('highObjectId ', highObjectId);
+// 5f0f27c40000000000000000
+
+/* NO. returns []  :o(
+        return articleModelHereInService.find({ _id: { $gt: lowObjectId, $lt: highObjectId }})
+*/
+/* YES. returned [(30)] from July 14 to date...
+        return articleModelHereInService.find({ _id: { $gt: lowObjectId }})
+*/
+/* YES. RANGE :o) returned e.g. [(16)] etc.
+        return articleModelHereInService.find({$and: [{ _id: { $gt: lowObjectId }}, { _id: { $lt: highObjectId }}]})
+*/
+        /* Compare MongoDB SHELL
+        MongoDB Enterprise ClusterWR03-shard-0:PRIMARY> db.newarticles.find({_id: {$lt: ObjectId("5f0dd6800000000000000000"), $gt: ObjectId("5f0d2dc00000000000000000") }}).count()
+16
+         */
+
+/* YEP: PRETTY AWESOME
+        return articleModelHereInService.find({$and: [{ _id: { $gt: lowObjectId }}, { _id: { $lt: highObjectId }}]})
+
+ */
+        /*
+          *****   /DATE RANGE TEST ZONE  ***** :o)
+        */
+
+
         return articleModelHereInService.find({}).sort({_id:-1}).limit(1)
             .then(
                 (whatIGot) => {
@@ -188,6 +241,29 @@ class articleService {
             )
             .catch((err) => console.log('Service .catch err ', err));
 } // /deleteArticle()
+
+
+    /* ****************************** */
+    /* ****** Delete Article ******** */
+    /* ****** TODO BY DATE, DATE-RANGE *** */
+
+    /* From CLIENT:
+    /Users/william.reilly/dev/JavaScript/CSCI-E31/Assignments/07-e31-combo-2020/client/src/app/articles/article.service.ts
+
+    * **************************************************
+   *   DELETE (MANY) ARTICLES (BY DATE, DATE-RANGE) *
+   **************************************************
+ */
+    /* https://steveridout.github.io/mongo-object-time/
+
+    PRIMARY> db.newarticles.deleteMany({_id: {$lt: ObjectId("5f0e7f400000000000000000"), $gt: ObjectId("5f0dd6800000000000000000") }})
+  { "acknowledged" : true, "deletedCount" : 6 }
+
+  PRIMARY> db.newarticles.find({_id: {$lt: ObjectId("5f0e7f400000000000000000"), $gt: ObjectId("5f0dd6800000000000000000") }}).count()
+  6 documents
+  July 14th P.M. from noon to midnight
+     */
+
 
 } // /articleService
 
