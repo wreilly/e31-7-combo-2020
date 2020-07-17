@@ -10,7 +10,8 @@
     </a>
     <mat-list-item>
         <a
-                routerLink="/articles"                                [state]="{data: {
+                routerLink="/articles"
+                [state]="{data: {
                             articleMostRecentHideRouterLinkState: false
                             }}"
                 on-click="myCloseSidenav()"
@@ -22,7 +23,8 @@
         <a
                 routerLink="/articles/list"
                 [state]="{data: {
-                            articleMostRecentHideRouterLinkState: true
+                            articleMostRecentHideRouterLinkState: true,
+                            articleListOnArticlesListPage: true
                             }}"
                 on-click="myCloseSidenav()"
         >

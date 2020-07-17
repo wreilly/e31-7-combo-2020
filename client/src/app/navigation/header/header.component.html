@@ -69,6 +69,8 @@
             place-content: stretch flex-end;
     align-content: stretch;
     justify-content: flex-end;
+
+    Above use of "flex-end" similar to in ArticleListComponent. cheers.
             -->
             <ul
                     fxLayout
@@ -119,7 +121,8 @@ https://angular.io/api/router/NavigationExtras#state
                                 routerLink="/articles/list"
                                 routerLinkActive="my-active"
                                 [state]="{data: {
-                            articleMostRecentHideRouterLinkState: true
+                            articleMostRecentHideRouterLinkState: true,
+                            articleListOnArticlesListPage: true
                             }}"
                         >Articles List</a>
                     </p>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ArticleService } from '../article.service';
 // import {Observable} from "rxjs"; // << not needed here after all
 import {Article} from "../article.model";
@@ -17,6 +17,16 @@ export class ArticleListComponent implements OnInit {
    */
   // articles: []; // empty to begin
   // articles = []; // empty to begin
+
+    latestArticleDate: Date;
+    latestArticleAnchorId: string; // articles[articles.length - 1].articleId_name
+    articlesCount: number;
+
+    @Input('articleListOnWelcomePage')
+    articleListOnWelcomePage: boolean; // From WelcomeComponent
+
+    articleListOnArticlesListPage: boolean; // From routerLinks {data}
+    // Links from 3 locations: Header, Sidenav, ArticlesComponent
 
   testArticles = [
     {
@@ -42,6 +52,14 @@ export class ArticleListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+
+      // ***********
+      if (history.state.data) {
+          if (history.state.data.articleListOnArticlesListPage) {
+              this.articleListOnArticlesListPage = true;
+          }
+      }
+
     // TEST TIME!
 /*
     this.articles = [ ...this.testArticles ];
@@ -78,9 +96,21 @@ export class ArticleListComponent implements OnInit {
                     return eachRealArticleToReturn;
                   }
               )
+                this.latestArticleDate = this.myDateFromObjectId(this.articles[this.articles.length - 1].articleId_name);
+              this.latestArticleAnchorId = this.articles[this.articles.length - 1].articleId_name;
+              this.articlesCount = this.articles.length;
             }
         );
 
-  }
+  } // /ngOnInit()
+
+    // https://steveridout.github.io/mongo-object-time/
+    myDateFromObjectId = function (objectId): Date {
+        return new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
+    };
+
+    myObjectIdFromDate = function (date) {
+        return Math.floor(date.getTime() / 1000).toString(16) + "0000000000000000";
+    };
 
 }

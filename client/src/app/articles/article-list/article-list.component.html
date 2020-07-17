@@ -1,11 +1,94 @@
 <div class="component-label">ARTICLE-LIST.COMPONENT</div>
-<mat-nav-list role="navigation"
+<mat-nav-list role="navigation">
+    <mat-card class="spacing">
+        <mat-card-subtitle>
+            <span>Count: {{articlesCount}}</span>
+            <span
+                fxFlex
+                fxLayout
+                fxLayoutAlign="flex-end">
 
->
-    <!-- class="spacing"
-    style="background-color: lavenderblush"
-    -->
-    <!-- Oi! Thank God I found this solution:
+<!-- Sadly, these both don't work!
+>> href="./articles/list/#{{latestArticleAnchorId}}"
+>> href="/articles/list/#{{latestArticleAnchorId}}"
+I don't know why, seeing that this does work:
+>> href="./#{{latestArticleAnchorId}}"  Hmm.
+>> href="/#{{latestArticleAnchorId}}" << this does too, fwiw
+
+
+O well.
+So, as an alternative, --  despite inconsistent UX :o(  --  we resort, on
+the ArticlesListPage, to a simple link to the URL for the latest article,
+ as a full page ArticleComponent, rather than jump
+ to #anchor at bottom of list (which is the nicer UX on the WelcomePage).
+ Too bad.
+-->
+<!-- NO.
+                <a
+                        href="/articles/list/#{{latestArticleAnchorId}}"
+                >
+                    Latest: {{latestArticleDate | date}}
+                </a>
+-->
+                <!-- YES. -->
+                <a
+                        *ngIf="articleListOnArticlesListPage"
+                        routerLink="/articles/{{latestArticleAnchorId}}">
+                    Latest: {{latestArticleDate | date}}
+                </a>
+<!-- YES works but routerLink is better than href
+                <a
+
+                        href="./articles/{{latestArticleAnchorId}}">
+                    Latest: {{latestArticleDate | date}}
+                </a>
+-->
+<!--   YES. -->
+                <a
+                        *ngIf="articleListOnWelcomePage"
+                        href="./#{{latestArticleAnchorId}}">
+                    Latest: {{latestArticleDate | date}}
+                </a>
+
+<!-- YES Worked, if imperfectly, for /    FAILED for /articles/list
+So that has driven the need (above) for *ngIf conditional. Yowza. -->
+<!--
+                <a
+                        href="./#{{latestArticleAnchorId}}">
+                    Latest: {{latestArticleDate | date}}
+                </a>
+-->
+
+            </span>
+            <!-- TRIED. FAILED. SIGH.
+                            <a bind-routerLink="['.']" bind-fragment="latestArticleAnchorId">Latest: {{latestArticleDate | date}}</a>
+            -->
+
+            <!-- https://www.geekstrick.com/fragment-url-in-angular-8/
+            [routerLink]="['.']" << hmm
+            [routerLink]='"."'   << hmm aussi
+            "['./']" << hmm encore une fois
+
+            One Note:   yeah, gotta bind-routerLink, seems.
+            With [routerLink]="" or bind-routerLink="" << all right
+            Without that: error  routerLink="" << error
+            : Error: Cannot match any routes. URL Segment: 'articles/list/%5B'./'%5D'
+Error: Cannot match any routes. URL Segment: 'articles/list/%5B'./'%5D'
+            -->
+        </mat-card-subtitle>
+<!-- (above)
+            place-content: stretch flex-end;
+    align-content: stretch;
+    justify-content: flex-end;
+Above use of "flex-end" similar to in HeaderComponent. cheers.
+
+
+        <mat-card-content><span>Count: {{articles.length}}</span> -&#45;&#45; <span fxLayoutAlign="flex-end">Latest: {{latestArticleDate | date}}</span></mat-card-content>
+-->
+    </mat-card>
+    <!-- style="background-color: lavenderblush" << No good for "dark-theme"!
+
+    Oi! Thank God I found this solution:
         "You can add mat-list-item as the directive to your app-car-item component..."
         https://stackoverflow.com/questions/58477720/how-to-use-in-angular-material-list-an-item-component
 
