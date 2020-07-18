@@ -90,11 +90,19 @@ But for NOW, let's try withOUT, hey?
                             type="text"
                             matInput
                             placeholder="placey title"
-                            formControlName="articleTitle_formControlName"
                             appInputFocus
+                            formControlName="articleTitle_formControlName"
+
                             [errorStateMatcher]="myOwnErrorStateMatcher"
                     >
                 <!--
+                Comment on use of "appInputFocus":
+                - It's nice. okay.
+                - But it does create this, well, not-so-great situation:
+                -- User gets focus on Title field (good). But if user first just clicks *anywhere* else on this whole page,
+                the form field turns red and complains & etc. Yeesh.
+                - Sigh. Guess we'll keep it in.
+
                 FOCUS:
 See shared/input-focus DIRECTIVE
                 https://stackoverflow.com/questions/50006888/set-focus-on-input-element
@@ -183,11 +191,20 @@ using it. cheers.
                 <button
                         mat-icon-button
                         type="submit"
+                        *ngIf="!(myUIIsLoadingStore$ | async)"
                         bind-disabled="!addArticleFormGroup.valid"
                 >
+                    <!-- Hide that button while spinner appears
+                    -->
                         <mat-icon>note_add</mat-icon>
                         <span style="margin-left: 5px;" class="tiny">Post Your Article</span>
                 </button>
+                <mat-progress-spinner
+                        mode="indeterminate"
+                        *ngIf="myUIIsLoadingStore$ | async"
+                >
+
+                </mat-progress-spinner>
             </div>
         </form>
         </mat-card-content>

@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {FormGroup, FormControl, Validators, Form, FormGroupDirective, NgForm} from '@angular/forms';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../../store/app.reducer';
+import { Observable } from 'rxjs';
 
 import { Article, Category } from '../article.model';
 
@@ -98,8 +101,11 @@ export class ArticleAddComponent implements OnInit {
     },
   ];
 
+  myUIIsLoadingStore$: Observable<boolean>;
+
   constructor(
       private myArticleService: ArticleService,
+      private myStore: Store,
   ) { }
 
   ngOnInit(): void {
@@ -129,6 +135,8 @@ export class ArticleAddComponent implements OnInit {
     });
 
     this.myOwnErrorStateMatcher = new MyErrorStateMatcher();
+
+    this.myUIIsLoadingStore$ = this.myStore.select(fromRoot.getIsLoading);
 
     this.getArticleMostRecent();
 
@@ -296,15 +304,17 @@ articleUrl_name: http://nytimes.com/oboy
 
 
   goAddArticle(myFormFieldsAndFiles): void {
-
+/*
     this.myArticleService.createArticle(myFormFieldsAndFiles)
+*/
+    this.myArticleService.createArticleB(myFormFieldsAndFiles)
         .subscribe(
             (whatIJustCreated: {
               _id: string,
               articleTitle: string,
               articleUrl: string,
             }) => {
-              console.log('whatIJustCreated: ', whatIJustCreated);
+              console.log('ARTICLE "B" - whatIJustCreated: ', whatIJustCreated);
               /* FEATURES THE "BE NAMING CONVENTION" for an Article. Bueno.
               {articlePhotos: Array(0),
               _id: "5f032c5daf6229101f019065",

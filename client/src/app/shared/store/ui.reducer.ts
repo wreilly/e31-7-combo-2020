@@ -2,12 +2,13 @@ import * as fromUIActions from './ui.actions';
 
 export interface MyState {
     sidenavIsOpen: boolean;
-    // TODO isLoading: boolean, too
+    isLoading: boolean;
 }
 
 const myInitialState: MyState = {
     sidenavIsOpen: false,
     // sidenavIsOpen: true,
+    isLoading: false,
 }
 
 export function UIReducer(
@@ -24,6 +25,20 @@ export function UIReducer(
     // above is used for OLDER (unused) CODE below
 
     switch (action.type) {
+
+        case fromUIActions.START_LOADING:
+            return {
+                ...state,
+                isLoading: true,
+            }
+
+
+        case fromUIActions.STOP_LOADING:
+            return {
+                ...state,
+                isLoading: false,
+            }
+
 
         case fromUIActions.SET_SIDENAV_TO_OPPOSITE_STATE:
             // ******************
@@ -44,7 +59,10 @@ export function UIReducer(
             # 2. "...with Object.assign() we have successfully created a copy of the source object without any references to it."  << yeah okay
              */
 
-            let myAssignedObjectToReturnState: MyState = {sidenavIsOpen: null};
+            let myAssignedObjectToReturnState: MyState = {
+                ...state,
+                sidenavIsOpen: null
+            };
             /* ?
             I guess we can "set up" this property as null - doesn't really matter.
             Could be set up as true, or false. It's just a placeholder.
@@ -172,10 +190,14 @@ export function getIsSidenavOpen(statePassedIn: MyState) {
     return statePassedIn.sidenavIsOpen;
 }
 
+export function getIsLoading(statePassedIn: MyState) {
+    return statePassedIn.isLoading;
+}
+
 // *****  From OTHER Project  ************************
 /* EXAMPLE USE OF .SELECT()
     this.myUIIsLoadingStore$ = this.myStore.select(fromRoot.getIsLoading);
-    src/app/auth/login/login.component.ts:197
+    src/app/auth/login/login.component.ts:197 ngOnInit()
  */
 /* EXAMPLE USE OF .DISPATCH()
 this.myStore.dispatch(new UI.StartLoading());
