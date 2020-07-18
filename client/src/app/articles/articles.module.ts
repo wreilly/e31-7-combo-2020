@@ -10,6 +10,7 @@ import { ArticleDetailComponent } from './article-detail/article-detail.componen
 import { ArticlesComponent } from './articles.component';
 
 
+
 @NgModule({
   declarations: [
     ArticleComponent,

@@ -18,6 +18,10 @@ import { HttpClientModule } from '@angular/common/http';
 https://stackoverflow.com/questions/47528852/angular-material-sidenav-cdkscrollable/50812763#50812763
  */
 import { ScrollingModule } from '@angular/cdk/scrolling';
+/* SharedModule
+import { NgxPageScrollCoreModule } from 'ngx-page-scroll-core';
+import { NgxPageScrollModule } from 'ngx-page-scroll';
+*/
 
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core/core.module';
@@ -53,9 +57,11 @@ import {environment} from "../environments/environment";
     // NoopAnimationsModule,
     HttpClientModule,
     ScrollingModule,
+    // NgxPageScrollCoreModule, // << SharedModule
+    // NgxPageScrollModule,
     SharedModule,
     CoreModule,
-    // MyMaterialModule,
+    // MyMaterialModule, // << Now in SharedModule
     StoreModule.forRoot(fromRoot.myRootReducersMap),
     // https://blog.angular-university.io/angular-ngrx-devtools/
     !environment.production ? StoreDevtoolsModule.instrument({

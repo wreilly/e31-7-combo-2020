@@ -1,6 +1,12 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { ArticleService } from '../article.service';
+import { Component, OnInit, Input, Inject } from '@angular/core';
+// import { DOCUMENT } from '@angular/common'; // << No longer needed
 // import {Observable} from "rxjs"; // << not needed here after all
+/* CRAP
+import { PageScrollService } from 'ngx-page-scroll-core';
+*/
+
+import { ArticleService } from '../article.service';
+
 import {Article} from "../article.model";
 
 @Component({
@@ -49,16 +55,33 @@ export class ArticleListComponent implements OnInit {
 
   constructor(
       private myArticleService: ArticleService,
+      // private myPageScrollService: PageScrollService, // << CRAP
+/* Nah
+      @Inject(DOCUMENT)
+      private myDocument: Document,
+*/
   ) { }
 
   ngOnInit(): void {
 
-      // ***********
+      /* ***********
+      We are checking if this ArticleListComponent is
+      being loaded into the page:
+      - "Welcome"? /    << via @Input param passed
+      - "Articles List"? /articles/list/  << via history.state.data
+       */
       if (history.state.data) {
           if (history.state.data.articleListOnArticlesListPage) {
               this.articleListOnArticlesListPage = true;
           }
       }
+
+/* COMPLETE CRAP
+      this.myPageScrollService.scroll({
+          document: this.myDocument,
+          scrollTarget: '#foobarmaybe'
+      });
+*/
 
     // TEST TIME!
 /*

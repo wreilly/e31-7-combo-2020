@@ -15,6 +15,11 @@
 class="gap-between"
 id="{{articleHere.articleId_name}}"
 >
+    <!--
+    (above) id is the # TARGET ANCHOR TAG ID for "jump to in page"
+    http://0.0.0.0:4200/#5f11a3ae04e544a462218208 << Yes (grazie al cielo)
+    http://0.0.0.0:4200/articles/list/#5afac7603fa7e949fa00a64e  << No ?
+    -->
     <mat-card-title
             *ngIf="articleHere"
     >{{ articleHere.articleTitle_name }}</mat-card-title>

@@ -37,17 +37,41 @@ the ArticlesListPage, to a simple link to the URL for the latest article,
                 Can use routerLink okay because not using any # anchor. (sadly)
                 Note: routerLink of course avoids browser refresh in page navigation. Good.
                 -->
+<!--  !!! IX-NAY TO PAGESCROLL PIECE OF CRAP DIRECTIVE
                 <a
                         *ngIf="articleListOnArticlesListPage"
-                        routerLink="/articles/{{latestArticleAnchorId}}">
-                    Latest: {{latestArticleDate | date}}
+                        pageScroll
+                        [routerLink]="['/articles/list']" href="#{{latestArticleAnchorId}}"
+                >
+                    Latest: {{latestArticleDate | date}} (02 LIST)
                 </a>
-<!-- YES works but routerLink is better than href
-                <a
+-->
+                <!--
+(above)
+NO. Nothing doing with "pageScroll" CRap.
+                        pageScroll
+                        [routerLink]="['/articles/list']" href="#{{latestArticleAnchorId}}"
+-->
 
-                        href="./articles/{{latestArticleAnchorId}}">
-                    Latest: {{latestArticleDate | date}}
-                </a>
+<!--  ****** ARTICLES LIST PAGE  (01 LIST) ******** -->
+<a
+        *ngIf="articleListOnArticlesListPage"
+        routerLink="/articles/{{latestArticleAnchorId}}">
+    Latest: {{latestArticleDate | date}}
+</a>
+                <!-- N.B. Not really "anchor" --
+                Here above we navigate to route with
+                full URL including Article ID,
+                not an "anchor" # URL fragment using Article ID.
+                cheers.
+                -->
+
+<!-- YES works but routerLink is better than href
+<a
+
+        href="./articles/{{latestArticleAnchorId}}">
+    Latest: {{latestArticleDate | date}}
+</a>
 -->
                 <!--   YES.  ArticleListComponent on WELCOME PAGE
                 Comes in via <app-article-list> placed in WelcomeComponent template.
@@ -56,6 +80,31 @@ the ArticlesListPage, to a simple link to the URL for the latest article,
                 Uses href, not routerLink. The latter was NOT working with # anchor links (sadly)
                 Note, this use of href, on same page & url, does NOT cause browser refresh of page. Good.
                 -->
+<!--  !!! IX-NAY TO PAGESCROLL PIECE OF CRAP DIRECTIVE
+                <a
+                        *ngIf="articleListOnWelcomePage"
+                        pageScroll
+                        [routerLink]="[]" [fragment]="latestArticleAnchorId"
+                >
+                    Latest: {{latestArticleDate | date}} (02 WELCOME)
+                </a>
+-->
+                <!--
+                (above)
+                Yes, but, "href"? (icky)
+                        pageScroll
+                        href="#{{latestArticleAnchorId}}">
+NO. None of this worked. CRap.
+                        pageScroll
+                        [routerLink]="['/']" href="#{{latestArticleAnchorId}}"
+
+                        ALSO NO.
+                        pageScroll
+                        [routerLink]="[]" [fragment]="latestArticleAnchorId"
+                        MORE CRAP
+https://github.com/Nolanus/ngx-page-scroll/issues/403
+                -->
+                <!--  ****** WELCOME  (01 WELCOME) ******** -->
                 <a
                         *ngIf="articleListOnWelcomePage"
                         href="./#{{latestArticleAnchorId}}">
