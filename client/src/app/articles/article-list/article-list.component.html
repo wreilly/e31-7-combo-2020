@@ -30,7 +30,13 @@ the ArticlesListPage, to a simple link to the URL for the latest article,
                     Latest: {{latestArticleDate | date}}
                 </a>
 -->
-                <!-- YES. -->
+                <!-- YES.  ArticleListComponent on ARTICLE LIST PAGE
+                Comes in via router-outlet (off the ArticlesComponent template)
+                Logic parameter comes in via Router NavigationExtras .data{articleListOnArticlesListPage}
+
+                Can use routerLink okay because not using any # anchor. (sadly)
+                Note: routerLink of course avoids browser refresh in page navigation. Good.
+                -->
                 <a
                         *ngIf="articleListOnArticlesListPage"
                         routerLink="/articles/{{latestArticleAnchorId}}">
@@ -43,7 +49,13 @@ the ArticlesListPage, to a simple link to the URL for the latest article,
                     Latest: {{latestArticleDate | date}}
                 </a>
 -->
-<!--   YES. -->
+                <!--   YES.  ArticleListComponent on WELCOME PAGE
+                Comes in via <app-article-list> placed in WelcomeComponent template.
+                Logic parameter comes in via @Input(articleListOnWelcomePage)
+
+                Uses href, not routerLink. The latter was NOT working with # anchor links (sadly)
+                Note, this use of href, on same page & url, does NOT cause browser refresh of page. Good.
+                -->
                 <a
                         *ngIf="articleListOnWelcomePage"
                         href="./#{{latestArticleAnchorId}}">
