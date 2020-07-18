@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { Article } from '../article.model';
 
 @Component({
@@ -6,7 +6,7 @@ import { Article } from '../article.model';
     templateUrl: './article.component.html',
     styleUrls: ['./article.component.scss'],
 })
-export class ArticleComponent implements OnInit {
+export class ArticleComponent implements OnInit, OnChanges {
 
     @Input('articleToSendDownName')
     articleHere: Article;

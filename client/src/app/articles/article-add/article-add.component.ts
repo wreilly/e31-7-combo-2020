@@ -1,9 +1,39 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import {FormGroup, FormControl, Validators, Form, FormGroupDirective, NgForm} from '@angular/forms';
 
 import { Article, Category } from '../article.model';
 
 import { ArticleService } from '../article.service';
+
+
+import {ErrorStateMatcher} from '@angular/material/core';
+/*
+https://www.concretepage.com/angular-material/angular-material-inputs#ErrorStateMatcher
+// 2020 NOTE! "Just so you know", now comes from '@angular/material/core' - So There! (Was (2019...) '@angular/material' o well
+
+Here in ArticleAddComponent, this ErrorStateMatcher,
+is an example of "special" Angular
+Material import needed BEYOND what our "my-material.module.ts" covers for us.
+*/
+/* (btw)
+This "matcher" is used because w. Angular Material and form reset(), the default is to call it an error if the form was ever submitted.
+With the custom matcher, we can omit that default criterion.
+ */
+
+class MyErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    return !!(control && control.invalid && (control.dirty || control.touched));
+  }
+}
+/*
+// We OMIT to include form.submitted
+
+        // https://medium.com/better-programming/javascript-bang-bang-i-shot-you-down-use-of-double-bangs-in-javascript-7c9d94446054
+        // TL;DR "The !! (double bang) logical operators return a value’s truthy value."
+
+        https://itnext.io/materror-cross-field-validators-in-angular-material-7-97053b2ed0cf
+ */
+
 
 @Component({
   selector: 'app-article-add',
@@ -19,6 +49,8 @@ export class ArticleAddComponent implements OnInit {
   articleTitle_formControl: FormControl;
   articleUrl_formControl: FormControl;
   articleCategory_formControl: FormControl;
+
+  myOwnErrorStateMatcher: MyErrorStateMatcher;
 
   articleIJustCreatedBoolean = false;
   articleIJustCreatedDisplayBE: {
@@ -80,7 +112,11 @@ export class ArticleAddComponent implements OnInit {
     this.articleUrl_formControl = new FormControl(null,
         [
             Validators.required,
-        ])
+            Validators.pattern(/^[A-Za-z][A-Za-z\d.+-]*:\/*(?:\w+(?::\w+)?@)?[^\s/]+(?::\d+)?(?:\/[\w#!:.?+=&%@\-/]*)?$/)
+        ]);
+    /* URL_REGEXP from: (2015)
+    https://github.com/angular/angular.js/commit/ffb6b2fb56d9ffcb051284965dd538629ea9687a
+     */
 
     this.articleCategory_formControl = new FormControl('News',[
         Validators.required,
@@ -91,6 +127,8 @@ export class ArticleAddComponent implements OnInit {
       'articleUrl_formControlName': this.articleUrl_formControl,
       'articleCategory_formControlName': this.articleCategory_formControl,
     });
+
+    this.myOwnErrorStateMatcher = new MyErrorStateMatcher();
 
     this.getArticleMostRecent();
 
@@ -358,5 +396,17 @@ _id: "5f0daf9584c76c1887b06e14"
         );
 
   } // /goAddArticle()
+
+  //  ****  UTILITIES ETC :o)  ******
+
+  myHowManyCharsTyped(formControlNamePassedIn: string): number {
+    let howMany;
+    howMany = (
+        this.addArticleFormGroup.get(formControlNamePassedIn).value
+        &&
+            this.addArticleFormGroup.get(formControlNamePassedIn).value.length
+    );
+    return howMany;
+  }
 
 }

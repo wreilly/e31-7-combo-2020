@@ -11,7 +11,10 @@
 -->
 
 <!-- Yes but, MatCard on MatList = not so good << ?? -->
+
+<!-- Note: WITHOUT *ngIf test, this was hitting error: articleHere was undefined. cheers. -->
 <mat-card
+        *ngIf="articleHere"
 class="gap-between"
 id="{{articleHere.articleId_name}}"
 >

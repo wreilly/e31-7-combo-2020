@@ -19,8 +19,11 @@ export class InputFocusDirective implements OnInit { // "FocusOnShowDirective" f
 
   ngOnInit(): void {
     const input: HTMLInputElement = this.elementWithDirective.nativeElement as HTMLInputElement;
-    input.focus({preventScroll: true});
-    /*
+    input.focus();
+    // input.focus({preventScroll: true}); // << nice, but, we'll go without
+    /* The "prevent" is good, for wide screen (keeps header at top, looks nice)
+    But the "prevent" is not so good for narrow, mobile screen. (That header sticking to top means the first form field is "below the fold" / invisible. Hmm.
+
     https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/focus
      */
     // input.select();

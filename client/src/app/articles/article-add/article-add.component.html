@@ -89,8 +89,10 @@ But for NOW, let's try withOUT, hey?
                     <input
                             type="text"
                             matInput
+                            placeholder="placey title"
                             formControlName="articleTitle_formControlName"
                             appInputFocus
+                            [errorStateMatcher]="myOwnErrorStateMatcher"
                     >
                 <!--
                 FOCUS:
@@ -106,9 +108,9 @@ See shared/input-focus DIRECTIVE
               ></mat-input>
                 -->
                 <mat-hint>
-                    Hint for Title
+                    Hint for Title. You typed/pasted {{ myHowManyCharsTyped('articleTitle_formControlName')}} of / 10!
                 </mat-hint>
-                <mat-error>Error for Title</mat-error>
+                <mat-error>Error for Title: needs to be 10 chars! You typed/pasted {{ myHowManyCharsTyped('articleTitle_formControlName')}} of / 10!</mat-error>
             </mat-form-field>
 
             <mat-form-field>
@@ -117,11 +119,12 @@ See shared/input-focus DIRECTIVE
                         type="text"
                         matInput
                         formControlName="articleUrl_formControlName"
+                        [errorStateMatcher]="myOwnErrorStateMatcher"
                 >
                 <mat-hint>
                     Hint for URL
                 </mat-hint>
-                <mat-error>Error for URL</mat-error>
+                <mat-error>Error for URL (failed our RegEx!)</mat-error>
             </mat-form-field>
 
             <mat-form-field>
@@ -132,6 +135,7 @@ See shared/input-focus DIRECTIVE
        -->
                 <mat-select
                         formControlName='articleCategory_formControlName'
+                        [errorStateMatcher]="myOwnErrorStateMatcher"
                 >
 
            <!--
