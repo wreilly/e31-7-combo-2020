@@ -64,9 +64,16 @@
          ARR   {{ theOne.articleTitle}}
         </mat-card-title>
         <mat-card-subtitle>
-            {{ theOne.articleUrl}}
+            {{ theOne.articleUrl}} | URL HERE$ etc.
+{{urlHereToSeeWhetherEditingObservable$ | async}}
+            <!--
+            5b01e393b810e02daf607239edit
+            -->
         </mat-card-subtitle>
         <mat-card-content>
+            <div *ngIf="areWeEditing">
+                EDITING!
+            </div>
             {{ theOne.articleTitle}}
             {{ theOne.articleTitle}}
             {{ theOne.articleTitle}}

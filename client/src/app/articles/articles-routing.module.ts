@@ -29,7 +29,10 @@ const myArticleRoutes: Routes = [
                 path: ':article_id',
                 component: ArticleDetailComponent,
             },
-
+            {
+                path: ':article_id/edit',
+                component: ArticleDetailComponent,
+            },
         ]
     },
 ];
