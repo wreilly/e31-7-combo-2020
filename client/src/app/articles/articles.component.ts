@@ -4,7 +4,10 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 https://stackoverflow.com/questions/41678356/router-navigate-does-not-call-ngoninit-when-same-page
  */
 import { Router } from '@angular/router'; // ActivatedRoute
+/* re: <router-outlet on-activate=""> see:
+https://medium.com/@sujeeshdl/angular-parent-to-child-and-child-to-parent-communication-from-router-outlet-868b39d1ca89
 
+ */
 import { Article } from './article.model';
 import { ArticleService } from './article.service';
 
@@ -22,6 +25,8 @@ export class ArticlesComponent implements OnInit {
     articleUrl: string,
   };
   articleMostRecentDisplayFE: Article;
+
+  articleToEditId: string;
 
   constructor(
       private myArticleService: ArticleService,
@@ -126,6 +131,24 @@ https://angular.io/api/router/NavigationExtras#state
     }
   }
 */
+
+  myOnActivate(componentReferenceFromRouterOutlet) {
+    // https://medium.com/@sujeeshdl/angular-parent-to-child-and-child-to-parent-communication-from-router-outlet-868b39d1ca89
+    console.log('componentReferenceFromRouterOutlet ', componentReferenceFromRouterOutlet);
+
+
+    if(componentReferenceFromRouterOutlet.tellingYouMyId) {
+      // Only ArticleDetailComponent has that property ^^
+      // The other possible Components passed to this <router-outlet> won't have it
+
+      // tellingYouMyId is an EventEmitter. You can subscribe to its events (stream)
+      componentReferenceFromRouterOutlet.tellingYouMyId.subscribe(
+          (dataWeGet) => {
+            this.articleToEditId = dataWeGet; // MongoDB _id
+          }
+      )
+    }
+  }
 
   hideArticleMostRecent() {
     // HACK-Y!

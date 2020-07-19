@@ -29,7 +29,27 @@ id="{{articleHere.articleId_name}}"
     <mat-card-subtitle
             *ngIf="articleHere"
     >Subtitle
-        <a routerLink="/articles/{{articleHere.articleId_name}}">{{ articleHere.articleTitle_name }}</a>
+        <a routerLink="/articles/{{articleHere.articleId_name}}"
+        >{{ articleHere.articleTitle_name }}</a>
+
+
+        <!-- (below) Not Using: this [state]="{data: {}}}" with routerLink
+
+I thought I needed some special flag/boolean to identify
+an Article, coming inside an ArticleDetailComponent, to the
+<router-outlet> in the ArticlesComponent.
+Nope.
+See instead the on-activate property on router-outlet (an EventEmitter). That permits the "Child-to-Parent" communication, via router-outlet, that permits me to flag that
+the Child arriving in the router-outlet is an ArticleDetailComponent, and to pass the ID up to the Parent.
+I (will) use that ID up on the Parent to create the link to EDIT that ID.
+cheers.
+
+        <a routerLink="/articles/{{articleHere.articleId_name}}"
+           [state]="{data: {
+                            heyHereIsArticleForArticleDetailRouterLinkState: true
+                            }}"
+        >{{ articleHere.articleTitle_name }}</a>
+-->
     </mat-card-subtitle>
     <mat-card-content
             *ngIf="articleHere"

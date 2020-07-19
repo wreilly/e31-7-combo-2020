@@ -1,4 +1,4 @@
-<div class="component-label">ARTICLES.COMPONENT</div>
+<div class="component-label">ARTICLES.COMPONENT: &lt;router-outlet></div>
 <section>
     <nav mat-tab-nav-bar>
         <a
@@ -37,6 +37,17 @@
 <!--            on-click="hideArticleMostRecent()"-->
             Add Article
         </a>
+        <!-- HARD-CODED (to begin) Twitter Hacker article 2020-07-27 -->
+        <a
+                mat-tab-link
+                routerLink="{{articleToEditId}}"
+                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: true
+                            }}"
+        >
+            <!--            on-click="hideArticleMostRecent()"-->
+            Edit (Twitter) Article  // "5f14173c43438c62e560baaa"
+        </a>
     </nav>
     <div
 style="margin: 5px 10px 0 10px;"
@@ -48,6 +59,6 @@ style="margin: 5px 10px 0 10px;"
             <h2>Last Article Created...</h2>
             <app-article bind-articleToSendDownName="articleMostRecentDisplayFE"></app-article>
         </div>
-        <router-outlet></router-outlet>
+        <router-outlet on-activate="myOnActivate($event)"></router-outlet>
     </div>
 </section>

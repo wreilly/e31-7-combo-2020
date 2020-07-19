@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ArticleService } from '../article.service';
 import { Article } from '../article.model';
@@ -10,6 +10,14 @@ import {Observable} from "rxjs"; // << ?? t.b.d.
     styleUrls: ['article-detail.component.scss']
 })
 export class ArticleDetailComponent implements OnInit {
+
+    /*
+    CHILD-to-PARENT "Communication" ** by way of <router-outlet> **
+    https://medium.com/@sujeeshdl/angular-parent-to-child-and-child-to-parent-communication-from-router-outlet-868b39d1ca89
+     */
+    @Output()
+    tellingYouMyId: EventEmitter<string> = new EventEmitter<string>();
+
 
     // DOT.NEXT() (not "DOT.PIPE()"/ASYNC)
     articleAsOneItemArrayHereInDetailPage: any[] = [];
@@ -32,6 +40,12 @@ export class ArticleDetailComponent implements OnInit {
 
     ngOnInit() {
         this.getArticle();
+
+/* NO. (dummy)
+        // Take two: << D'oh. No. Too soon. Gotta wait for async call above!!
+        this.tellingYouMyId.emit(this.articleHereInDetailPage.articleId_name);
+        // SENDING TO PARENT ARTICLES.COMPONENT
+*/
     }
 
     getArticle() {
@@ -45,6 +59,17 @@ export class ArticleDetailComponent implements OnInit {
                  determined in the (Article) Routing Module
                  */
 
+/* Take one: TOO SOON (throws below error, but did get the ID value, fwiw.)
+                this.tellingYouMyId.emit(articleIdHereInDetailPage);
+                // SENDING TO PARENT ARTICLES.COMPONENT
+
+ERROR:
+" Error: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'undefined'. Current value: '5af746cea7008520ae732e2c'.
+    at throwErrorIfNoChangesMode (core.js:8147)"
+
+    https://blog.angular-university.io/angular-debugging/
+    "Expression has changed after it was checked": Simple Explanation (and Fix)
+*/
 
                 this.myArticleService.getArticle(articleIdHereInDetailPage)
                     .subscribe(
@@ -54,6 +79,9 @@ export class ArticleDetailComponent implements OnInit {
 
                             this.articleHereInDetailPage = articleIGot; // BOOM.
                             this.articleAsOneItemArrayHereInDetailPage.push( articleIGot);
+                            // Take three: ("the charm") :)
+                            this.tellingYouMyId.emit(articleIdHereInDetailPage);
+                            // SENDING TO PARENT ARTICLES.COMPONENT
                         }
                     );
 
