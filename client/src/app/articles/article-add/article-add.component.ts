@@ -169,6 +169,9 @@ ARRAY of one - same as above.
 /* =====================================
    TIME TO "CONVERT" TO THE "FE NAMING CONVENTION" for an Article
    =====================================
+   (cf. where we do NOT need to (bother) "converting" - when BE object
+   is used directly on the HTML template:
+   src/app/articles/article-detail/article-detail.component.ts:219
 */
               // 04  ** YES **  Object Literal Initializer << whoa
               // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer

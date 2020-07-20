@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 
 /*
 https://stackoverflow.com/questions/41678356/router-navigate-does-not-call-ngoninit-when-same-page
@@ -17,7 +17,7 @@ import { ArticleService } from './article.service';
   templateUrl: './articles.component.html',
   styleUrls: ['./articles.component.scss']
 })
-export class ArticlesComponent implements OnInit {
+export class ArticlesComponent implements OnInit, OnDestroy {
 
   articleMostRecentDisplayBE: {
     _id: string,
@@ -27,6 +27,8 @@ export class ArticlesComponent implements OnInit {
   articleMostRecentDisplayFE: Article;
 
   articleToEditId: string;
+  weAreEditing = false;
+  // weAreEditing = true;
 
   constructor(
       private myArticleService: ArticleService,
@@ -132,11 +134,48 @@ https://angular.io/api/router/NavigationExtras#state
   }
 */
 
+  // NOT USED, NOT CALLED
+  setWeAreEditingToTrue() {
+    /* No. Why?
+    This is NOT working. How tum?
+
+    UPDATE.
+    Kids, this isn't working, because, THIS "PARENT" COMPONENT
+    that HOSTS THE ROUTER-OUTLET
+    ** ALSO ** re-runs its whole ngOnInit()  !! (didn't exactly expect that)
+    when a new URL/ROUTER-THING-A goes through that
+    damned <router-outlet>
+    So: weAreEditing is set back to FALSE.
+    cheers.
+
+    Hmm, we have on-click on same link as drives to another URL, router-outlet etc.
+    Something amiss in trying to change value (false to true) on this
+    component that hosts that router-outlet, while driving the child
+    component to (I think?) re-render itself, hey? Hmm.
+    We'll try another approach: again pass @Output from child ArticleDetailComponent
+    UP to parent (this Component): ArticlesComponent, to .subscribe() to in the OnActivate(),
+    regarding message of "Hey, I'm now being edited, ya darn fool!"
+     */
+
+    // NOT USED
+/*
+    this.weAreEditing = true;
+    console.log('this.weAreEditing: ', this.weAreEditing); // yeah, we see it say 'true'
+*/
+    // but this ain't working on the template. something to do with re-rendering (?) of stuff
+    // through new URL "/edit" and router-outlet and all that jazz.
+  }
+
   myOnActivate(componentReferenceFromRouterOutlet) {
     // https://medium.com/@sujeeshdl/angular-parent-to-child-and-child-to-parent-communication-from-router-outlet-868b39d1ca89
     console.log('componentReferenceFromRouterOutlet ', componentReferenceFromRouterOutlet);
+    /* N.B.
+Now handling TWO different events/pieces-of-info:
+1. Here is the _id for the article in ArticleDetailComponent. (Use that _id to set the /:_id/edit link)
+2. User has now clicked on that /edit URL, so shift to weAreEditing to TRUE. (Use that to disable the Edit link)
+*/
 
-
+    // 1.
     if(componentReferenceFromRouterOutlet.tellingYouMyId) {
       // Only ArticleDetailComponent has that property ^^
       // The other possible Components passed to this <router-outlet> won't have it
@@ -148,7 +187,21 @@ https://angular.io/api/router/NavigationExtras#state
           }
       )
     }
-  }
+
+    // 2.
+    if(componentReferenceFromRouterOutlet.weAreEditingNow) {
+      // Only ArticleDetailComponent has that property ^^
+      // The other possible Components passed to this <router-outlet> won't have it
+
+      // weAreEditingNow is an EventEmitter. You can subscribe to its events (stream)
+      componentReferenceFromRouterOutlet.weAreEditingNow.subscribe(
+          (dataWeGet) => {
+            this.weAreEditing = dataWeGet; // boolean
+          }
+      )
+    }
+
+  } // /myOnActivate (from RouterOutlet)
 
   hideArticleMostRecent() {
     // HACK-Y!
@@ -196,5 +249,8 @@ articleUrl_name: undefined}
         );
   } // getArticleMostRecent()
 
+  ngOnDestroy() {
+    this.weAreEditing = false; // << Needed on "destroy"? Since class property sets it to default of false ?
+  }
 
 }

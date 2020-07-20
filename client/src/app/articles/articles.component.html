@@ -38,16 +38,51 @@
             Add Article
         </a>
         <!-- HARD-CODED (to begin) Twitter Hacker article 2020-07-27 -->
+        <!-- (below)
+        - We HIDE this link until a single ArticleDetailComponent is selected, for Display
+                 /articles/5af746cea7008520ae732e2c
+        - We SHOW but "disable" this link when it has been clicked, when the user is now Editing that single Article
+                 /articles/5af746cea7008520ae732e2c/edit
+        -->
         <a
+                *ngIf="articleToEditId && !weAreEditing"
                 mat-tab-link
                 routerLink="{{articleToEditId}}/edit"
                 [state]="{data: {
                             articleMostRecentHideRouterLinkState: true
                             }}"
         >
-            <!--            on-click="hideArticleMostRecent()"-->
-            Edit (Twitter) Article  // "5f14173c43438c62e560baaa"
+            <!--    ?? >> NOT USED >>    on-click="setWeAreEditingToTrue()" -->
+            Edit Article
         </a>
+<!--
+        <p *ngIf="weAreEditing">we are apparently editing</p>
+        <p *ngIf="!(weAreEditing)">we are apparently NOT editing</p>
+-->
+<!--
+        <a
+                *ngIf="articleToEditId && weAreEditing"
+                mat-tab-link
+        >
+            (Editing) ORIG
+        </a>
+-->
+        <a
+                *ngIf="articleToEditId && weAreEditing"
+                mat-tab-link [disabled]="true"
+        >
+            (Editing)
+        </a>
+<!--        <span
+                *ngIf="articleToEditId && weAreEditing"
+        >
+        <a
+                *mat-tab-label
+        >
+            (Editing)label
+        </a>
+        </span>
+-->
     </nav>
     <div
 style="margin: 5px 10px 0 10px;"
@@ -60,5 +95,10 @@ style="margin: 5px 10px 0 10px;"
             <app-article bind-articleToSendDownName="articleMostRecentDisplayFE"></app-article>
         </div>
         <router-outlet on-activate="myOnActivate($event)"></router-outlet>
+        <!-- N.B.
+        Now handling TWO different events/pieces-of-info:
+        1. Here is the _id for the article in ArticleDetailComponent. (Use that _id to set the /:_id/edit link)
+        2. User has now clicked on that /edit URL, so shift to weAreEditing to TRUE. (Use that to disable the Edit link)
+        -->
     </div>
 </section>

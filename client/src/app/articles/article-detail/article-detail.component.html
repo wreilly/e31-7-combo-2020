@@ -5,6 +5,52 @@
 <!--<div *ngIf="articleAsOneItemArrayHereInDetailPage">  Apparently not needed! << WAAL no. -->
 <!--<div>-->
 <div *ngIf="articleHereInDetailPage">
+    <!--
+    <h3>{{articleHereInDetailPage.articleTitle_name}}</h3>
+
+    OBJECT for article, not array for article:
+-->
+    <mat-card
+            *ngIf="!areWeEditing"
+    >
+        <mat-card-title>
+            {{ articleHereInDetailPage.articleTitle}}
+        </mat-card-title>
+        <mat-card-subtitle>
+            DISPLAY: {{ articleHereInDetailPage.articleUrl}} |
+            {{urlHereToSeeWhetherEditingObservable$ | async}}
+            <!--
+            5b01e393b810e02daf607239/edit
+            -->
+        </mat-card-subtitle>
+        <mat-card-content>
+            {{ articleHereInDetailPage.articleTitle}}
+        </mat-card-content>
+    </mat-card>
+
+
+    <!--
+    <h3>{{articleHereInDetailPage.articleTitle_name}}</h3>
+
+    OBJECT for article, not array for article:
+-->
+    <mat-card
+            *ngIf="areWeEditing"
+    >
+        <mat-card-title>
+            {{ articleHereInDetailPage.articleTitle}}
+        </mat-card-title>
+        <mat-card-subtitle>
+            EDITING: {{ articleHereInDetailPage.articleUrl}} |
+            {{urlHereToSeeWhetherEditingObservable$ | async}}
+            <!--
+            5b01e393b810e02daf607239/edit
+            -->
+        </mat-card-subtitle>
+        <mat-card-content>
+            {{ articleHereInDetailPage.articleTitle}}
+        </mat-card-content>
+    </mat-card>
 <!--
     <div>
         {{articleHereInDetailPage}} [object Object]
@@ -57,18 +103,20 @@
     </mat-card>
 
 -->
+    <!--  ***** NOT USING "Array" (!)  ***** -->
+<!--
     <mat-card
             *ngFor="let theOne of articleAsOneItemArrayHereInDetailPage"
     >
         <mat-card-title>
-         ARR   {{ theOne.articleTitle}}
+         ARRAY   {{ theOne.articleTitle}}
         </mat-card-title>
         <mat-card-subtitle>
             {{ theOne.articleUrl}} | URL HERE$ etc.
 {{urlHereToSeeWhetherEditingObservable$ | async}}
-            <!--
+            &lt;!&ndash;
             5b01e393b810e02daf607239edit
-            -->
+            &ndash;&gt;
         </mat-card-subtitle>
         <mat-card-content>
             <div *ngIf="areWeEditing">
@@ -79,12 +127,13 @@
             {{ theOne.articleTitle}}
         </mat-card-content>
     </mat-card>
-<!-- WORKS FINE
+-->
+    <!--  ***** /NOT USING "Array" (!)  ***** -->
+
+    <!-- WORKS FINE
     <div *ngFor="let theOne of articleAsOneItemArrayHereInDetailPage">
         {{ theOne.articleTitle}}
     </div>
 -->
-<!--
-    <h3>{{articleHereInDetailPage.articleTitle_name}}</h3>
--->
+
 </div>
