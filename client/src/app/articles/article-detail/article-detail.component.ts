@@ -7,6 +7,10 @@ import { map, tap } from 'rxjs/operators';
 /* ??
 import {url} from "inspector";
 */
+// ** NGRX STUFF **
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../../store/app.reducer';
+import * as UIActions from '../../shared/store/ui.actions';
 
 @Component({
     selector: 'app-article-detail',
@@ -14,6 +18,34 @@ import {url} from "inspector";
     styleUrls: ['article-detail.component.scss']
 })
 export class ArticleDetailComponent implements OnInit, OnDestroy {
+
+    /* ========================================
+       *  NGRX Experiment  *
+       * In lieu of ( ? ) <router-outlet on-activate="">
+       We'll try Store .dispatch() and .select(),
+       * 1) ArticleDetailComponent
+       * We'll do .dispatch() I think in same place
+       * where we did the .emit(), near bottom
+       * of .getArticle()
+       *
+       * 2) ArticlesComponent
+       * .select()
+       * now needs to get assigned to Observable$,
+       * probably in OnInit() or similar... t.b.d.
+       * NOT where we did the .subscribe(), which
+       * was down in the myOnActivate(). I think.
+       *
+       * WUL
+     (I think I can leave in most of the existing code, e.g. @Output etc.
+     * but I probably need to turn off the on-activate() biz ?) hmm. just so we don't get
+     * competing (or redundant therefore untestable)
+     *  boolean values & etc.
+     *
+     * We'll see.
+     * =========================================
+     * */
+
+
 
     /*
     CHILD-to-PARENT "Communication" ** by way of <router-outlet> **
@@ -34,7 +66,7 @@ Now handling TWO different events/pieces-of-info:
 
 
     urlHereToSeeWhetherEditingObservable$: Observable<string>; // ugh worked with | async, but *not* making it go in TS logic. urgh
-    urlHereToSeeWhetherEditingBehaviorSubject$: BehaviorSubject<string> = new BehaviorSubject<string>('FAKEURL');
+    urlHereToSeeWhetherEditingBehaviorSubject$: BehaviorSubject<string> = new BehaviorSubject<string>('FAKEURL-INITIALVALUE-BEHAVIORSUBJECT');
     urlHereAsObservableFromBehaviorSubject$ = this.urlHereToSeeWhetherEditingBehaviorSubject$.asObservable();
     urlHere: string;
     areWeEditing = false;
@@ -62,6 +94,7 @@ Now handling TWO different events/pieces-of-info:
         constructor(
             private myArticleService: ArticleService,
             private myActivatedRoute: ActivatedRoute,
+            private myStore: Store,
         ) {
             console.log('999 do you see me?');
             /*
@@ -96,7 +129,7 @@ Now handling TWO different events/pieces-of-info:
 /* We do this below instead of here.
             this.urlHere = segments.join('/'); // << fuhggeddaboudid
 */
-            console.log('Constructor. PIPE off ActivatedRoute.url. this.urlHere ', this.urlHere); // undefined << ?? Now FAKEURL
+            console.log('Constructor. PIPE off ActivatedRoute.url. this.urlHere ', this.urlHere); // undefined << ?? Now FAKEURL-INITIALVALUE-BEHAVIORSUBJECT
 
             return segments.join('/'); // << yeah needed.
         }));
@@ -162,7 +195,7 @@ Maybe this is also the time to see what the d-@#$%^&-d URL is, whether we are /e
             (urlFromActivatedRoute) => {
                 console.log('GetArticle. .Subscribe. off urlHere$. we get: urlFromActivatedRoute ', urlFromActivatedRoute); // << YES. Finally fucking works. 5af746cea7008520ae732e2c
                 this.urlHereToSeeWhetherEditingBehaviorSubject$.next(urlFromActivatedRoute);
-                this.urlHere = urlFromActivatedRoute;
+                this.urlHere = urlFromActivatedRoute; // whamma-jamma. ok.
                 console.log('blah. SUBSCRIBE this.urlHere ', this.urlHere); // YES. 5af746cea7008520ae732e2c/edit
                 // REGEX TIME
                 if (this.urlHere.match(/\/edit$/g)) {
@@ -288,26 +321,60 @@ _id: "5af746cea7008520ae732e2c"
                              */
 
 
+
+
+                            /* ========================================
+                               *  NGRX Experiment  *
+                               * Instead of .emit(), we'll use
+                               *  Store.dispatch()
+                             */
+                            this.myStore.dispatch(new UIActions.TellingYouMyId(articleIdHereInDetailPage));
+                            // SENDING TO NGRX STORE.
+                            /* Seen in Redux Tool: yes the Action data look good:
+                            {
+  myPayload: '5af746cea7008520ae732e2c',
+  type: '[UI] Telling You My Id'
+}
+
+But then, sadly, the Store 'state' somehow ( ? ) *loses* this property of articleIdIs:
+{
+  uiPartOfStore: {
+    sidenavIsOpen: false,
+    isLoading: false,
+                           // <<<<<<<<<< Where did articleIdIs go ??
+    areWeEditing: false
+  }
+}
+                             */
+
+                            // THEN, THE ARTICLES.COMPONENT WILL
+                            // "SELECT" IT TO OBTAIN OBSERVABLE
+                            // TO ITS VALUE. :o)
+
                             // Take three: ("the charm") :)  We actually have the article back from the BE Service. bueno
                             this.tellingYouMyId.emit(articleIdHereInDetailPage);
                             // SENDING TO PARENT ARTICLES.COMPONENT
 
-                            // Take FIVE: ("the charm") :)?
-                            // Below is used to SEND TO PARENT that we are editing,
-                            // to disable that "Edit Article" link up on ArticlesComponent
-                            if (this.areWeEditing) { // << But, need to check difference between /:_id and /:_id/edit !
-                                this.weAreEditingNow.emit(true);
-                                // SENDING TO PARENT ARTICLES.COMPONENT
-                            }
-                            // =================================================
-
-                        }
-                    ); // /.subscribe()  ...Service.getArticle()
 
 
-/* NO
-                this.articleAsObservableHereInDetailPage$ =
-*/
+
+
+                                                    // Take FIVE: ("the charm") :)?
+                                                    // Below is used to SEND TO PARENT that we are editing,
+                                                    // to disable that "Edit Article" link up on ArticlesComponent
+                                                    if (this.areWeEditing) { // << But, need to check difference between /:_id and /:_id/edit !
+                                                        this.weAreEditingNow.emit(true);
+                                                        // SENDING TO PARENT ARTICLES.COMPONENT
+                                                    }
+                                                    // =================================================
+
+                                                }
+                                            ); // /.subscribe()  ...Service.getArticle()
+
+
+                        /* NO
+                                        this.articleAsObservableHereInDetailPage$ =
+                        */
 /* NO NO WAY
                     this.myArticleService.getArticle(articleIdHereInDetailPage)
                     .subscribe(

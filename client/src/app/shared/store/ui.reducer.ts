@@ -1,14 +1,20 @@
 import * as fromUIActions from './ui.actions';
+import {from} from "rxjs";
+// import {TellingYouMyId} from "./ui.actions"; // << ?
 
 export interface MyState {
     sidenavIsOpen: boolean;
     isLoading: boolean;
+    articleIdIs: string;
+    areWeEditing: boolean;
 }
 
 const myInitialState: MyState = {
     sidenavIsOpen: false,
     // sidenavIsOpen: true,
     isLoading: false,
+    articleIdIs: '', // null,
+    areWeEditing: false,
 }
 
 export function UIReducer(
@@ -97,10 +103,45 @@ export function UIReducer(
             return myAssignedObjectToReturnState;
 
 
+        case fromUIActions.TELLING_YOU_MY_ID:
+/*
+            console.log('TELLING_YOU_MY_ID action.myPayload.myIdIsInAction ', action.myPayload.myIdIsInAction); // undefined  :o(
+*/
+/*
+            console.log('TELLING_YOU_MY_ID action.myPayload.articleIdIs ', action.myPayload.articleIdIs); // TODO << NO! What? :o\
+*/
+/*
+Remove {} object biz:
+ */
+            console.log('TELLING_YOU_MY_ID action.myPayload (NO {} Object biz) ', action.myPayload); // Works. Don't know why the other don't.
 
-        // /*****************
-            // return state;
+            return {
+                ...state,
+                // articleIdIs: '5f159fd168ae3270489266b1', // yeah hard-coded debugging, worked
 
+                articleIdIs: action.myPayload, //.myIdIsInAction, // << NAME MISMATCH = NOT OK. :o(
+                // articleIdIs: action.myPayload.articleIdIs, // << NAME MATCH = OK
+                /*
+                Sheesh! ("Cost me an hour")
+                The DANGED name has to MATCH
+                 */
+
+                /* No. Not the Action name >> TellingYouMyId.myPayload
+                We use 'action', passed in to this
+                 reducer function(), to reference the Action.
+                 */
+            }
+
+
+        case fromUIActions.TELLING_YOU_IF_WE_ARE_EDITING:
+            return {
+                ...state,
+                areWeEditing: action.myPayload.areWeEditingInAction,
+            }
+
+        // /***********************************************
+        // /***********************************************
+        // /***********************************************
 
         case abracadabra: // << OLDER CODE
             // -ORIG-fromUIActions.SET_SIDENAV_TO_OPPOSITE_STATE
@@ -156,9 +197,6 @@ export function UIReducer(
             // /FROM EMAIL-FABRICATOR
 
 
-
-
-
             // Yucky if logic
             if (state.sidenavIsOpen === true) {
                 console.log('1A-2020 sidenavbiz set to TRUE state ', state);
@@ -178,11 +216,20 @@ ERROR TypeError: Cannot assign to read only property 'sidenavIsOpen' of object '
                 }
             }
             return myStateToBeUpdatedACopyObjectViaAssign;
+            // /case: ABRACADABRA whack stuff
+        // /***********************************************
+        // /***********************************************
+        // /***********************************************
+
 
         default:
             return state;
     }
 }
+
+
+// /******    UTILITY FUNCTIONS   *******************
+
 
 export function getIsSidenavOpen(statePassedIn: MyState) {
     console.log('8888 UI Reducer - getIsSidenavOpen() - statePassedIn ', statePassedIn);
@@ -194,7 +241,18 @@ export function getIsLoading(statePassedIn: MyState) {
     return statePassedIn.isLoading;
 }
 
-// *****  From OTHER Project  ************************
+export function getArticleIdIs(statePassedIn: MyState) {
+    return statePassedIn.articleIdIs;
+}
+
+export function getAreWeEditing(statePassedIn: MyState) {
+    return statePassedIn.areWeEditing;
+}
+
+
+
+// *****  CHEAT SHEET  *****
+// From OTHER Project  ************************
 /* EXAMPLE USE OF .SELECT()
     this.myUIIsLoadingStore$ = this.myStore.select(fromRoot.getIsLoading);
     src/app/auth/login/login.component.ts:197 ngOnInit()

@@ -28,3 +28,7 @@ export const getUiState = createFeatureSelector<fromUi.MyState>('uiPartOfStore')
 export const getIsSidenavOpen = createSelector(getUiState, fromUi.getIsSidenavOpen)
 
 export const getIsLoading = createSelector(getUiState, fromUi.getIsLoading)
+
+export const getArticleIdIs = createSelector(getUiState, fromUi.getArticleIdIs);
+
+export const getAreWeEditing = createSelector(getUiState, fromUi.getAreWeEditing);

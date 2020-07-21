@@ -1,9 +1,29 @@
 import { Action } from '@ngrx/store';
 
+/* *************************
+    INTERFACE DEFINITION
+   *************************
+   Copy here in Actions, from Reducer,
+   for *convenience*. cheers.
+
+export interface MyState {
+    sidenavIsOpen: boolean;
+    isLoading: boolean;
+    articleIdIs: string;
+    areWeEditing: boolean;
+}
+ */
+
 export const SET_SIDENAV_TO_OPPOSITE_STATE = '[UI] Set Sidenav To Opposite State';
 
 export const START_LOADING = '[UI] Start Loading';
 export const STOP_LOADING = '[UI] Stop Loading';
+
+/*
+ArticleDetailComponent (viz. "parent" ArticlesComponent, and <router-outlet> and on-activate())
+ */
+export const TELLING_YOU_MY_ID = '[UI] Telling You My Id';
+export const TELLING_YOU_IF_WE_ARE_EDITING = '[UI] Telling You If We Are We Editing'
 
 export class SetSidenavToOppositeState implements Action {
     readonly type = SET_SIDENAV_TO_OPPOSITE_STATE;
@@ -25,10 +45,49 @@ export class StopLoading implements Action {
     }
 }
 
+export class TellingYouMyId implements Action {
+    readonly type = TELLING_YOU_MY_ID;
+
+    constructor(
+        public myPayload: string, // remove {} object biz.
+/*
+    public myPayload: {
+        // myIdIsInAction: string, // << Q. ? Does name have to match?
+        articleIdIs: string, // << A. It sure as hell does!
+    }
+*/
+    ) { }
+}
+/*
+NOTE:
+// THIS is what the action data looks like:
+{
+  myPayload: '5af746cea7008520ae732e2c',
+  type: '[UI] Telling You My Id'
+}
+
+// I guess I thought it was going to be like this instead:
+{
+  myPayload: { myIdIsInAction: '5af746cea7008520ae732e2c' },
+  type: '[UI] Telling You My Id'
+}
+ */
+
+export class TellingYouIfWeAreEditing implements Action {
+    readonly type = TELLING_YOU_IF_WE_ARE_EDITING;
+    constructor(
+        public myPayload: {
+            areWeEditingInAction: boolean,
+        }
+    ) {  }
+}
+
 export type UIActions =
-    SetSidenavToOppositeState
+      SetSidenavToOppositeState
     | StartLoading
-    | StopLoading;
+    | StopLoading
+    | TellingYouMyId
+    | TellingYouIfWeAreEditing;
 
 // *****  Bit of Cheatsheet. From OTHER Project  ************************
 /* EXAMPLE USE OF .SELECT()

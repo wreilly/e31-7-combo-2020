@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, OnChanges } from '@angular/core';
 
 /*
 https://stackoverflow.com/questions/41678356/router-navigate-does-not-call-ngoninit-when-same-page
@@ -6,10 +6,15 @@ https://stackoverflow.com/questions/41678356/router-navigate-does-not-call-ngoni
 import { Router } from '@angular/router'; // ActivatedRoute
 /* re: <router-outlet on-activate=""> see:
 https://medium.com/@sujeeshdl/angular-parent-to-child-and-child-to-parent-communication-from-router-outlet-868b39d1ca89
-
  */
+
+// *** NGRX STUFF ***
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../store/app.reducer';
+
 import { Article } from './article.model';
 import { ArticleService } from './article.service';
+import {Observable} from "rxjs";
 
 
 @Component({
@@ -17,7 +22,7 @@ import { ArticleService } from './article.service';
   templateUrl: './articles.component.html',
   styleUrls: ['./articles.component.scss']
 })
-export class ArticlesComponent implements OnInit, OnDestroy {
+export class ArticlesComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
 
   articleMostRecentDisplayBE: {
     _id: string,
@@ -26,7 +31,36 @@ export class ArticlesComponent implements OnInit, OnDestroy {
   };
   articleMostRecentDisplayFE: Article;
 
+  /* ========================================
+   *  NGRX Experiment  *
+   * In lieu of ( ? ) <router-outlet on-activate="">
+   We'll try Store .dispatch() and .select(),
+   * 1) ArticleDetailComponent
+   * We'll do .dispatch() I think in same place
+   * where we did the .emit(), near bottom
+   * of .getArticle()
+   *
+   * 2) ArticlesComponent
+   * .select()
+   * now needs to get assigned to Observable$,
+   *  >> e.g.  articleToEditIdObservable$  <<
+   * probably in OnInit() or similar... t.b.d.
+   * NOT where we did the .subscribe(), which
+   * was down in the myOnActivate(). I think.
+   *
+   * WUL
+ (I think I can leave in most of the existing code, e.g. @Output etc.
+ * but I probably need to turn off the on-activate() biz ?) hmm. just so we don't get
+ * competing (or redundant therefore untestable)
+ *  boolean values & etc.
+ *
+ * We'll see.
+ * =========================================
+ * */
+
   articleToEditId: string;
+  articleToEditIdObservable$: Observable<string>; // << NGRX Jazz
+
   weAreEditing = false;
   // weAreEditing = true;
 
@@ -34,6 +68,7 @@ export class ArticlesComponent implements OnInit, OnDestroy {
       private myArticleService: ArticleService,
       // myActivatedRoute: ActivatedRoute,
       private myRouter: Router,
+      private myStore: Store,
   ) {
     console.log('CONSTRUCTOR. BASTA.');
     this.myRouter.routeReuseStrategy.shouldReuseRoute = () => false;
@@ -102,22 +137,71 @@ https://angular.io/api/router/NavigationExtras#state
       // No need for ngOnInit() logic.
     }
 
+    /*  =====   NGRX STUFF   =========
+Huh. This is NOT WORKING. "undefined" in Store. :o(
+At least not here in ngOnInit().
+NEITHER in  ngAfterViewInit() !
+NOR in ngOnChanges() !
+"oh-for-three" :o(
+
+Next up: Back to <router-outlet on-activate>
+
+Bit later. (Okay, *quite* a bit later):
+Hah.
+Issue was not, where in this ArticlesComponent do I invoke it.
+No. Turns out, invoking it right here in ngOnInit() is FINE.
+Issue was, in my Reducer (and Actions), the myPayload: { string }
+did not be happy, whereas myPayload: string was FINE. (odd. frustrating)
+o well!
+     */
+
+    // WORKING LIKE A CHAMP
+    // Hmm, gets it too soon ! o la
+    // WRONG: << do not run here in OnInit.
+    // Instead WE DO STILL RUN IT below IN ROUTER-OUTLET ON-ACTIVATE
+    // Y?
+    // Because we DON'T want that Article ID UNTIL we do get
+    // the ArticleDetailComponent. NOT the other kinds of Components
+    // that can appear via this router-outlet. cheers.
+/*
+    this.articleToEditIdObservable$ = this.myStore.select(fromRoot.getArticleIdIs); // o well
+*/
+
 
   } // /ngOnInit()
 
-/*
+
   ngAfterViewInit() {
+    console.log('AFTER VIEW INIT');
+    /*  =====   NGRX STUFF   =========
+    NEW NEWS: This does work here, but, seems better to put/leave in ngOnInit(). cheers.
+OLD NEWS: Huh. This is NOT WORKING. "undefined" in Store. :o(
+ */
+  //  this.articleToEditIdObservable$ = this.myStore.select(fromRoot.getArticleIdIs); // << yeah worked
+
+/*
     console.log('AFTER VIEW Kids 01 & this.articleMostRecentDisplayFE ', this.articleMostRecentDisplayFE);
     if (!this.articleMostRecentDisplayFE) {
       console.log('AFTER VIEW Kids 02');
       this.getArticleMostRecent(); // ?? NO. does not run "navigating" back to /articles ?
     }
-  }
 */
 
-/*
+  }
+
+
+
   ngOnChanges() {
-    /!*
+      console.log('NG ON CHANGES()'); // << Hmm. not seen. hmm
+          /*  =====   NGRX STUFF   =========
+          ngOnChanges seems to NOT be the place to mess with this.
+          cheers.
+
+Huh. This is NOT WORKING. "undefined" in Store. :o(
+ */
+/*  this.articleToEditIdObservable$ = this.myStore.select(fromRoot.getArticleIdIs);*/
+
+/*
     Better explanation:
     "Angular calls the ngOnChanges() method of a component or directive whenever it detects changes to the input properties."
     https://angular.io/guide/lifecycle-hooks#onchanges
@@ -131,8 +215,10 @@ https://angular.io/api/router/NavigationExtras#state
       console.log('ON CHANGES Kids 02');
       this.getArticleMostRecent(); // ?? NO. nothin' !! ??
     }
-  }
-*/
+    */
+
+  } // /ngOnChanges()
+
 
   // NOT USED, NOT CALLED
   setWeAreEditingToTrue() {
@@ -164,7 +250,9 @@ https://angular.io/api/router/NavigationExtras#state
 */
     // but this ain't working on the template. something to do with re-rendering (?) of stuff
     // through new URL "/edit" and router-outlet and all that jazz.
-  }
+
+  } // /setWeAreEditingToTrue() // << NOT CALLED
+
 
   myOnActivate(componentReferenceFromRouterOutlet) {
     // https://medium.com/@sujeeshdl/angular-parent-to-child-and-child-to-parent-communication-from-router-outlet-868b39d1ca89
@@ -180,12 +268,36 @@ Now handling TWO different events/pieces-of-info:
       // Only ArticleDetailComponent has that property ^^
       // The other possible Components passed to this <router-outlet> won't have it
 
+      /* ===   NGRX STUFF   ==========
+
+WRONG:
+Glory be! Yes! The Store allows me to NOT have to deal with this
+on-activate() passing of data from child up to parent
+through a router-outlet.
+I mean, it worked fine, but, with Store, I get to SKIP IT.
+See instead simply ngOnInit().
+cheers.
+       */
+     this.articleToEditIdObservable$ = this.myStore.select(fromRoot.getArticleIdIs);
+     // WRONG: << not using here, not needed to be run from here.
+      // YES WE DO STILL RUN IT FROM HERE IN ROUTER-OUTLET ON-ACTIVATE
+      // Y?
+      // Because we DON'T want that Article ID UNTIL we do get
+      // the ArticleDetailComponent. NOT the other kinds of Components
+      // that can appear via this router-outlet. cheers.
+
+  /* SUPERSEDED BY NGRX  ???
+  Wahat ?? hmm, we still do need this apparaently ? why? TODONE figure out 2020-07-21-0852 cheers
+  * */
       // tellingYouMyId is an EventEmitter. You can subscribe to its events (stream)
+/*
       componentReferenceFromRouterOutlet.tellingYouMyId.subscribe(
           (dataWeGet) => {
             this.articleToEditId = dataWeGet; // MongoDB _id
           }
       )
+*/
+
     }
 
     // 2.
