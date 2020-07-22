@@ -12,6 +12,9 @@ import { Store } from '@ngrx/store';
 
 import * as UIActions from '../../shared/store/ui.actions'; // Here, we .dispatch(), yes.
 import * as fromRoot from '../../store/app.reducer'; // But we do not need/do .select(). No.
+// Well, not till now: .select() to find out if we are editing!  This Component "needs to know"
+// Before, we were just sending out that info (are we editing or not) to other (parent) Component to know.
+// cheers
 
 @Component({
     selector: 'app-article-detail',
@@ -78,6 +81,8 @@ Now handling TWO different events/pieces-of-info:
     urlHereToSeeWhetherEditingBehaviorSubject$: BehaviorSubject<string> = new BehaviorSubject<string>('FAKEURL-INITIALVALUE-BEHAVIORSUBJECT');
     urlHereAsObservableFromBehaviorSubject$ = this.urlHereToSeeWhetherEditingBehaviorSubject$.asObservable();
     urlHere: string;
+
+    areWeEditingObservable$: Observable<boolean>;
     areWeEditing = false;
 
     // DOT.NEXT() (not "DOT.PIPE()"/ASYNC) << ?
@@ -159,6 +164,9 @@ Now handling TWO different events/pieces-of-info:
 
 
     ngOnInit() {
+
+        this.areWeEditingObservable$ = this.myStore.select(fromRoot.getAreWeEditing);
+            
         this.getArticle();
 
 /* NO. (dummy)

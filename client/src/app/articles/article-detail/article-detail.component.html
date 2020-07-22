@@ -11,8 +11,13 @@
     OBJECT for article, not array for article:
 -->
     <mat-card
+            *ngIf="!(areWeEditingObservable$ | async)"
+    >
+<!--
+    <mat-card
             *ngIf="!areWeEditing"
     >
+-->
         <mat-card-title>
             {{ articleHereInDetailPage.articleTitle}}
         </mat-card-title>
@@ -35,8 +40,13 @@
     OBJECT for article, not array for article:
 -->
     <mat-card
+            *ngIf="areWeEditingObservable$ | async"
+    >
+<!--
+    <mat-card
             *ngIf="areWeEditing"
     >
+-->
         <mat-card-title>
             {{ articleHereInDetailPage.articleTitle}}
         </mat-card-title>
