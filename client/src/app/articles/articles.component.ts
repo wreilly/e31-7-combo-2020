@@ -15,6 +15,7 @@ import * as fromRoot from '../store/app.reducer';
 import { Article } from './article.model';
 import { ArticleService } from './article.service';
 import {Observable} from "rxjs";
+import {ArticleDetailComponent} from "./article-detail/article-detail.component";
 
 
 @Component({
@@ -58,10 +59,11 @@ export class ArticlesComponent implements OnInit, OnDestroy, AfterViewInit, OnCh
  * =========================================
  * */
 
-  articleToEditId: string;
+  // articleToEditId: string;
   articleToEditIdObservable$: Observable<string>; // << NGRX Jazz
 
-  weAreEditing = false;
+  weAreEditingObservable$: Observable<boolean>; // More Jazz
+  // weAreEditing = false;
   // weAreEditing = true;
 
   constructor(
@@ -254,7 +256,54 @@ Huh. This is NOT WORKING. "undefined" in Store. :o(
   } // /setWeAreEditingToTrue() // << NOT CALLED
 
 
-  myOnActivate(componentReferenceFromRouterOutlet) {
+
+
+      myOnActivate(componentReferenceFromRouterOutlet) {
+
+/* WEBSTORM - "INFER TYPE FROM USAGE"
+Automatically discovered this:
+
+  myOnActivate(componentReferenceFromRouterOutlet: { tellingYouMyId: any; weAreEditingNow: { subscribe: (arg0: (dataWeGet: any) => void) => void; }; }) {
+*/
+/* COMMENTS on above
+That (I guess?) matches one (ok) but not all (!?) of the
+possible Components that can be loaded via this
+router-outlet. Hmm.
+- Matches (I guess?): ArticleDetailComponent.
+- Does not match: ArticleAddComponent, ArticleListComponent, ArticlesComponent. Hmm.
+
+Doesn't break or complain though. hmm.
+
+TEST: 01 << Nope
+I just put this artificially, benignly, on ArticleListComponent:
+    @Output()
+    testOutputDoesNotDoAnythingOnList: string;
+Result, as t'were:
+Well, nothing happened. WebStorm did not suggest a new/different
+type for the myOnActivate() parameter.
+Since it had put in the two "@Output()" I had on ArticleDetailComponent,
+I thought introducing another @Output() onto
+another Component that comes through this router-outlet, WebStorm
+might suggest the type now included that, too. Did not. Hmm, etc.
+
+TEST 02 << Nope
+Okay, tried similar to above, but this time also on ArticleDetailComponent.
+    // 3. TEST
+    @Output()
+    testOutputDoesNotDoAnythingOnDetail: string;
+Result: No change, not affected by it.
+
+FINDING
+- Okay, only now do I (finally) see: what WebStorm is reading is not
+the possible Components that come through this router-outlet (too crazy).
+It is just reading what is right below here, inside this method.
+easy-peasy. all that is down there (have a look) is the stuff mentioned
+in the type: "tellingYouMyId" and "weAreEditingNo" etc.
+OK.
+ */
+
+
+
     // https://medium.com/@sujeeshdl/angular-parent-to-child-and-child-to-parent-communication-from-router-outlet-868b39d1ca89
     console.log('componentReferenceFromRouterOutlet ', componentReferenceFromRouterOutlet);
     /* N.B.
@@ -263,23 +312,46 @@ Now handling TWO different events/pieces-of-info:
 2. User has now clicked on that /edit URL, so shift to weAreEditing to TRUE. (Use that to disable the Edit link)
 */
 
+        // 1.A. << NGRX now, no more EventEmitter.
+        // Therefore, more better "if" test is based on
+        // WHICH COMPONENT TYPE, << good
+        // not some particular "flag" property on it. << bit hack-y
+        if(componentReferenceFromRouterOutlet instanceof ArticleDetailComponent) {
+          /* THX, StackOverflow!
+          if(componentRef instanceof ChildWithWorksMethodComponent){ ...
+          https://stackoverflow.com/questions/45720655/access-router-outlet-component-from-parent
+           */
+
+/* THIS WORKED, BUT IS/WAS CLUNKY. Especially now with NGRX I no
+longer even use this ".tellingYouMyId" EventEmitter.
     // 1.
     if(componentReferenceFromRouterOutlet.tellingYouMyId) {
+*/
       // Only ArticleDetailComponent has that property ^^
       // The other possible Components passed to this <router-outlet> won't have it
 
+
+
       /* ===   NGRX STUFF   ==========
 
-WRONG:
-Glory be! Yes! The Store allows me to NOT have to deal with this
+WRONG >> Glory be! Yes! The Store allows me to NOT have to deal with this
 on-activate() passing of data from child up to parent
 through a router-outlet.
-I mean, it worked fine, but, with Store, I get to SKIP IT.
-See instead simply ngOnInit().
+I mean, it worked fine, but, with Store, I get to SKIP IT. << WRONG
+See instead simply ngOnInit(). << WRONG
 cheers.
+
+UPDATE. We *do* have to still do this down here in myOnActivate().
+        *Not* up in ngOnInit().
+        Q. Y?
+        A. We still need to trigger all this logic upon the router-outlet
+        sending in/loading whatever (child) Component, and only *then*,
+         "(up)on-activate(ing)" that (child) Component,
+         *then* we proceed with this kind of logic.
+         Not just "on-init" of this (parent) ArticlesComponent. No.
        */
      this.articleToEditIdObservable$ = this.myStore.select(fromRoot.getArticleIdIs);
-     // WRONG: << not using here, not needed to be run from here.
+     // WRONG: >> not using here, not needed to be run from here.
       // YES WE DO STILL RUN IT FROM HERE IN ROUTER-OUTLET ON-ACTIVATE
       // Y?
       // Because we DON'T want that Article ID UNTIL we do get
@@ -287,10 +359,10 @@ cheers.
       // that can appear via this router-outlet. cheers.
 
   /* SUPERSEDED BY NGRX  ???
-  Wahat ?? hmm, we still do need this apparaently ? why? TODONE figure out 2020-07-21-0852 cheers
+  What ?? hmm, we still do need this apparently ? why? TODONE figure out 2020-07-21-0852 cheers
   * */
       // tellingYouMyId is an EventEmitter. You can subscribe to its events (stream)
-/*
+/* YEAH, THIS IS (NOW) SUPERSEDED BY NGRX. WAS WORKING FINE. JUST SO YOU KNOW.
       componentReferenceFromRouterOutlet.tellingYouMyId.subscribe(
           (dataWeGet) => {
             this.articleToEditId = dataWeGet; // MongoDB _id
@@ -300,25 +372,46 @@ cheers.
 
     }
 
+
+        // 2.A. (SAME COMMENT as above at "1.A.") << NGRX now, no more EventEmitter.
+        // Therefore, more better "if" test is based on
+        // WHICH COMPONENT TYPE, << good
+        // not some particular "flag" property on it. << bit hack-y
+        if(componentReferenceFromRouterOutlet instanceof ArticleDetailComponent) {
+          /* THX, StackOverflow!
+          if(componentRef instanceof ChildWithWorksMethodComponent){ ...
+          https://stackoverflow.com/questions/45720655/access-router-outlet-component-from-parent
+           */
+          /*
     // 2.
     if(componentReferenceFromRouterOutlet.weAreEditingNow) {
-      // Only ArticleDetailComponent has that property ^^
+*/
+      // Only ArticleDetailComponent has that property ^^ << bit hack-y
       // The other possible Components passed to this <router-outlet> won't have it
 
+          /*  ===   NGRX STUFF
+
+           */
+          this.weAreEditingObservable$ = this.myStore.select(fromRoot.getAreWeEditing);
+
+/* NO LONGER USING. Now NGRX
       // weAreEditingNow is an EventEmitter. You can subscribe to its events (stream)
       componentReferenceFromRouterOutlet.weAreEditingNow.subscribe(
           (dataWeGet) => {
             this.weAreEditing = dataWeGet; // boolean
           }
       )
-    }
+*/
+    } // if()
 
   } // /myOnActivate (from RouterOutlet)
+
 
   hideArticleMostRecent() {
     // HACK-Y!
     this.articleMostRecentDisplayFE = null;
   }
+
 
   getArticleMostRecent() {
     this.myArticleService.getArticleMostRecent()
@@ -362,7 +455,14 @@ articleUrl_name: undefined}
   } // getArticleMostRecent()
 
   ngOnDestroy() {
+
+/* NO LONGER USING NOW NGRX
     this.weAreEditing = false; // << Needed on "destroy"? Since class property sets it to default of false ?
+*/
+
+// Hmm, instead of here in ngOnDestroy() of (parent) ArticlesComponent,
+// will try first in (child) ArticleDetailComponent
+    // this.myStore.dispatch() ... // << Nah ( ? )
   }
 
 }

@@ -48,14 +48,26 @@ export class StopLoading implements Action {
 export class TellingYouMyId implements Action {
     readonly type = TELLING_YOU_MY_ID;
 
+    /*
+    O LA
+    I had/suffered-from WRONG CONSTRUCTOR SIGNATURE.
+    Ouch-y
+     */
+
     constructor(
+/* Yeah, simplified I got to work. Okay, but we can do better. see below.
         public myPayload: string, // remove {} object biz.
-/*
+*/
+// Back to "Plan A."
     public myPayload: {
+/* Initial understanding:
         // myIdIsInAction: string, // << Q. ? Does name have to match?
         articleIdIs: string, // << A. It sure as hell does!
-    }
 */
+        myIdIsInAction: string, // << Q. ? Does name have to match? WE SHALL (RE)-SEE!
+        // articleIdIs: string, // << A. dunno (YET)
+    }
+
     ) { }
 }
 /*
@@ -68,7 +80,7 @@ NOTE:
 
 // I guess I thought it was going to be like this instead:
 {
-  myPayload: { myIdIsInAction: '5af746cea7008520ae732e2c' },
+  myPayload: { myIdIsInAction: '5af746cea7008520ae732e2c' }, // << N.B.!!!
   type: '[UI] Telling You My Id'
 }
  */

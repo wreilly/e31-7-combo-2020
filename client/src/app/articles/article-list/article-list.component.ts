@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Inject } from '@angular/core';
+import { Component, OnInit, Input, Output, Inject } from '@angular/core';
 // import { DOCUMENT } from '@angular/common'; // << No longer needed
 // import {Observable} from "rxjs"; // << not needed here after all
 /* CRAP
@@ -27,6 +27,9 @@ export class ArticleListComponent implements OnInit {
     latestArticleDate: Date;
     latestArticleAnchorId: string; // articles[articles.length - 1].articleId_name
     articlesCount: number;
+
+    @Output()
+    testOutputDoesNotDoAnythingOnList: string;
 
     @Input('articleListOnWelcomePage')
     articleListOnWelcomePage: boolean; // From WelcomeComponent

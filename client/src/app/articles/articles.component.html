@@ -45,6 +45,17 @@
                  /articles/5af746cea7008520ae732e2c/edit
         -->
         <a
+                *ngIf="(articleToEditIdObservable$ | async) && !(weAreEditingObservable$ | async)"
+                mat-tab-link
+                routerLink="{{(articleToEditIdObservable$ | async)}}/edit"
+                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: true
+                            }}"
+        >
+            Edit Article <!--NGRX {{weAreEditingObservable$ | async}}  (weAreEditingObservable$ = false)-->
+        </a>
+<!--
+        <a
                 *ngIf="(articleToEditIdObservable$ | async) && !weAreEditing"
                 mat-tab-link
                 routerLink="{{(articleToEditIdObservable$ | async)}}/edit"
@@ -52,8 +63,9 @@
                             articleMostRecentHideRouterLinkState: true
                             }}"
         >
-            Edit Article <!-- NGRX {{articleToEditIdObservable$ | async}}  -->
+            Edit Article ORIG &lt;!&ndash; NGRX {{articleToEditIdObservable$ | async}}  &ndash;&gt;
         </a>
+-->
 <!--
             <a
                     *ngIf="articleToEditId && !weAreEditing"
@@ -80,11 +92,19 @@
         </a>
 -->
         <a
+                *ngIf="(articleToEditIdObservable$ | async) && (weAreEditingObservable$ | async)"
+                mat-tab-link [disabled]="true"
+        >
+            (Editing) <!--NGRX (weAreEditingObservable$ = true)-->
+        </a>
+<!--
+        <a
                 *ngIf="(articleToEditIdObservable$ | async) && weAreEditing"
                 mat-tab-link [disabled]="true"
         >
-            (Editing) <!-- NGRX -->
+            (Editing) ORIG &lt;!&ndash; NGRX &ndash;&gt;
         </a>
+-->
 <!--
         <a
                 *ngIf="articleToEditId && weAreEditing"

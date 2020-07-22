@@ -9,8 +9,9 @@ import {url} from "inspector";
 */
 // ** NGRX STUFF **
 import { Store } from '@ngrx/store';
-import * as fromRoot from '../../store/app.reducer';
-import * as UIActions from '../../shared/store/ui.actions';
+
+import * as UIActions from '../../shared/store/ui.actions'; // Here, we .dispatch(), yes.
+import * as fromRoot from '../../store/app.reducer'; // But we do not need/do .select(). No.
 
 @Component({
     selector: 'app-article-detail',
@@ -56,14 +57,22 @@ Now handling TWO different events/pieces-of-info:
 1. Here is the _id for the article in ArticleDetailComponent. (Use that _id to set the /:_id/edit link)
 2. User has now clicked on that /edit URL, so shift to weAreEditing to TRUE. (Use that to disable the Edit link)
 */
+/* NO LONGER. NOW NGRX.
     // 1.
     @Output()
     tellingYouMyId: EventEmitter<string> = new EventEmitter<string>();
+*/
 
+/* NO LONGER. NOW NGRX.
     // 2.
     @Output()
     weAreEditingNow: EventEmitter<boolean> = new EventEmitter<boolean>();
+*/
 
+/*    // 3. TEST (see myOnActivate in ArticlesComponent)
+    @Output()
+    testOutputDoesNotDoAnythingOnDetail: string;
+    */
 
     urlHereToSeeWhetherEditingObservable$: Observable<string>; // ugh worked with | async, but *not* making it go in TS logic. urgh
     urlHereToSeeWhetherEditingBehaviorSubject$: BehaviorSubject<string> = new BehaviorSubject<string>('FAKEURL-INITIALVALUE-BEHAVIORSUBJECT');
@@ -145,7 +154,9 @@ Now handling TWO different events/pieces-of-info:
         }
 */
         // this.areWeEditing = true; // hard-code it, kids!
-    }
+
+    } // /constructor() {}
+
 
     ngOnInit() {
         this.getArticle();
@@ -192,6 +203,15 @@ Maybe this is also the time to see what the d-@#$%^&-d URL is, whether we are /e
 
         // OH YEAH BABY-KINS! *** OH YEAH ***  << .SUBSCRIBE() WHERE IT'S AT
         this.urlHereToSeeWhetherEditingObservable$.subscribe(
+            /*
+            (above) got initialized in the constructor(), off the ActivatedRoute 'url'
+            Here in .getArticle() immediately called in ngOnInit(),
+            we (apparently) can immediately .subscribe() to it, get that URL.
+            Goal is to test: "Does it contain /edit at the end ?"
+            From that we set "areWeEditing" to T or F. bueno.
+            cheers
+             */
+
             (urlFromActivatedRoute) => {
                 console.log('GetArticle. .Subscribe. off urlHere$. we get: urlFromActivatedRoute ', urlFromActivatedRoute); // << YES. Finally fucking works. 5af746cea7008520ae732e2c
                 this.urlHereToSeeWhetherEditingBehaviorSubject$.next(urlFromActivatedRoute);
@@ -202,11 +222,35 @@ Maybe this is also the time to see what the d-@#$%^&-d URL is, whether we are /e
                     // https://regexr.com/  https://regex101.com/  :)
                     console.log('RegEx SUBSCRIBE WORKS WORKS WORKS passed we are editing seems');
 
+                    /*  ===   NGRX STUFF
+Hmm, is this point, where we *just got* the logic of '/edit' off the URL,
+     is this point "too early" ( ? ) to do this Store Action Dispatch ? (Hmm, why would it be?)
+Should I instead do it further along, where the EventEmitter did its .emit() ? (Hmm)
+(That "further along" point is near the end of .getArticle(). Same place we .dispatch() the article ID to the Store. cheers)
+
+This seems to be working FINE for the FIRST time through, but navigating to bring up a 2nd
+ArticleDetail to "edit" seems to be not quite right. May be owing to "this point" vs. another,
+May just be something else. W-I-P.
+
+btw, related question: just *where/when* do we .dispatch the FALSE action that we are No Longer Editing, hey?
+For now: in the (parent) ArticleComponent's ngOnDestroy() ? hmm
+Soon-(ish): Or of course (in (near) future), could be off the (not yet created) <form> submit from the ArticleDetailComponent in "editMode". Guess that would be a .dispatch to the Store, which would of course get read/known/updated
+in the (parent) ArticlesComponent, which would then "do the right thing" to hide the "(Editing)" nav tab bar thing. cheers.
+                     */
+                    this.myStore.dispatch(
+                        new UIActions.TellingYouIfWeAreEditing(
+                            { areWeEditingInAction: true} // AH-HAH moment. Got to match the danged constructor signature, kids!
+                        )
+                    );
+
+
                     // =================================================
+/* NO LONGER (GOING TO BE) USED. NGRX instead
                     this.areWeEditing = true; // << YES this logic works, etc. bueno.
+*/
                     // Above is used LOCALLY here on the ArticleDetailComponent HTML as flag
 
-                    // Take FOUR: ("the charm") :)? << NO. Hitting dumb error "Expression Changed" = TOO SOON.
+                    // Take FOUR: << NO. >>  ("the charm") :)? << NO. Hitting dumb error "Expression Changed" = TOO SOON.
                     // Below is used to SEND TO PARENT that we are editing,
                     // to disable that "Edit Article" link up on ArticlesComponent
 /* NOT HERE
@@ -221,7 +265,7 @@ Maybe this is also the time to see what the d-@#$%^&-d URL is, whether we are /e
 
                 }
 
-                // ?? Do we need to return anything?  Didn't break stuff. Hmm.
+                // ?? Do we need to return anything?  Didn't break stuff having it return. Hmm.
                 return urlFromActivatedRoute;
             }
         ); // /.subscribe() urlHere...Editing$
@@ -328,8 +372,16 @@ _id: "5af746cea7008520ae732e2c"
                                * Instead of .emit(), we'll use
                                *  Store.dispatch()
                              */
+
+/* WRONG CONSTRUCTOR SIGNATURE ! (o la) ("Cost me an hour")
                             this.myStore.dispatch(new UIActions.TellingYouMyId(articleIdHereInDetailPage));
+*/
+                            this.myStore.dispatch(new UIActions.TellingYouMyId(
+                                {myIdIsInAction: articleIdHereInDetailPage}
+                            ));
                             // SENDING TO NGRX STORE.
+
+
                             /* Seen in Redux Tool: yes the Action data look good:
                             {
   myPayload: '5af746cea7008520ae732e2c',
@@ -352,7 +404,9 @@ But then, sadly, the Store 'state' somehow ( ? ) *loses* this property of articl
                             // TO ITS VALUE. :o)
 
                             // Take three: ("the charm") :)  We actually have the article back from the BE Service. bueno
+/*  NO LONGER. NOW NGRX. THIS DID WORK FINE.
                             this.tellingYouMyId.emit(articleIdHereInDetailPage);
+*/
                             // SENDING TO PARENT ARTICLES.COMPONENT
 
 
@@ -362,10 +416,18 @@ But then, sadly, the Store 'state' somehow ( ? ) *loses* this property of articl
                                                     // Take FIVE: ("the charm") :)?
                                                     // Below is used to SEND TO PARENT that we are editing,
                                                     // to disable that "Edit Article" link up on ArticlesComponent
+
+/* No Longer
                                                     if (this.areWeEditing) { // << But, need to check difference between /:_id and /:_id/edit !
+*/
+
+/* NO LONGER NOW NGRX
                                                         this.weAreEditingNow.emit(true);
                                                         // SENDING TO PARENT ARTICLES.COMPONENT
-                                                    }
+*/
+/* No Longer
+                                                    } // /if()
+*/
                                                     // =================================================
 
                                                 }
@@ -407,7 +469,14 @@ But then, sadly, the Store 'state' somehow ( ? ) *loses* this property of articl
     }
 
     ngOnDestroy() {
+/* No Longer
         this.areWeEditing = false;
+*/
+
+        // Will try first here in ngOnDestroy() of (child) ArticleDetailComponent
+        // instead of over in (parent) ArticlesComponent
+        this.myStore.dispatch(new UIActions.TellingYouIfWeAreEditing({areWeEditingInAction: false}));
+
     }
 
 }
