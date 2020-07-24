@@ -46,7 +46,7 @@ _id: "5f1364e304e544a462218215"
               setTimeout(
                   ()=> {
                       this.myStore.dispatch(new UIActions.StopLoading());                  },
-                  2000);
+                  1000);
 
           }
           ), // tap()

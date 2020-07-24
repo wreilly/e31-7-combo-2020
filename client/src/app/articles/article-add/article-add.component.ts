@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import {FormGroup, FormControl, Validators, Form, FormGroupDirective, NgForm} from '@angular/forms';
-import { Store } from '@ngrx/store';
+import {Component, OnInit} from '@angular/core';
+import {FormControl, FormGroup, FormGroupDirective, NgForm, Validators} from '@angular/forms';
+import {Store} from '@ngrx/store';
 import * as fromRoot from '../../store/app.reducer';
-import { Observable } from 'rxjs';
+import {Observable} from 'rxjs';
 
-import { Article, Category } from '../article.model';
+import {Article, Category} from '../article.model';
 
-import { ArticleService } from '../article.service';
+import {ArticleService} from '../article.service';
 
 
 import {ErrorStateMatcher} from '@angular/material/core';
@@ -23,7 +23,7 @@ This "matcher" is used because w. Angular Material and form reset(), the default
 With the custom matcher, we can omit that default criterion.
  */
 
-class MyErrorStateMatcher implements ErrorStateMatcher {
+export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
@@ -37,6 +37,59 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
         https://itnext.io/materror-cross-field-validators-in-angular-material-7-97053b2ed0cf
  */
 
+export class MyCategoriesEnumLikeClass {
+
+  // FREE RIDE EXPERIMENT ****  UTILITIES ETC :o)  ******
+// NOT USED NOW. Experiment's over, kids.
+/*
+  public myHowManyCharsTypedFromEnumLikeClass(): number {
+    // HARD-CODED AS ALL GET OUT
+    // But it DID WORK, to get that value of '20' over to ArticleDetailComponent. cheers
+    /!*
+        howMany = (
+            this.addArticleFormGroup.get(formControlNamePassedIn).value
+            &&
+            this.addArticleFormGroup.get(formControlNamePassedIn).value.length
+        );
+    *!/
+    return 20;
+  }
+*/
+
+  // /FREE RIDE EXPERIMENT ****  UTILITIES ETC :o)  ******
+
+  categoriesFromEnumLikeClass: Category[] = [ // New York Times categories
+    // N.B. 'News' is default TODO how is its *value* handled? hmm
+    {
+      value: 'world',
+      viewValue: 'World-ENUM-LIKE',
+    },
+    {
+      value: 'u.s.',
+      viewValue: 'U.S.',
+    },
+    {
+      value: 'politics',
+      viewValue: 'Politics',
+    },
+    {
+      value: 'business',
+      viewValue: 'Business',
+    },
+    {
+      value: 'opinion',
+      viewValue: 'Opinion',
+    },
+    {
+      value: 'arts',
+      viewValue: 'Arts',
+    },
+    {
+      value: 'living',
+      viewValue: 'Living',
+    },
+  ];
+}
 
 @Component({
   selector: 'app-article-add',
@@ -70,10 +123,12 @@ export class ArticleAddComponent implements OnInit {
   };
   articleMostRecentDisplayFE: Article;
 
-  categories: Category[] = [ // New York Times categories
+  public categories: Category[] = [ // New York Times categories
+    // 1. N.B. 'News' is default TODO how is its *value* handled? hmm
+      // 2. Unsure if making 'categories' to be 'public' helps, matters, etc. o well
     {
       value: 'world',
-      viewValue: 'World',
+      viewValue: 'World-REGULAR',
     },
     {
       value: 'u.s.',

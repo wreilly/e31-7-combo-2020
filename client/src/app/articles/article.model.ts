@@ -46,3 +46,18 @@ export interface Category {
     value: string;
     viewValue: string;
 }
+/*
+See Also
+  in ArticleAddComponent for ADD
+  (used also in ArticleDetailComponent for EDIT)
+  ********************
+  export class MyCategoriesEnumLikeClass {
+    categoriesFromEnumLikeClass: Category[] = [ // New York Times categories
+    {
+      value: 'world',
+      viewValue: 'World',
+    },
+    ...
+    ];
+    }
+ */

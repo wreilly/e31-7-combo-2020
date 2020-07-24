@@ -10,9 +10,12 @@
 
     OBJECT for article, not array for article:
 -->
+
+    <!-- **************   1.  DISPLAY   ************** -->
     <mat-card
             *ngIf="!(areWeEditingObservable$ | async)"
     >
+
 <!--
     <mat-card
             *ngIf="!areWeEditing"
@@ -39,14 +42,18 @@
 
     OBJECT for article, not array for article:
 -->
+    <!-- **************   2.  EDITING   ************** -->
     <mat-card
             *ngIf="areWeEditingObservable$ | async"
     >
-<!--
-    <mat-card
-            *ngIf="areWeEditing"
-    >
--->
+        <div class="component-label"
+             fxLayout="column">*EDITING* &lt;FORM&gt; - (ARTICLE-DETAIL)</div>
+
+        <!--
+            <mat-card
+                    *ngIf="areWeEditing"
+            >
+        -->
         <mat-card-title>
             {{ articleHereInDetailPage.articleTitle}}
         </mat-card-title>
@@ -59,6 +66,79 @@
         </mat-card-subtitle>
         <mat-card-content>
             {{ articleHereInDetailPage.articleTitle}}
+            <p>*******   FORM EDITING   *********</p>
+            <form
+                    bind-formGroup="editArticleFormGroup"
+                    on-ngSubmit="processReactiveFormEdit()"
+                    enctype="multipart/form-data"
+                    fxLayout="column"
+                    fxLayoutGap="10px"
+            >
+                <mat-form-field>
+                    <mat-label>Label for Title EDIT</mat-label>
+                    <input
+                            type="text"
+                            matInput
+
+                            appInputFocus
+                            formControlName="articleTitle_formControlName"
+                            [errorStateMatcher]="myOwnErrorStateMatcher"
+                    >
+<!--
+NOPE:               bind-formControlName="'articleTitle_formControlName'"
+NOPE:                    formControlName="'articleTitle_formControlName'"
+
+Hmm, for EDIT mode? hmm       placeholder="placey title EDIT"-->
+                    <mat-hint>
+                        Hint for Title EDIT
+                    </mat-hint>
+                    <mat-error>
+                        Error for Title EDIT: 10 chars pls! btw you typed/pasted {{ myHowManyCharsTyped('articleTitle_formControlName')}} of /10
+                    </mat-error>
+<!-- But it DID WORK, to get that value of '20' over from ArticleAddComponent. cheers
+                    <mat-error>
+                        Error for Title EDIT: 10 chars pls! btw you typed/pasted {{ myOwnCategoriesEnumLikeClass.myHowManyCharsTypedFromEnumLikeClass()}} of /10
+                    </mat-error>
+-->
+                </mat-form-field>
+                <div
+                        fxLayoutAlign="center"
+                >
+                    <!--
+                                <button
+                                        type="submit" mat-raised-button
+                                        color="accent"
+                                        style="width: 6em;"
+                                        bind-disabled="!addArticleFormGroup.valid"
+                                >
+                    &lt;!&ndash;                <mat-icon>note_add</mat-icon>&ndash;&gt;
+                                    <span style="margin-left: 5px;">Post!</span>
+                                </button>
+                    -->
+                    <button
+                            mat-icon-button
+                            type="submit"
+
+
+                    >
+                        <!-- Hide that button while spinner appears
+                            bind-disabled="!editArticleFormGroup.valid"
+                            *ngIf="!(myUIIsLoadingStore$ | async)"
+                            *ngIf="myUIIsLoadingStore$ | async"
+                        -->
+                        <mat-icon>note_add</mat-icon>
+                        <span style="margin-left: 5px;" class="tiny">Post Your Article</span>
+                    </button>
+                    <!--
+                                <mat-progress-spinner
+                                        mode="indeterminate"
+
+                                >
+                                </mat-progress-spinner>
+                    -->
+                </div>
+            </form>
+            <p>*******   /FORM EDITING  *********</p>
         </mat-card-content>
     </mat-card>
 <!--

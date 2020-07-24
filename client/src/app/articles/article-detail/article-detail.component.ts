@@ -1,5 +1,17 @@
 import {Component, EventEmitter, OnInit, Output, OnDestroy} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+
+// ****   FORM for EDIT MODE  **********
+import { FormGroup, FormControl, Validators, FormGroupDirective, NgForm } from '@angular/forms';
+import { ErrorStateMatcher } from '@angular/material/core';
+// Interesting. Above not needed; we get it from ArticleAddComponent instead as "My"...
+import { MyErrorStateMatcher, MyCategoriesEnumLikeClass } from '../article-add/article-add.component';
+/* MyCategoriesEnumLikeClass, for that "HowManyCharsTyped()" business:
+Hokey, hard-coded, But it DID WORK, to get that value of '20' over from ArticleAddComponent. cheers
+*/
+// ****   /FORM for EDIT MODE  **********
+
+import { ActivatedRoute, Router } from '@angular/router';
+
 import { ArticleService } from '../article.service';
 import { Article } from '../article.model';
 import {BehaviorSubject, Observable} from 'rxjs'; // << ?? t.b.d.
@@ -22,6 +34,29 @@ import * as fromRoot from '../../store/app.reducer'; // But we do not need/do .s
     styleUrls: ['article-detail.component.scss']
 })
 export class ArticleDetailComponent implements OnInit, OnDestroy {
+
+    // ****   FORM for EDIT MODE  **********
+
+    /* ~SAME VARIABLE NAMES
+    For this first go, we'll copy in
+       ~MOSTLY~ the SAME NAMES
+    on the variables, from ArticleAddComponent.
+    cheers
+     */
+
+    myFormFieldsData: FormData = new FormData();
+
+    editArticleFormGroup: FormGroup; // << WAS "addArticleFormGroup" fwiw
+
+    articleTitle_formControl: FormControl;
+    articleUrl_formControl: FormControl;
+    articleCategory_formControl: FormControl;
+
+    myOwnErrorStateMatcher: MyErrorStateMatcher; // << imported ! very nice.
+    myOwnCategoriesEnumLikeClass: MyCategoriesEnumLikeClass;
+
+    // ****   /FORM for EDIT MODE  **********
+
 
     /* ========================================
        *  NGRX Experiment  *
@@ -108,6 +143,7 @@ Now handling TWO different events/pieces-of-info:
         constructor(
             private myArticleService: ArticleService,
             private myActivatedRoute: ActivatedRoute,
+            private myRouter: Router,
             private myStore: Store,
         ) {
             console.log('999 do you see me?');
@@ -166,7 +202,47 @@ Now handling TWO different events/pieces-of-info:
     ngOnInit() {
 
         this.areWeEditingObservable$ = this.myStore.select(fromRoot.getAreWeEditing);
-            
+
+        // ****   FORM for EDIT MODE  **********
+
+        // INITIATE FormGroup, Controls
+        this.articleTitle_formControl = new FormControl(null,
+            [
+                Validators.required,
+                Validators.minLength(10),
+            ]);
+
+        this.articleUrl_formControl = new FormControl(null,
+            [
+                Validators.required,
+                Validators.pattern(
+                    /^[A-Za-z][A-Za-z\d.+-]*:\/*(?:\w+(?::\w+)?@)?[^\s/]+(?::\d+)?(?:\/[\w#!:.?+=&%@\-/]*)?$/
+                ),
+            ]);
+        /* URL_REGEXP from: (2015)
+https://github.com/angular/angular.js/commit/ffb6b2fb56d9ffcb051284965dd538629ea9687a
+ */
+
+        this.articleCategory_formControl = new FormControl('News',
+            [
+                Validators.required,
+            ]);
+
+        this.editArticleFormGroup = new FormGroup({
+            'articleTitle_formControlName': this.articleTitle_formControl,
+            'articleUrl_formControlName': this.articleUrl_formControl,
+            'articleCategory_formControlName': this.articleCategory_formControl,
+        });
+
+        this.myOwnErrorStateMatcher = new MyErrorStateMatcher(); // << imported. very nice.
+/* Hokey, hard-coded, But it DID WORK, to get that value of '20' over from ArticleAddComponent. cheers
+        this.myOwnCategoriesEnumLikeClass = new MyCategoriesEnumLikeClass();
+*/
+
+        // TODO this.myUIIsLoadingStore$ = this.myStore.select(fromRoot.getIsLoading);
+
+        // ****   /FORM for EDIT MODE  **********
+
         this.getArticle();
 
 /* NO. (dummy)
@@ -438,7 +514,49 @@ But then, sadly, the Store 'state' somehow ( ? ) *loses* this property of articl
 */
                                                     // =================================================
 
-                                                }
+                            /* ***********************************
+                                FORM EDIT
+                                PatchValue
+                                **********************************
+                             */
+                            /*
+                            Another "AH-HAH" moment: PATCH VALUE !!!
+Hey! Big Point!
+This "patch" biz is ONE WAY.
+It puts the value into the input field. Fine.
+But it does NOT get you "2-WAY Binding". No.
+Maybe you don't need it. Fine. Jus' saying.
+
+--------------------------------------
+src/app/article-detail/article-detail.component.ts:173
+/Users/william.reilly/dev/JavaScript/CSCI-E31/Assignments/07-final-CODE-CLEAN-UP/client/src/app/article-detail/article-detail.component.ts
+--------------------------------------
+Service.getArticle() {
+	...
+// Fill in that REACTIVE editable Form, too!
+this.myArticleEditFormGroup.patchValue({
+    articleTitle_formControlName: articleIGot.articleTitle
+});
+...
+}
+--------------------------------------
+
+https://angular.io/api/forms/FormControl#patchvalue
+                             */
+
+                            this.editArticleFormGroup.patchValue({
+                                articleTitle_formControlName: articleIGot.articleTitle
+                                // N.B. "BE" convention: articleTitle, not FE articleTitle_name. cheers
+                            })
+
+
+                            /* ***********************************
+                                /FORM EDIT
+                                **********************************
+                             */
+
+
+                                                } // /next(articleIGot)
                                             ); // /.subscribe()  ...Service.getArticle()
 
 
@@ -474,6 +592,37 @@ But then, sadly, the Store 'state' somehow ( ? ) *loses* this property of articl
                     );
             }
         )
+    }
+
+    processReactiveFormEdit() {
+        // ****   FORM for EDIT MODE  **********
+        console.log('processReactiveFormEdit() was called');
+        console.log(`TITLE = this.editArticleFormGroup.get('articleTitle_formControlName').value`, this.editArticleFormGroup.get('articleTitle_formControlName').value);
+
+/*
+Q. Hmm, is this necessary ? don't think so. may put in again, or similar. cheers
+A. No. not really needed.
+
+        this.myRouter.navigate(['/']); // navigate away from this page after EDIT Submit() ...
+*/
+
+        // ****   FORM for EDIT MODE  **********
+    } // /processReactiveFormEdit()
+
+    // **********  UTILITIES  *****************
+    myHowManyCharsTyped(formControlNamePassedIn: string):number {
+            let howMany;
+            /*
+            Clever little code: boolean expression both must be true/truthy "&&"
+            - test whether there IS any "value" (string) in that FormControl, right now
+            - get its length. that's what you're sending back. cheers
+             */
+            howMany = (
+                this.editArticleFormGroup.get(formControlNamePassedIn).value
+                &&
+                this.editArticleFormGroup.get(formControlNamePassedIn).value.length
+            );
+            return howMany;
     }
 
     ngOnDestroy() {
