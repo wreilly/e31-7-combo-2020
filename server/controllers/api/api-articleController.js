@@ -7,6 +7,7 @@ const apiArticleController = {};
 - GET '/' = apiGetAllArticles
 - GET '/recent' ==> '/api/v1/articles/recent' // 1, for now. NEW.
 - GET '/:id' = apiGetArticleById
+- PUT '/:id' = apiUpdateArticle
 - POST '/' = apiCreateArticle
 - DELETE '/:id' = apiDeleteArticle
  */
@@ -158,6 +159,47 @@ apiArticleController.apiGetArticleMostRecent = function (req, res, next) {
 
 } // /.apiGetArticleMostRecent()
 
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+/* !!!!!  apiArticleController
+          .apiUpdateArticle   !!!!! */
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+apiArticleController.apiUpdateArticle = function (req, res, next) {
+    console.log('Controller: updateArticle req.body ', req.body);
+    /* YEPpers
+    Controller: updateArticle req.body  [Object: null prototype] {
+  articleTitle_name: 'Trump’s NORBIE WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers',
+  articleUrl_name: 'null',
+  articleCategory_name: 'News'
+}
+     */
+
+    /*
+ https://canvas.harvard.edu/courses/35096/pages/week-9-rest-api-routes?module_item_id=369603
+ http://mongoosejs.com/docs/documents.html#updating
+ */
+
+    const idForUpdate = req.params.idToEditHere;
+    // This is the ID "for" updating.
+    // It is not the ID "to" update.
+    // We do not update the ID. cheers
+
+    const articleDataToUpdate = {};
+
+    articleDataToUpdate.articleTitle_name = req.body.articleTitle_name;
+    articleDataToUpdate.articleUrl_name = req.body.articleUrl_name;
+
+    // Hmm 2018 has 'return' prefixed here... I'll do same now in 2020
+   return articleDataServiceHereInApiController.updateArticle(
+        idForUpdate,
+        articleDataToUpdate
+    )
+        .then(
+            (whatIGot) => {
+            res.send(whatIGot);
+        })
+        .catch((errWeGot) => console.log('Server. Controller. UPDATE errWeGot ', errWeGot));
+
+}
 
 /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
 /* !!!!!  apiArticleController
@@ -220,8 +262,9 @@ headers: {
   }
      */
     console.log('********************');
-    console.log('Controller: createArticle req.body ', req.body); // << undefined  :o(
-    /* Now Happy :o)  (now using BodyParser in app.js)
+    console.log('Controller: createArticle req.body ', req.body); // WAS: << undefined  :o(
+    /* NOW:
+    Happy :o)  (now using BodyParser in app.js)
     Controller: createArticle req.body  {
   articleUrl_name: 'https://nytimes.com',
   articleTitle_name: 'Headline Today Be xyz1'

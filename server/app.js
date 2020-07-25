@@ -26,6 +26,7 @@ mongoose.connect(
         dbName: 'cscie31',
         useNewUrlParser: true,
         useUnifiedTopology: true,
+        useFindAndModify: false,
     }
     /* re: above 2 new lines in 2020 (not 2018)
     - useNewUrlParser:
@@ -33,6 +34,11 @@ mongoose.connect(
 
     - useUnifiedTopology:
     DeprecationWarning: current Server Discovery and Monitoring engine is deprecated
+     */
+    /* 2020 more deprecation
+    re: findByIdAndUpdate() etc.
+    https://mongoosejs.com/docs/deprecations.html#findandmodify
+    useFindAndModify: false
      */
     )
     .then(

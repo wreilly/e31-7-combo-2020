@@ -316,17 +316,43 @@ This seems to be working FINE for the FIRST time through, but navigating to brin
 ArticleDetail to "edit" seems to be not quite right. May be owing to "this point" vs. another,
 May just be something else. W-I-P.
 
+
+---  2020-07-24   ----------------------
+Ah-hah. Hmm. Looks like YEAH we should move this Store Action Dispatch down below (near the other .emit()) cheers
+-------------------------
+core.js:6228 ERROR Error: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked.
+Previous value: 'undefined'. Current value: 'false'.
+It seems like the view has been created after its parent and its children have been dirty checked. Has it been created in a change detection hook?
+-------------------------
+
+
+
 btw, related question: just *where/when* do we .dispatch the FALSE action that we are No Longer Editing, hey?
 For now: in the (parent) ArticleComponent's ngOnDestroy() ? hmm
 Soon-(ish): Or of course (in (near) future), could be off the (not yet created) <form> submit from the ArticleDetailComponent in "editMode". Guess that would be a .dispatch to the Store, which would of course get read/known/updated
 in the (parent) ArticlesComponent, which would then "do the right thing" to hide the "(Editing)" nav tab bar thing. cheers.
                      */
+
+                    // !!!  TOO  EARLY !!! //
+/*
                     this.myStore.dispatch(
                         new UIActions.TellingYouIfWeAreEditing(
                             { areWeEditingInAction: true} // AH-HAH moment. Got to match the danged constructor signature, kids!
                         )
                     );
-
+*/
+                    /*
+                    above, "Too Early" for NgRx Store Dispatch. OK.
+                    But right here, NOT "too early" to simply
+                    capture to local Boolean class member
+                    that yeah, "we are editing," because
+                    we just tested that the URL does contain
+                    '/edit'
+                    cheers
+                    (that is, you'll see below we test on this
+                     flag when we go to Dispatch to Store.)
+                     */
+                    this.areWeEditing = true;
 
                     // =================================================
 /* NO LONGER (GOING TO BE) USED. NGRX instead
@@ -472,7 +498,7 @@ _id: "5af746cea7008520ae732e2c"
   type: '[UI] Telling You My Id'
 }
 
-But then, sadly, the Store 'state' somehow ( ? ) *loses* this property of articleIdIs:
+But then, sadly, the Store 'state' somehow ( ? ) *loses* this property of articleIdIs:  << Hey, I FIXED THIS.
 {
   uiPartOfStore: {
     sidenavIsOpen: false,
@@ -512,6 +538,43 @@ But then, sadly, the Store 'state' somehow ( ? ) *loses* this property of articl
 /* No Longer
                                                     } // /if()
 */
+                            /*
+                            What Ho! Re-Instating the "Take FIVE"
+                            (Take SIX, hey?)
+                            That is, we have (once again)
+                            learned the Hard Way that the
+                            timing for this Store Dispatch
+                            (which in turn updates our Observable$)
+                          needs to be here, later, not
+                          so immediately, as we first tried
+                           up above, at beginning of getArticle().
+                           Note how we set up that Observable$
+                           v. early in constructor() (normal)
+                           But something about router-outlet
+                           onActivate() ? and this same
+                           Component getting re-used/loaded ?
+                           for shifting to /edit mode causes
+                           too much too early (re)-updating
+                           of that Observable etc etc
+                           Fix seems to be: delay all that
+                           updating by finally only doing it way
+                           down here, when the Article has been
+                           re-retrieved ? for editing.
+                           o la.
+                             */
+                            if (this.areWeEditing) {
+                                /*
+                                We need to test for this;
+                                we've captured the boolean
+                                up above when we looked at the
+                                URL for '/edit'
+                                 */
+                                this.myStore.dispatch(
+                                    new UIActions.TellingYouIfWeAreEditing(
+                                        {areWeEditingInAction: true}
+                                        )
+                                );
+                            }
                                                     // =================================================
 
                             /* ***********************************
@@ -571,7 +634,7 @@ https://angular.io/api/forms/FormControl#patchvalue
                         }
                     )*/
             }
-        ) // /.subscribe()
+        ) // /.subscribe()  myActivatedRoute.params
     } // /getArticle()
 
     getArticleViaSubscribe() {
@@ -596,27 +659,150 @@ https://angular.io/api/forms/FormControl#patchvalue
 
     processReactiveFormEdit() {
         // ****   FORM for EDIT MODE  **********
-        console.log('processReactiveFormEdit() was called');
+
         console.log(`TITLE = this.editArticleFormGroup.get('articleTitle_formControlName').value`, this.editArticleFormGroup.get('articleTitle_formControlName').value);
+        console.log(`FORM ENTIRE = this.editArticleFormGroup.value`, this.editArticleFormGroup.value);
 
 /*
-Q. Hmm, is this necessary ? don't think so. may put in again, or similar. cheers
+Q. Hmm, is this "navigate" necessary ? don't think so. may put in again, or similar. cheers
 A. No. not really needed.
 
         this.myRouter.navigate(['/']); // navigate away from this page after EDIT Submit() ...
 */
 
-        // ****   FORM for EDIT MODE  **********
-    } // /processReactiveFormEdit()
+        let myFormFieldsAndFiles: any; // << FormData, but, tricky, so 'any' helps ...
+        /*
+Phase I. Just FormFields
+Phase II. Files too (for Photo(s))
+         */
 
-    // **********  UTILITIES  *****************
-    myHowManyCharsTyped(formControlNamePassedIn: string):number {
-            let howMany;
-            /*
-            Clever little code: boolean expression both must be true/truthy "&&"
-            - test whether there IS any "value" (string) in that FormControl, right now
-            - get its length. that's what you're sending back. cheers
-             */
+        myFormFieldsAndFiles = this.prepareToEditArticleReactiveForm();
+
+        // const idToPass: string = '5af746cea7008520ae732e2c'; // << Yes of course hard-coded works...
+        // const idToPass: string = this.articleHereInDetailPage.articleId_name.value; // << Ooffa. FE convention, not in use at this moment! oi.
+        // const idToPass: string = this.articleHereInDetailPage._id.value; // << oi. don't look for ".value"
+        const idToPass: string = this.articleHereInDetailPage._id; // << Here you want the (lazy) BE convention. sheesh.
+        console.log('WTF & Etc. this.articleHereInDetailPage ', this.articleHereInDetailPage);
+        /* Yeah, we have _id:
+        articlePhotos: ["["justsomestring-in-an-array"]"]
+articleTitle: "Trump’s WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers"
+articleUrl: "myhttp"
+__v: 0
+_id: "5af746cea7008520ae732e2c"
+         */
+
+        this.goEditArticle(idToPass, myFormFieldsAndFiles);
+        // Better name: go UPDATE Article ...
+
+    // ****   FORM for EDIT MODE  **********
+} // /processReactiveFormEdit()
+
+    private prepareToEditArticleReactiveForm(): FormData {
+        /*
+        - 1. "Prepare" here means:
+           Appends values from form fields onto our
+           HTML "FormData" type
+
+        - 2. A sort of "mapping" occurs, from:
+           - naming convention for form fields "_formControlName", to:
+           - naming convention for FE Article "_name"
+           (Note that there will be another "mapping"
+           later, from the FE convention, to the BE
+           convention, for sending to the BE/API/DB.)
+           BE drops the "_name" (e.g. articleTitle)
+
+        - 3. Returns that FormData.
+        */
+
+        console.log('o la prepare EDIT 00 this.editArticleFormGroup.controls[\'articleTitle_formControlName\'].value ', this.editArticleFormGroup.controls['articleTitle_formControlName'].value);
+        /* YES
+        Trump’s Uncle Brendan WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers
+         */
+
+        this.myFormFieldsData.append(
+            'articleTitle_name',
+            this.editArticleFormGroup.controls['articleTitle_formControlName'].value
+        );
+
+        this.myFormFieldsData.append(
+            'articleUrl_name',
+            this.editArticleFormGroup.controls['articleUrl_formControlName'].value
+        );
+
+        this.myFormFieldsData.append(
+            'articleCategory_name',
+            this.editArticleFormGroup.controls['articleCategory_formControlName'].value
+        )
+
+        console.log('o la. prepare EDIT this.myFormFieldsData: ', this.myFormFieldsData); // hmm. FormData {}
+        /* YES we do have the data here. very good.
+        O la. Need that XHR-2-FAKE.URL to debug FormData, people. sigh.
+        -- OR --
+        just (lazily) use that Chrome DevTools Network Headers FormData:
+        -----
+        ------WebKitFormBoundaryfNJTOZUW1y6QoaUw
+Content-Disposition: form-data; name="articleTitle_name"
+
+Trump’s Uncle Brendan WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers
+------WebKitFormBoundaryfNJTOZUW1y6QoaUw
+Content-Disposition: form-data; name="articleUrl_name"
+
+null
+------WebKitFormBoundaryfNJTOZUW1y6QoaUw
+Content-Disposition: form-data; name="articleCategory_name"
+
+News
+------WebKitFormBoundaryfNJTOZUW1y6QoaUw--
+        -----
+      */
+
+        return this.myFormFieldsData;
+    } // /prepareToEditArticleReactiveForm()
+
+    goEditArticle(idPassedIn, myFormFieldsAndFiles): void {
+        /*
+            - 1. "Go Edit" here really means Go UPDATE:
+                   Go to the Service
+                   (which in turn does XHR to the BE API)
+                   to UPDATE ("Edit") the Article
+                   on the BE/DB
+
+            - 2. No 'return' (void)
+         */
+
+        this.myArticleService.updateArticle(idPassedIn, myFormFieldsAndFiles)
+            .subscribe(
+                (whatWeGotBackFromUpdate) => {
+                    console.log('whatWeGotBackFromUpdate BE ', whatWeGotBackFromUpdate);
+
+                    /* TODO (maybe)
+                    BE-to-FE convert, to DISPLAY result on FE
+
+                    -- OR --
+                    just navigate away from this page ? T.B.D.
+                     */
+
+                    this.editArticleFormGroup.reset(); // << hmm. not what we want ?
+                },
+                (errWeGot) => {
+                    console.log('updateArticle. errWeGot ', errWeGot);
+                    console.log('updateArticle. errWeGot.message ', errWeGot.message);
+                },
+                () => {
+                    console.log('updateArticle. complete. that\'s it. eom.');
+                }
+            );
+
+    } // /goEditArticle()
+
+// **********  UTILITIES  *****************
+myHowManyCharsTyped(formControlNamePassedIn: string):number {
+        let howMany;
+        /*
+        Clever little code: boolean expression both must be true/truthy "&&"
+        - test whether there IS any "value" (string) in that FormControl, right now
+        - get its length. that's what you're sending back. cheers
+         */
             howMany = (
                 this.editArticleFormGroup.get(formControlNamePassedIn).value
                 &&
@@ -626,9 +812,9 @@ A. No. not really needed.
     }
 
     ngOnDestroy() {
-/* No Longer
+/* using (again) now */
         this.areWeEditing = false;
-*/
+
 
         // Will try first here in ngOnDestroy() of (child) ArticleDetailComponent
         // instead of over in (parent) ArticlesComponent

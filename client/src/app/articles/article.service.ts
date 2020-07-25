@@ -58,7 +58,7 @@ _id: "5f1364e304e544a462218215"
   } // createArticleB()
 
 
-      createArticle(myFormFieldsAndFiles: any): Observable<Object> { // << FormData
+      createArticle(myFormFieldsAndFiles: any): Observable<Object> { // << FormData  << NO LONGER CALLING THIS
 
       /*
       OK.
@@ -95,7 +95,21 @@ _id: "5f1364e304e544a462218215"
               articleTitle: "https://www.nytimes.com/2020/07/06/us/Epidemiologists-coronavirus-protests-quarantine.html", __v: 0}
                */
 
-  } // /createArticle()
+  } // /createArticle() << NO LONGER CALLING THIS.  See Plan "B."
+
+
+    updateArticle(idPassedIn, editedArticle) {
+      /*
+
+      - Returns ... hmm, results of HTTP PUT call.
+        Just sort of benign "ACK" msg. (or error, of course)
+        But no data of substance
+       */
+
+        // DON'T FORGET!  PUT 'return' AT FRONT OF THIS LINE:
+        return this.myHttp.put(`http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`, editedArticle);
+
+    }
 
   listArticles(): Observable<Object> {
     // GET ALL Articles

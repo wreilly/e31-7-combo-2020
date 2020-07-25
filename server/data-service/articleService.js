@@ -12,6 +12,7 @@ const articleModelHereInService = require('../models/articleModel');
 - .get('/') ==> findAllArticles
 - .get('/recent') ==> findArticleMostRecent
 - .get('/:id') ==> findArticleById
+- .put(':/id') ==> updateArticle
 - .post('/') ==> saveArticle
 - .delete('/:id') ==> deleteArticle
 
@@ -161,6 +162,46 @@ class articleService {
             )
             .catch((err) => console.log('Data Service findArticleMostRecent() CATCH err ', err));
     } // /findArticleMostRecent()
+
+
+    /* ********************************* */
+    /* *** Update Article   *********** */
+    /* ********************************* */
+    static updateArticle(idToUpdatePassedIn, articleDataToUpdatePassedIn) {
+        console.log('Server. Service. UPDATE. ******** articleDataToUpdatePassedIn ', articleDataToUpdatePassedIn);
+
+        /* Hmm. 2020 Doesn't like .findByIdAndUpdate(). Worked in 2018 ?
+        Fixed by putting into app.js mongoose.connect(uri, {useFindAndModify: false})
+        (node:8400) DeprecationWarning: Mongoose: `findOneAndUpdate()` and `findOneAndDelete()` without the `useFindAndModify` option set to false are deprecated. See: https://mongoosejs.com/docs/deprecations.html#findandmodify
+         */
+        // DO NOT FORGET :::: 'return'   <<< YEESH
+        return articleModelHereInService.findByIdAndUpdate(
+            {_id: idToUpdatePassedIn},
+            { $set: {
+                    articleTitle: articleDataToUpdatePassedIn.articleTitle_name,
+                    articleUrl: articleDataToUpdatePassedIn.articleUrl_name,
+                }},
+            { new: true }
+            // Gets you the NEW, just-edited doc (not the orig one)
+        )
+            .then(
+                (whatIGot) => {
+                    console.log('Server. Service. UPDATE .then() whatIGot ', whatIGot); // Model (Mongoose)
+                    console.log('Server. Service. UPDATE .then() whatIGot._doc ', whatIGot._doc); // Yeah the document: (Mongoose style ?)
+                    /*
+                    articlePhotos: ["["justsomestring-in-an-array"]"]
+articleTitle: "Trump’s EDITED OUT OF OFFICE WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers"
+articleUrl: "null"
+__v: 0
+_id: ObjectID
+generationTime: (...)
+id: Buffer(12) [90, 247, 70, 206, 167, 0, 133, 32, 174, 115, 46, 44]
+                     */
+                    return whatIGot._doc;
+                }
+            )
+            .catch((err) => console.log('Service. Update. Catch err ', err));
+    } // /updateArticle(id)
 
 
     /* **************************** */

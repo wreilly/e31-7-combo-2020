@@ -53,6 +53,7 @@ const apiArticleControllerHereInApi = require('.././../controllers/api/api-artic
 - GET '/' ==> '/api/v1/articles/'
 - GET '/recent' ==> '/api/v1/articles/recent' // 1, for now. NEW.
 - GET '/:id' ==> '/api/v1/articles/123456'
+- PUT '/:id' ==> '/api/v1/articles/123456'
 - POST '/'  ==> '/api/v1/articles'
 - DELETE '/:id' ==> '/api/v1/articles/123456'
 
@@ -127,6 +128,26 @@ apiArticlesRouter.get('/',
 })
 
 
+/* ************************************************** */
+/* ******** PUT '/api/v1/articles/12345' ************ */
+/* ************************************************** */
+apiArticlesRouter.put(
+    '/:idToEditHere',
+    myPhotosUploadMulter.array(), // << Right
+    function (req, res, next) {
+        console.log('REST API ROUTER PUT /:idToEditHere req.body: ', req.body);
+        /* YEPpers
+        REST API ROUTER PUT /:idToEditHere req.body:  [Object: null prototype] {
+  articleTitle_name: 'Trump’s NORBIE WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers',
+  articleUrl_name: 'null',
+  articleCategory_name: 'News'
+}
+         */
+
+        apiArticleControllerHereInApi.apiUpdateArticle(req, res, next);
+    }
+) // /PUT '/:id'
+
 
 /* ************************************************** */
 /* ******** POST '/api/v1/articles/'  ************ */
@@ -143,7 +164,7 @@ apiArticlesRouter.post(
     damned thing.
      */
     // myPhotosUploadMulter.array, // << !! WRONG !!
-    myPhotosUploadMulter.array(),
+    myPhotosUploadMulter.array(), // << Right
 
 
     function (req, res, next) {
