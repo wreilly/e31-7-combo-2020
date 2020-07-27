@@ -127,7 +127,11 @@ Hmm, for EDIT mode? hmm       placeholder="placey title EDIT"-->
                             *ngIf="myUIIsLoadingStore$ | async"
                         -->
                         <mat-icon>note_add</mat-icon>
-                        <span style="margin-left: 5px;" class="tiny">Post Your Article</span>
+                        <span style="margin-left: 5px;" class="tiny">Update Your Article</span>
+                        <!--
+                        This TERNARY logic works, but, isn't needed. This whole FORM is already in "areWeEditing === true" mode. cheers
+                        {{areWeEditing ? 'Update' : 'Post'}} Your Article
+                        -->
                     </button>
                     <!--
                                 <mat-progress-spinner

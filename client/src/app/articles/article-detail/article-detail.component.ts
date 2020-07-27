@@ -661,7 +661,15 @@ https://angular.io/api/forms/FormControl#patchvalue
         // ****   FORM for EDIT MODE  **********
 
         console.log(`TITLE = this.editArticleFormGroup.get('articleTitle_formControlName').value`, this.editArticleFormGroup.get('articleTitle_formControlName').value);
+        /*
+        Coronavirus 234 Live Updates: Birx Urges Bar Closures and Limits on Gatherings
+         */
         console.log(`FORM ENTIRE = this.editArticleFormGroup.value`, this.editArticleFormGroup.value);
+        /* Q. Curious. Why is Category retained? (I know why URL is not.) Hmm.
+        A. Ah-hah-ho. It is the damned DEFAULT value. Yeesh. (We in fact LOSE our original value, e.g. 'U.S.")
+
+        {articleTitle_formControlName: "Coronavirus 234 Live Updates: Birx Urges Bar Closures and Limits on Gatherings", articleUrl_formControlName: null, articleCategory_formControlName: "News"}
+         */
 
 /*
 Q. Hmm, is this "navigate" necessary ? don't think so. may put in again, or similar. cheers
@@ -776,13 +784,15 @@ News
                     console.log('whatWeGotBackFromUpdate BE ', whatWeGotBackFromUpdate);
 
                     /* TODO (maybe)
-                    BE-to-FE convert, to DISPLAY result on FE
+                    BE-to-FE convert, to DISPLAY result on FE << NAH
 
                     -- OR --
-                    just navigate away from this page ? T.B.D.
+                    just navigate away from this page ? T.B.D. << YAH
                      */
 
                     this.editArticleFormGroup.reset(); // << hmm. not what we want ?
+                    this.myRouter.navigate([`/articles/${idPassedIn}`]); // back to page we just edited
+
                 },
                 (errWeGot) => {
                     console.log('updateArticle. errWeGot ', errWeGot);

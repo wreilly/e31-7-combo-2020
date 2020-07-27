@@ -1,6 +1,8 @@
 const express = require('express');
 const apiArticlesRouter = express.Router();
 
+const middlewareTrimUrlHere = require('../../middleware/trim-url-is-all');
+
 /* ######################################################### */
 /* ###############  MULTER HERE IN ROUTER, SIMPLY ########## */
 /* ######################################################### */
@@ -134,6 +136,8 @@ apiArticlesRouter.get('/',
 apiArticlesRouter.put(
     '/:idToEditHere',
     myPhotosUploadMulter.array(), // << Right
+    // MIDDLEWARE !
+    middlewareTrimUrlHere.myMiddlewareTrimUrlFunction,
     function (req, res, next) {
         console.log('REST API ROUTER PUT /:idToEditHere req.body: ', req.body);
         /* YEPpers
@@ -165,6 +169,9 @@ apiArticlesRouter.post(
      */
     // myPhotosUploadMulter.array, // << !! WRONG !!
     myPhotosUploadMulter.array(), // << Right
+
+    // MIDDLEWARE !
+    middlewareTrimUrlHere.myMiddlewareTrimUrlFunction,
 
 
     function (req, res, next) {
