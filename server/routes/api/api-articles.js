@@ -77,6 +77,8 @@ apiArticlesRouter.use(
         // PRE-FLIGHT check:
         if (req.method === 'OPTIONS') {
             console.log('999 We got an OPTIONS Request Method! req.toString() ', req.toString());
+            // [object Object]
+
             return res.status(200).end();
         }
         next();

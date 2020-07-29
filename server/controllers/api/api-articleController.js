@@ -342,7 +342,21 @@ apiArticleController.apiDeleteArticle = function (req, res, next) {
         .then(
             (whatIGot) => {
                 console.log('Controller: Delete confirmation ', whatIGot);
-            res.send(whatIGot); // << !! Don't Forget !! oi!
+                /*
+                null    hmm. << again! wtf
+
+                Better now! Whole Mongoose model:
+                model {$__: InternalCache, isNew: false, errors: undefined, $locals: {…}, $op: null, …} ...
+
+                 */
+                console.log('Controller: Delete confirmation - JSON.stringify(whatIGot) ', JSON.stringify(whatIGot));
+                /* null   hmm.
+
+                Good:
+                 {"_id":"5b12baffc21542eb8a213c23","articlePhotos":["[\"sometimes__1527954173521_merlin_138000807_87232e64-80cf-4b3c-987b-88c861c611e6-superJumbo.jpg\"]"],"articleUrl":"https://www.nytimes.com/section/us","articleTitle":"nobody sees 33","__v":0}
+                 */
+
+                res.send(whatIGot); // << !! Don't Forget !! oi!
                 // Q. Where (to who/what) is this "sending" ?? ... o la
             },
             (problemo) => {

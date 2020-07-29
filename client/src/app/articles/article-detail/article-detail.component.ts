@@ -805,6 +805,65 @@ News
 
     } // /goEditArticle()
 
+    letUsDelete() {
+        const idToDelete = this.articleHereInDetailPage._id;
+        if(confirm('Are you sure you want to Delete?')) {
+            this.myArticleService.deleteArticle(idToDelete)
+                .subscribe(
+                    (whatIGotDeleting) => {
+                        console.log('whatIGotDeleting ', whatIGotDeleting); // null  hmm. << again! wtf
+                        /* Better!
+                        {
+                        articlePhotos: ["["sometimes__1527882425725_09dc-Autos-1-jumbo.jpg"…_fbde38d7-df32-4801-9c88-c9111e7084d7-jumbo.jpg"]"]
+articleTitle: "gtyhbnmmj888888"
+articleUrl: "null"
+__v: 0
+_id: "5b11a2bac21542eb8a213c18"
+                        }
+                         */
+
+                        this.myRouter.navigate(
+                            ['/articles'],
+                            {
+                                state: {
+                                    data: {
+                                        articleMostRecentHideRouterLinkState: false
+                                    }
+                                }
+                            }
+                            );
+
+                    },
+                    (errIGotDeleting) => {
+                        console.log('errIGotDeleting ', errIGotDeleting)
+                    },
+                    () => {
+                        console.log('Deleting, complete()'); // << yep
+                    }
+                );
+        }
+    }
+
+    letUsCancelEditing() {
+            console.log(this.articleHereInDetailPage);
+            /* RECALL: "BE" Naming Convention!
+
+            articlePhotos: ["["justsomestring-in-an-array"]"]
+articleTitle: "Trump’s show me show me show me EDITED THE HELL BACK OUT (that's better) OFFICE WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONES,lopTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers"
+articleUrl: "null"
+__v: 0
+_id: "5af746cea7008520ae732e2c"
+             */
+
+/* NO. Not "FE" Naming Convention....
+            this.myRouter.navigate([`/articles/${this.articleHereInDetailPage.articleId_name.value}`]);
+*/
+
+        // YES. "BE" Naming Convention:
+        this.myRouter.navigate([`/articles/${this.articleHereInDetailPage._id}`]);
+
+    }
+
 // **********  UTILITIES  *****************
 myHowManyCharsTyped(formControlNamePassedIn: string):number {
         let howMany;

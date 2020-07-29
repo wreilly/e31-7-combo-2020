@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, FormGroupDirective, NgForm, Validators} from '@angular/forms';
+import { Router } from '@angular/router';
 import {Store} from '@ngrx/store';
 import * as fromRoot from '../../store/app.reducer';
 import {Observable} from 'rxjs';
@@ -152,7 +153,7 @@ export class ArticleAddComponent implements OnInit {
     },
     {
       value: 'living',
-      viewValue: 'Living',
+      viewValue: 'Living999',
     },
   ];
 
@@ -161,6 +162,7 @@ export class ArticleAddComponent implements OnInit {
   constructor(
       private myArticleService: ArticleService,
       private myStore: Store,
+      private myRouter: Router,
   ) { }
 
   ngOnInit(): void {
@@ -464,6 +466,28 @@ _id: "5f0daf9584c76c1887b06e14"
         );
 
   } // /goAddArticle()
+
+  letUsCancelAdding() {
+    this.myRouter.navigate(
+        ['/articles'],
+        {
+          state: {
+            data: {
+              articleMostRecentHideRouterLinkState: false
+            }
+          }
+        }
+    );
+    /*
+      https://medium.com/ableneo/how-to-pass-data-between-routed-components-in-angular-2306308d8255
+
+https://angular.io/api/router/NavigationExtras#state
+
+                            [state]="{data: {
+                            articleMostRecentHideRouterLinkState: false
+                            }}"
+     */
+  }
 
   //  ****  UTILITIES ETC :o)  ******
 

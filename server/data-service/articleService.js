@@ -37,7 +37,7 @@ class articleService {
                     It's the WHOLE MODEL (Too Much).
                                             console.log('articleService runModelPromises resolved whatIGot[0]', whatIGot[0])
                     */
-                    console.log('articleService. finaAllArticles. resolved whatIGot[0].articleTitle', whatIGot[0].articleTitle);
+                    console.log('articleService. findAllArticles. resolved whatIGot[0].articleTitle', whatIGot[0].articleTitle);
                     return whatIGot;
                 },
                 (problemo) => {
@@ -256,22 +256,34 @@ id: Buffer(12) [90, 247, 70, 206, 167, 0, 133, 32, 174, 115, 46, 44]
     /* **************************** */
     static deleteArticle(idToDeleteInService) {
         /*
-        **** !!!!  Don't Forget!!! ***
+        https://mongoosejs.com/docs/api.html#model_Model.findByIdAndRemove
+        Returns (MongoosE) "Query". Hmm.
+        (Better if I supply a Callback, than using ".then()"
+        on this sort of pseudo-Promise that Mongoose provides.
+        The Callback (in Node.js) lets me get back both:
+        (err, document)
+        Right now with .then() I am (apparently?) getting
+        back just the (err) (which is null). Hmmph.
+*/
+
+        /* PROMISE STYLE (Works - but doesn't get back the just-deleted document. hmmph.) */
+        /* *** !!!!  Don't Forget!!! ***
         * You need *RETURN* at top here!
          */
+/*
         return articleModelHereInService.findByIdAndRemove(idToDeleteInService)
             .then(
                 (whatIGotFromDeletion) => {
                     // resolved
-                    console.log('Service: whatIGotFromDeletion ', whatIGotFromDeletion);
-                    /*
+                    console.log('Service: PROMISE whatIGotFromDeletion from DELETE (should be empty document : null) is: ', whatIGotFromDeletion); // << Yes. null
+                    /!* ?? hmm. earlier.
                     Service: whatIGotFromDeletion  {
   _id: 5ee4c5facc58cf6657c96c17,
   articleUrl: 'https://nytimes.com',
   articleTitle: 'Headline Today Be xyz1',
   __v: 0
 }
-                     */
+                     *!/
 
                     return whatIGotFromDeletion;
                 },
@@ -281,6 +293,36 @@ id: Buffer(12) [90, 247, 70, 206, 167, 0, 133, 32, 174, 115, 46, 44]
                 }
             )
             .catch((err) => console.log('Service .catch err ', err));
+*/
+
+
+        /*  CALLBACK STYLE  (Works) */
+
+                return articleModelHereInService.findByIdAndRemove(idToDeleteInService, function (err, returnedDocument) {
+                    // callback
+                    console.log('CALLBACK returnedDocument from DELETE is: ', returnedDocument) // null (?) << again! wtf
+                    /* (Better (?))
+                    Mongoose model ....
+                    model {$__: InternalCache, isNew: false, ...
+                     */
+
+                    if (!returnedDocument) {
+                        console.log('articleService Delete  !returnedDocument in CALLBACK. hmm. And ERR is: ', err); // null (?)
+                        return(returnedDocument) // ?
+                    } else {
+                        console.log('articleService Delete  !returnedDocument in CALLBACK returnedDocument is (for some reason) NOT empty: Bueno ? returnedDocument is: ', returnedDocument)
+                        /* (Better (?))
+                    Mongoose model ....
+                    model {$__: InternalCache, isNew: false, ...
+                         */
+
+                        return(returnedDocument)
+                    }
+                })
+
+
+
+
 } // /deleteArticle()
 
 

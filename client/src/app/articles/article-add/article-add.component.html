@@ -175,7 +175,8 @@ using it. cheers.
 (we wound up controlling width by CSS "hard-coding-ish")
 -->
             <div
-                    fxLayoutAlign="center"
+                    fxLayout="column"
+                    fxLayoutAlign="center center"
             >
 <!--
             <button
@@ -203,12 +204,20 @@ using it. cheers.
                         mode="indeterminate"
                         *ngIf="myUIIsLoadingStore$ | async"
                 >
-
                 </mat-progress-spinner>
+                <div>
+                    <button
+                            mat-raised-button
+                            color="accent"
+                            type="button"
+                            on-click="letUsCancelAdding()"
+                    >
+                        Cancel
+                    </button>
+                </div>
             </div>
         </form>
         </mat-card-content>
-
             <!--
 LOOKED FINE.
 But as noted above I
@@ -228,7 +237,6 @@ rolling your own here...
             >Post!</button>
         </div>
 -->
-
     </mat-card>
     <mat-card
             fxFlex.lt-md="100%"

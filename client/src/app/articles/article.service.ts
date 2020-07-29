@@ -111,6 +111,14 @@ _id: "5f1364e304e544a462218215"
 
     }
 
+
+    deleteArticle(idPassedIn) {
+      return this.myHttp.delete(
+          `http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`
+      );
+    } // /deleteArticle()
+
+
   listArticles(): Observable<Object> {
     // GET ALL Articles
     // DON'T FORGET THAT BLOODY 'return' !!! !!! !!!
