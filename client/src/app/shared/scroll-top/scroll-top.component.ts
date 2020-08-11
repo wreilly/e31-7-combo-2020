@@ -30,7 +30,7 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
         this.myScrollService.scrollOffsetInServiceObservable
             .subscribe(
                 (scrollOffsetWeGot) => {
-                    console.log('OnInit. XX99 Scroll Offset (of the moment) be: ', scrollOffsetWeGot);
+                    // console.log('OnInit. XX99 Scroll Offset (of the moment) be: ', scrollOffsetWeGot);
                     // this.showToTopIfScrolled(scrollOffsetWeGot);
                 }
             )
@@ -38,19 +38,19 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
 
     showToTopIfScrolled(offsetPassedIn) {
 
-        console.log('ZZ99 showToTopIfScrolled(offsetPassedIn) ', offsetPassedIn);
+        // console.log('ZZ99 showToTopIfScrolled(offsetPassedIn) ', offsetPassedIn);
 
         if ( offsetPassedIn > 100 ) {
-            console.log('AA99 .offsetPassedIn > 100 - windowScrolled TRUE! ');
+            // console.log('AA99 .offsetPassedIn > 100 - windowScrolled TRUE! ');
             this.myWindowScrolled = true;
-            console.log('AA99 this.myWindowScrolled should be TRUE: ', this.myWindowScrolled);
+            // console.log('AA99 this.myWindowScrolled should be TRUE: ', this.myWindowScrolled);
         } else if (
             this.myWindowScrolled
             &&
             offsetPassedIn < 10 ) {
-            console.log('BB99 .offsetPassedIn < 10 - windowScrolled FALSE! ');
+            // console.log('BB99 .offsetPassedIn < 10 - windowScrolled FALSE! ');
             this.myWindowScrolled = false;
-            console.log('BB99 this.myWindowScrolled should be FALSE: ', this.myWindowScrolled);
+            // console.log('BB99 this.myWindowScrolled should be FALSE: ', this.myWindowScrolled);
         }
 
     } // /showToTopIfScrolled()
@@ -67,17 +67,17 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
                         () => {
                             // console.log('? zone anything? ', anything); // undefined. Okay.
                             const scrollPosition = cdkScrollDataWeGot.getElementRef().nativeElement.scrollTop; // undefined for 'cdkScrollDataWeGot' :o(
-                            console.log('999 YOWZA? scrollPosition ', scrollPosition); // e.g.,  996.7999877929688
+                            // console.log('999 YOWZA? scrollPosition ', scrollPosition); // e.g.,  996.7999877929688
                             this.scrollOffsetWeJustGotToDisplay = scrollPosition; // TODONE THROTTLE !!! :) << auditTimeInMs. easy-peasy.
 
                             // DO MATH ROUNDING BIT HERE (for now)
                             let scrollOffsetWeJustGotToDisplayRounded = Math.round(this.scrollOffsetWeJustGotToDisplay); // hmm
                             // this.scrollOffsetWeJustGotToDisplay = Math.round(this.scrollOffsetWeJustGotToDisplay); // whamma-self-jamma ? yeah
 
-                            console.log('scrollOffsetWeJustGotToDisplayRounded ', scrollOffsetWeJustGotToDisplayRounded);
+                            // console.log('scrollOffsetWeJustGotToDisplayRounded ', scrollOffsetWeJustGotToDisplayRounded);
 
                             this.scrollPositionRounded = Math.round(scrollPosition);
-                            console.log('YYY this.scrollPositionRounded ', this.scrollPositionRounded);
+                            // console.log('YYY this.scrollPositionRounded ', this.scrollPositionRounded);
 
                             this.showToTopIfScrolled(this.scrollPositionRounded);
                             // this.showToTopIfScrolled(scrollOffsetWeJustGotToDisplayRounded); // << ?? hmm buggy-ish? shows non-rounded numbers ??
@@ -105,7 +105,7 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
             .pipe(
                 tap(
                     (whatIGot) => {
-                        console.log('ZZZ "WINDOW" whatIGot scroll pipe tap ', whatIGot);
+                        // console.log('ZZZ "WINDOW" whatIGot scroll pipe tap ', whatIGot);
                         // "Mai visto."
                     }
                 ),
@@ -118,7 +118,7 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
             .pipe(
                 tap(
                     (whatIGot) => {
-                        console.log('ZZZ "REAL" whatIGot scroll pipe tap ', whatIGot);
+                        // console.log('ZZZ "REAL" whatIGot scroll pipe tap ', whatIGot);
                         // "Mai visto."
                     }
                 ),
@@ -126,7 +126,7 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
             );
 
         // console.log('YYY myWindowScrollObservable$ ', myWindowScrollObservable$); // << Nope
-        console.log('ZZZ myRealScrollObservable$ ', myRealScrollObservable$);
+        // console.log('ZZZ myRealScrollObservable$ ', myRealScrollObservable$);
     }
 
 /*
@@ -160,7 +160,7 @@ Hmm turned OFF the HostListener for window scroll events. Seems that the CDK Scr
         https://stackblitz.com/edit/angular-scrolling-goto-top?file=app%2Fapp.component.ts
          */
 
-        console.log('ZZZZ SCROLL-TOP.COMPONENT myOnWindowScroll()');
+        // console.log('ZZZZ SCROLL-TOP.COMPONENT myOnWindowScroll()');
 
         if (
 /*
@@ -175,7 +175,7 @@ Hmm turned OFF the HostListener for window scroll events. Seems that the CDK Scr
             document.querySelector('mat-sidenav-content').scrollTop
             > 100
         ) {
-            console.log('1111 MATSIDENAV !!!! AA .scrollTop > 100 - windowScrolled TRUE! ');
+            // console.log('1111 MATSIDENAV !!!! AA .scrollTop > 100 - windowScrolled TRUE! ');
         }
 
 
@@ -189,7 +189,7 @@ Hmm turned OFF the HostListener for window scroll events. Seems that the CDK Scr
             document.querySelector('mat-sidenav-content').scrollTop
             > 100
         ) {
-            console.log('AA .scrollTop > 100 - windowScrolled TRUE! ');
+            // console.log('AA .scrollTop > 100 - windowScrolled TRUE! ');
             this.myWindowScrolled = true;
         } else if (
             this.myWindowScrolled
@@ -202,16 +202,16 @@ Hmm turned OFF the HostListener for window scroll events. Seems that the CDK Scr
             document.querySelector('mat-sidenav-content').scrollTop
             < 10
         ) {
-            console.log('BB .scrollTop < 10 - windowScrolled FALSE! ');
+            // console.log('BB .scrollTop < 10 - windowScrolled FALSE! ');
             this.myWindowScrolled = false;
         }
 
     }
 
     myScrollToTop() {
-        console.log('00 myScrollToTop()');
+        // console.log('00 myScrollToTop()');
         (function smoothScroll() {
-            console.log('01 (smoothScroll(){})()');
+            // console.log('01 (smoothScroll(){})()');
 /*
             let currentScrollORIG =
                 document.documentElement.scrollTop
@@ -219,7 +219,7 @@ Hmm turned OFF the HostListener for window scroll events. Seems that the CDK Scr
 */
             let currentScroll =
                                  document.querySelector('mat-sidenav-content').scrollTop;
-            console.log('02 currentScroll ', currentScroll);
+            // console.log('02 currentScroll ', currentScroll);
 
            // console.log(`scroll-top.component----|-window.pageYOffset (this.windowScrolled): ${(Math.round(window.pageYOffset*10^2)/10^2)}-xxxxxxx---![CLICKED-UP]!`);
 

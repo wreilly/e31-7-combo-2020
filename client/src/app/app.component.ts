@@ -52,8 +52,8 @@ export class AppComponent implements OnInit, OnDestroy {
             .scrolled()
             .subscribe(
                 (dataWeGot: CdkScrollable) => {
-                    console.log('APP CdkStrollable dataWeGot');
-                    console.log('APP CdkStrollable dataWeGot ? ', dataWeGot);
+                    // console.log('APP CdkStrollable dataWeGot');
+                    // console.log('APP CdkStrollable dataWeGot ? ', dataWeGot);
                    // this.myNOLONGERHEREOnWindowScroll(dataWeGot) // << Yes!
                     // this.myScrollService.myOnWindowScroll(dataWeGot)
                 }
@@ -129,22 +129,22 @@ export class AppComponent implements OnInit, OnDestroy {
         <mat-sidenav-container           > => No. "scrollData" undefined.
          */
 
-        console.log('APP - myNOLONGERHEREOnWindowScroll - Scroll biz myScrollTop ', myScrollTop);
+        // console.log('APP - myNOLONGERHEREOnWindowScroll - Scroll biz myScrollTop ', myScrollTop);
         /* E.g.,
         0, 278.66666453647, 280, 10994  etc.
          */
 
-        console.log('Scroll biz scrollData ', scrollData);
+        // console.log('Scroll biz scrollData ', scrollData);
         /*
         CdkScrollable {elementRef: ElementRef, scrollDispatcher: ScrollDispatcher, ngZone: NgZone, dir: Directionality, _destroyed: Subject, …}
          */
 
-        console.log('Scroll biz scrollData.getElementRef() ', scrollData.getElementRef());
+        // console.log('Scroll biz scrollData.getElementRef() ', scrollData.getElementRef());
         /*
 ElementRef {nativeElement: mat-sidenav-content.mat-drawer-content.mat-sidenav-content}
          */
 
-        console.log('Scroll biz scrollData.getElementRef() ', scrollData.getElementRef().nativeElement.nodeName);
+        // console.log('Scroll biz scrollData.getElementRef() ', scrollData.getElementRef().nativeElement.nodeName);
         /*
         MAT-SIDENAV-CONTENT
          */

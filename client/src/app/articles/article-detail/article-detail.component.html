@@ -32,7 +32,11 @@
             -->
         </mat-card-subtitle>
         <mat-card-content>
-            {{ articleHereInDetailPage.articleTitle}}
+            <div>
+                <a href="{{ articleHereInDetailPage.articleUrl }}" target="_blank">{{ articleHereInDetailPage.articleUrl }}</a>
+            </div>
+            <div>
+                {{ articleHereInDetailPage.articleTitle}}            </div>
         </mat-card-content>
     </mat-card>
 

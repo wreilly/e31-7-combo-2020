@@ -44,9 +44,9 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       this.myScrollService.scrollOffsetInServiceObservable
           .subscribe(
               (scrollOffsetWeGot) => {
-                  console.log('HEADER 00 OnInit. Scroll Offset (of the moment) be: ', scrollOffsetWeGot);
+                  // console.log('HEADER 00 OnInit. Scroll Offset (of the moment) be: ', scrollOffsetWeGot);
                   this.scrollOffsetWeJustGotToDisplay = scrollOffsetWeGot;
-                  console.log('HEADER 01 OnInit. this.scrollOffsetWeJustGotToDisplay ', this.scrollOffsetWeJustGotToDisplay);
+                  // console.log('HEADER 01 OnInit. this.scrollOffsetWeJustGotToDisplay ', this.scrollOffsetWeJustGotToDisplay);
                   // this.showToTopIfScrolled(scrollOffsetWeGot);
               }
           )
@@ -64,12 +64,12 @@ export class HeaderComponent implements OnInit, AfterViewInit {
                     this.myZone.run(
                         () => {
                             const scrollPosition = cdkScrollDataWeGot.getElementRef().nativeElement.scrollTop; // undefined for 'cdkScrollDataWeGot' :o(
-                            console.log('999888 HEADER YOWZA? scrollPosition ', scrollPosition);
+                            // console.log('999888 HEADER YOWZA? scrollPosition ', scrollPosition);
                             this.scrollOffsetWeJustGotToDisplay = scrollPosition; // whamma-jamma?
 
                             // DO MATH ROUNDING BIT HERE (for now)
                             this.scrollPositionRounded = Math.round(scrollPosition);
-                            console.log('YYY this.scrollPositionRounded ', this.scrollPositionRounded);
+                            // console.log('YYY this.scrollPositionRounded ', this.scrollPositionRounded);
 
                         }
                     )
