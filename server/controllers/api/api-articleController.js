@@ -207,7 +207,7 @@ apiArticleController.apiUpdateArticle = function (req, res, next) {
 /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
 apiArticleController.apiCreateArticle = function (req, res, next) {
 
-    console.log('********************');
+    // console.log('********************');
 /* All Right Already! Stop logging this monster. It's the whole REQUEST. *WAY* Too Much.
 
     console.log('Controller: createArticle req ', req);
@@ -261,7 +261,7 @@ headers: {
   [Symbol(kCapture)]: false
   }
      */
-    console.log('********************');
+    // console.log('********************');
     console.log('Controller: createArticle req.body ', req.body); // WAS: << undefined  :o(
     /* NOW:
     Happy :o)  (now using BodyParser in app.js)
@@ -270,17 +270,18 @@ headers: {
   articleTitle_name: 'Headline Today Be xyz1'
 }
      */
-    console.log('********************');
+    // console.log('********************');
 
     const articleToSave = {};
     articleToSave.articleUrl = req.body.articleUrl_name;
     articleToSave.articleTitle = req.body.articleTitle_name;
+    articleToSave.articleCategory = req.body.articleCategory_name;
 
     articleDataServiceHereInApiController.saveArticle(articleToSave)
         .then(
             (whatIGot) => {
                 // resolved
-                console.log('Controller: 00 createArticle resolved whatIGot.articleTitle ', whatIGot.articleTitle);
+                // console.log('Controller: 00 createArticle resolved whatIGot.articleTitle ', whatIGot.articleTitle);
                 console.log('Controller: 01 createArticle resolved whatIGot ', whatIGot);
                 /* TWO POINTS:
                 I can log the entire "whatIGot", and don't have to break it down to "whatIGot.articleTitle" etc.

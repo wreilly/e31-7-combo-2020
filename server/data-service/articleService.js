@@ -12,7 +12,7 @@ const articleModelHereInService = require('../models/articleModel');
 - .get('/') ==> findAllArticles
 - .get('/recent') ==> findArticleMostRecent
 - .get('/:id') ==> findArticleById
-- .put(':/id') ==> updateArticle
+- .put('/:id') ==> updateArticle
 - .post('/') ==> saveArticle
 - .delete('/:id') ==> deleteArticle
 

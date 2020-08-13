@@ -8,6 +8,10 @@ const articleSchema = new mongoose.Schema({
     articleTitle: {
        type: String,
         required: true
+    },
+    articleCategory: {
+       type: String,
+        required: true
     }
 });
 // LATER: articlePhotos: [String]
