@@ -2,7 +2,15 @@ export interface Article {
     articleId_name: string;
     articleTitle_name: string;
     articleUrl_name: string;
+    articleCategory_name: string;
 }
+/*
+- Sending to BE and DB: 'value'
+- Here on FE for display: 'viewValue'
+That is, here on FE we really want the 'viewValue', not the 'value'.
+'U.S.' not 'u.s.'
+ */
+
 /* Note re: CATEGORY
 w-i-p
 Not yet in use.
@@ -61,3 +69,42 @@ See Also
     ];
     }
  */
+
+export class CategoriesFromEnumLikeClassInModel {
+
+    getCategoriesInModel() {
+        return this.categoriesInModel;
+    }
+
+    categoriesInModel: Category[] = [ // New York Times categories
+        // N.B. 'News' is default TODO how is its *value* handled? hmm
+        {
+            value: 'world',
+            viewValue: 'World-ENUM-LIKE-IN-MODEL',
+        },
+        {
+            value: 'u.s.',
+            viewValue: 'U.S.',
+        },
+        {
+            value: 'politics',
+            viewValue: 'Politics',
+        },
+        {
+            value: 'business',
+            viewValue: 'Business',
+        },
+        {
+            value: 'opinion',
+            viewValue: 'Opinion',
+        },
+        {
+            value: 'arts',
+            viewValue: 'Arts',
+        },
+        {
+            value: 'living',
+            viewValue: 'Living',
+        },
+    ];
+}

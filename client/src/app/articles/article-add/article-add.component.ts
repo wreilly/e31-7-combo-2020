@@ -125,7 +125,14 @@ export class ArticleAddComponent implements OnInit {
   articleMostRecentDisplayFE: Article;
 
   public categories: Category[] = [ // New York Times categories
-    // 1. N.B. 'News' is default TODO how is its *value* handled? hmm
+    /* 1. N.B. 'News' is default
+    Note 'News' is *not* found in below array
+    TODO Q. How is 'News' *value* handled? hmm
+     */
+      /* re: # 1 above:
+      A. See HTML: Appears we bind the value there: t.b.d. if all working right...
+          <mat-option bind-value="'News-BOUND-VALUE'">News-HTML</mat-option>
+       */
       // 2. Unsure if making 'categories' to be 'public' helps, matters, etc. o well
     {
       value: 'world',
@@ -153,7 +160,7 @@ export class ArticleAddComponent implements OnInit {
     },
     {
       value: 'living',
-      viewValue: 'Living999',
+      viewValue: 'Living',
     },
   ];
 
@@ -181,7 +188,7 @@ export class ArticleAddComponent implements OnInit {
     https://github.com/angular/angular.js/commit/ffb6b2fb56d9ffcb051284965dd538629ea9687a
      */
 
-    this.articleCategory_formControl = new FormControl('News',[
+    this.articleCategory_formControl = new FormControl('News-DEFAULT',[
         Validators.required,
     ])
 
@@ -206,6 +213,7 @@ export class ArticleAddComponent implements OnInit {
               _id: string,
               articleTitle: string,
               articleUrl: string,
+              articleCategory: string,
             }) => {
               console.log('Most Recent. whatIGot BE ', whatIGot);
               /* Huh. ARRAY (of one)
@@ -236,7 +244,8 @@ ARRAY of one - same as above.
               this.articleMostRecentDisplayFE = {
                 articleId_name: whatIGot[0]._id,
                 articleTitle_name: whatIGot[0].articleTitle,
-                articleUrl_name: whatIGot[0].articleUrl
+                articleUrl_name: whatIGot[0].articleUrl,
+                articleCategory_name: whatIGot[0].articleCategory,
               };
               console.log('*MUCH* MORE BETTER fwiw, this.articleMostRecentDisplayFE $$$ :o) ', this.articleMostRecentDisplayFE);
               /* "FE NAMING CONVENTION" = bueno
@@ -328,6 +337,15 @@ articleToSave.articleTitle = req.body.articleTitle_name
     /* N.B. For now, we do NOT append the (new) Category form field.
     (The BE knows nothing of it (yet).)
      */
+    /*
+
+     */
+
+    this.myFormFieldsData.append(
+        'articleCategory_name',
+        this.addArticleFormGroup
+            .controls['articleCategory_formControlName'].value
+    );
 
     /*
     Q. console.log() ?
@@ -373,6 +391,7 @@ articleUrl_name: http://nytimes.com/oboy
               _id: string,
               articleTitle: string,
               articleUrl: string,
+              articleCategory: string,
             }) => {
               console.log('ARTICLE "B" - whatIJustCreated: ', whatIJustCreated);
               /* FEATURES THE "BE NAMING CONVENTION" for an Article. Bueno.
@@ -387,13 +406,17 @@ articleUrl_name: http://nytimes.com/oboy
 
               console.log('fwiw, this.articleIJustCreatedDisplayBE !!! ', this.articleIJustCreatedDisplayBE);
               /* Yes
-              {articlePhotos: Array(0), _id: "5f0d89417cd8e02f304f4070", articleUrl: "http://nytimes.com/oboyasdf", articleTitle: "I did just create this, but who knows", __v: 0}
+              {articlePhotos: Array(0), _id: "5f0d89417cd8e02f304f4070", articleUrl: "http://nytimes.com/oboyasdf", articleTitle: "I did just create this, but who knows", articleCategory: "politics", __v: 0}
                */
 
               /* =====================================
                  TIME TO "CONVERT" TO THE "FE NAMING CONVENTION" for an Article
                  =====================================
-                 Below, I get it wrong 3 ways. Then it works.
+                 Note: for CATEGORY, for this "conversion" for FE use,
+                 we want to use the 'viewValue', not the (DB) 'value' that gets stored. cheers.
+                 'U.S.' not 'u.s.'
+
+                 Below, I get WRONG the Object creation etc. 3 different ways. Then it works: "Object literal" - oi.
                */
               // 01 WRONG. Not Object.assign()
 /*
@@ -447,10 +470,24 @@ _id: "5f0daf9584c76c1887b06e14"
 
               // 04  ** YES **  Object Literal Initializer << whoa
               // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer
+
+              /* CATEGORY FIXER
+              Go get 'viewValue' for the 'value' returned from the DB.
+              e.g. 'u.s.' as value will return 'U.S.' as viewValue
+               */
+              const categoryViewValue = this.categories.find( // << Array 'find()', not Array 'filter()' No.
+                  (eachCategoryPair: Category) => {
+                    return eachCategoryPair.value === whatIJustCreated.articleCategory;
+                  }
+              );
+
+
               this.articleIJustCreatedDisplayFE = {
                 articleId_name: whatIJustCreated._id,
                 articleTitle_name: whatIJustCreated.articleTitle,
-                articleUrl_name: whatIJustCreated.articleUrl
+                articleUrl_name: whatIJustCreated.articleUrl,
+                // articleCategory_name: whatIJustCreated.articleCategory, // << This gives you 'value' stored to DB. e.g. 'u.s.'
+                articleCategory_name: categoryViewValue.viewValue, // << This gives you 'viewValue' for FE. e.g. 'U.S.'
               };
               console.log('*MUCH* MORE BETTER fwiw, this.articleIJustCreatedDisplayFE !!! $$$ :o) ', this.articleIJustCreatedDisplayFE);
               /* "FE NAMING CONVENTION" = bueno

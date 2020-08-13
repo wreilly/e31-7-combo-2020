@@ -5,6 +5,8 @@ import {Observable} from "rxjs";
 import { tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import * as UIActions from '../shared/store/ui.actions';
+// import { ArticleAddComponent } from './article-add/article-add.component'; // << ?? used here ? re: categories fixer hmm.
+import { Category } from './article.model';
 
 @Injectable({
   providedIn: 'root'
@@ -36,6 +38,7 @@ export class ArticleService {
               /* PIPE. TAP. articleConfirmationWeGot
               articleTitle: "The Trump Administration Is Reversing 100 Environmental Rules. Here’s the Full List."
 articleUrl: "https://www.nytimes.com/interactive/2020/climate/trump-environment-rollbacks.html?action=click&pgtype=Article&state=default&module=styln-climate&variant=show&region=TOP_BANNER&context=storylines_menu"
+articleCategory: "politics"
 __v: 0
 _id: "5f1364e304e544a462218215"
                */
@@ -153,4 +156,47 @@ PRIMARY> db.newarticles.find({_id: {$lt: ObjectId("5f0e7f400000000000000000"), $
 July 14th P.M. from noon to midnight
    */
 
-}
+
+
+    getCategoriesInService() {
+        return this.categoriesInService;
+    }
+
+    categoriesInService: Category[] = [ // New York Times categories
+        // N.B. 'News' is default TODO how is its *value* handled? hmm
+        {
+            value: 'business',
+            viewValue: 'Business',
+        },
+        {
+            value: 'world',
+            viewValue: 'World-ENUM-LIKE-IN-SERVICE',
+        },
+        {
+            value: 'u.s.',
+            viewValue: 'U.S.',
+        },
+        {
+            value: 'politics',
+            viewValue: 'Politics',
+        },
+        {
+            value: 'opinion',
+            viewValue: 'Opinion',
+        },
+        {
+            value: 'arts',
+            viewValue: 'Arts',
+        },
+        {
+            value: 'living',
+            viewValue: 'Living',
+        },
+    ];
+
+
+
+
+
+
+} // /class ArticleService

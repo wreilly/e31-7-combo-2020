@@ -439,7 +439,8 @@ UPDATE. We *do* have to still do this down here in myOnActivate().
               this.articleMostRecentDisplayFE = {
                 articleId_name: whatIGot[0]._id,
                 articleTitle_name: whatIGot[0].articleTitle,
-                articleUrl_name: whatIGot[0].articleUrl
+                articleUrl_name: whatIGot[0].articleUrl,
+                articleCategory_name: whatIGot[0].articleCategory,
               };
               console.log('*MUCH* MORE BETTER fwiw, this.articleMostRecentDisplayFE $$$ :o) ', this.articleMostRecentDisplayFE);
               /* "FE NAMING CONVENTION" = bueno
