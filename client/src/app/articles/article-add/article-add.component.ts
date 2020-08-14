@@ -39,6 +39,16 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
  */
 
 export class MyCategoriesEnumLikeClass {
+/* *****   NOT USED  *************
+
+Categories are NOT used from this list/array
+here in the ArticleAddComponent
+
+See instead ArticleService
+
+***********************************
+ */
+
 
   // FREE RIDE EXPERIMENT ****  UTILITIES ETC :o)  ******
 // NOT USED NOW. Experiment's over, kids.
@@ -59,8 +69,10 @@ export class MyCategoriesEnumLikeClass {
 
   // /FREE RIDE EXPERIMENT ****  UTILITIES ETC :o)  ******
 
-  categoriesFromEnumLikeClass: Category[] = [ // New York Times categories
-    // N.B. 'News' is default TODO how is its *value* handled? hmm
+  categoriesFromEnumLikeClass: Category[] = [
+      /* ***** NOT USED  ***** See SERVICE */
+      // New York Times categories
+    // N.B. 'News' is default TODONOPE how is its *value* handled? hmm
     {
       value: 'world',
       viewValue: 'World-ENUM-LIKE',
@@ -124,10 +136,18 @@ export class ArticleAddComponent implements OnInit {
   };
   articleMostRecentDisplayFE: Article;
 
-  public categories: Category[] = [ // New York Times categories
+  public categories: Category[]; // << from ArticleService now. :o)
+  public categoriesOLD: Category[] = [
+      /* ***  NOT USED ************
+      See instead ArticleService
+      for canonical (only) list of
+      CATEGORIES []
+      ******************************
+       */
+      // New York Times categories
     /* 1. N.B. 'News' is default
     Note 'News' is *not* found in below array
-    TODO Q. How is 'News' *value* handled? hmm
+    TODONE Q. How is 'News' *value* handled? hmm
      */
       /* re: # 1 above:
       A. See HTML: Appears we bind the value there: t.b.d. if all working right...
@@ -136,7 +156,7 @@ export class ArticleAddComponent implements OnInit {
       // 2. Unsure if making 'categories' to be 'public' helps, matters, etc. o well
     {
       value: 'world',
-      viewValue: 'World-REGULAR',
+      viewValue: 'World-REGULAR-ARTICLEADDCOMPONENT',
     },
     {
       value: 'u.s.',
@@ -173,6 +193,10 @@ export class ArticleAddComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+
+    // Get Categories[] from ArticleService
+    this.categories = this.myArticleService.getCategoriesInService();
+
     // INITIATE FORM GROUP, CONTROLS
     this.articleTitle_formControl = new FormControl(null, [
         Validators.required,
@@ -241,11 +265,23 @@ ARRAY of one - same as above.
               // 04  ** YES **  Object Literal Initializer << whoa
               // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer
               // N.B. 1st item off ARRAY[0] <<
+
+              /* CATEGORY FIXER */
+              /*
+              Go get 'viewValue' for the (stored) 'value'
+    returned from the DB.
+    e.g. 'u.s.' as value will return 'U.S.' as viewValue
+               */
+              let categorySuchAsItIsReturned: string;
+              categorySuchAsItIsReturned = this.myArticleService.getCategoryViewValue(whatIGot[0].articleCategory)
+
+
               this.articleMostRecentDisplayFE = {
                 articleId_name: whatIGot[0]._id,
                 articleTitle_name: whatIGot[0].articleTitle,
                 articleUrl_name: whatIGot[0].articleUrl,
-                articleCategory_name: whatIGot[0].articleCategory,
+                articleCategory_name: categorySuchAsItIsReturned,
+                // articleCategory_name: whatIGot[0].articleCategory,
               };
               console.log('*MUCH* MORE BETTER fwiw, this.articleMostRecentDisplayFE $$$ :o) ', this.articleMostRecentDisplayFE);
               /* "FE NAMING CONVENTION" = bueno
@@ -431,7 +467,7 @@ articleUrl_name: http://nytimes.com/oboy
 */
               /* Hmm. No. (wassup?)
               It is (now ?) keeping the original
-              properties too. hmm. TODO fix
+              properties too. hmm. TODONOPE fix
               articleId_name: "5f0daf9584c76c1887b06e14"
 articlePhotos: []
 articleTitle: "nononononoo"

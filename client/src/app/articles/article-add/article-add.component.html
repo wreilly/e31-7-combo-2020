@@ -151,7 +151,18 @@ See shared/input-focus DIRECTIVE
                 <mat-select
                         bind-formControl='articleCategory_formControl'
                 >
- -->                   <mat-option bind-value="'News-BOUND-VALUE'">News-HTML</mat-option>
+ -->
+<!-- Hmm. Appears I do NOT ( ? ) need to separate
+out as its own mat-option the "default" dropdown choice.
+Hmm. (Such as to avoid having the "Select one..."
+browser default msg appear.)
+Okay. Good.
+I am now putting "News" (back) into the top of the
+Categories Array, over in ArticleService.
+cheers.
+
+                    <mat-option bind-value="'news-BOUND-VALUE'">News-HTML</mat-option>
+-->
                     <mat-option
                             *ngFor="let category of categories"
                             bind-value="category.value"

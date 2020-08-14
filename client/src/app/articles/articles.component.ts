@@ -436,11 +436,22 @@ UPDATE. We *do* have to still do this down here in myOnActivate().
               // 04  ** YES **  Object Literal Initializer << whoa
               // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer
               // N.B. 1st item off ARRAY[0] <<
+
+              /* CATEGORY FIXER */
+              /*
+              Go get 'viewValue' for the (stored) 'value'
+    returned from the DB.
+    e.g. 'u.s.' as value will return 'U.S.' as viewValue
+               */
+              let categorySuchAsItIsReturned: string;
+              categorySuchAsItIsReturned = this.myArticleService.getCategoryViewValue(whatIGot[0].articleCategory)
+
               this.articleMostRecentDisplayFE = {
                 articleId_name: whatIGot[0]._id,
                 articleTitle_name: whatIGot[0].articleTitle,
                 articleUrl_name: whatIGot[0].articleUrl,
-                articleCategory_name: whatIGot[0].articleCategory,
+                articleCategory_name: categorySuchAsItIsReturned,
+                // articleCategory_name: whatIGot[0].articleCategory,
               };
               console.log('*MUCH* MORE BETTER fwiw, this.articleMostRecentDisplayFE $$$ :o) ', this.articleMostRecentDisplayFE);
               /* "FE NAMING CONVENTION" = bueno

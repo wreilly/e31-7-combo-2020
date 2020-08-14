@@ -122,6 +122,14 @@ _id: "5f1364e304e544a462218215"
     } // /deleteArticle()
 
 
+    listArticlesOLD(): Observable<object> {
+      return; //  kinda nothin'
+    }
+    /* "OLD"
+    Placeholder while I work on copy/move
+    of lots of logic from ArticleListComponent
+    over here to ArticleService
+     */
   listArticles(): Observable<Object> {
     // GET ALL Articles
     // DON'T FORGET THAT BLOODY 'return' !!! !!! !!!
@@ -162,15 +170,62 @@ July 14th P.M. from noon to midnight
         return this.categoriesInService;
     }
 
+    categoryThatMatches: Category; // declare here?
+
+    getCategoryViewValue(storedCategoryValue: string): string {
+        /* WAS IN ArticleListComponent (and ArticleAdd)
+
+         */
+
+        let categoryViewValueNoCategory: boolean;
+        // let categoryThatMatches: Category; // see above...
+        const NO_CATEGORY = 'no category (thx Service!)';
+        let categorySuchAsItIsToReturn: string;
+
+        this.categoryThatMatches = {
+            value: 'no value',
+            viewValue: 'no viewValue'
+        };
+
+        this.categoryThatMatches = this.categoriesInService.find(
+            (eachCategoryPair: Category) => {
+                if (typeof storedCategoryValue === "undefined") {
+                    categoryViewValueNoCategory = true;
+                } else {
+                    // we DO have a Category on the Article
+                    // now let's see if it matches the current entry from the array of possible Categories:
+                    if (storedCategoryValue === eachCategoryPair.value) {
+                        return true;
+                        /* Signalling/returning "true" to
+                        Array.find() means it will
+                        return the current array element,
+                        which is what we want.
+                        cheers.
+                         */
+                    }
+                }
+            }
+        ); // /.find()
+
+        if (categoryViewValueNoCategory) {
+            categorySuchAsItIsToReturn = NO_CATEGORY;
+        } else {
+            categorySuchAsItIsToReturn = this.categoryThatMatches.viewValue;
+        }
+
+        return categorySuchAsItIsToReturn;
+
+    } // /getCategoryViewValue()
+
     categoriesInService: Category[] = [ // New York Times categories
-        // N.B. 'News' is default TODO how is its *value* handled? hmm
+        // NO LONGER >> N.B. 'News' is default TODONOPE how is its *value* handled? hmm
         {
-            value: 'business',
-            viewValue: 'Business',
+            value: 'news',
+            viewValue: 'News-SERVICE',
         },
         {
             value: 'world',
-            viewValue: 'World-ENUM-LIKE-IN-SERVICE',
+            viewValue: 'World',
         },
         {
             value: 'u.s.',
@@ -183,6 +238,10 @@ July 14th P.M. from noon to midnight
         {
             value: 'opinion',
             viewValue: 'Opinion',
+        },
+        {
+            value: 'business',
+            viewValue: 'Business',
         },
         {
             value: 'arts',

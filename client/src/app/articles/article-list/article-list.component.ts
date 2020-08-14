@@ -96,174 +96,64 @@ export class ArticleListComponent implements OnInit {
     console.log('this.(test)Articles! ', this.articles);
 */
 
-    // REAL TIME!
+    // REAL (no longer "Test") TIME!
     // Service returns 'Observable<Object>', to which we .subscribe()
-    this.myArticleService.listArticles()
-        .subscribe(
-            (allArticlesWeGot: []) => {
-              // this.articles = allArticlesWeGot; // whamma-jamma? << No! << Well, mebbe? (I mean, I did in 2018.)
-                /*
-                BE-to-FE Converter
-                BE naming convention: articleTitle
-                FE naming convention: articleTitle_name
 
-                (and don't forget the FE FORM naming convention:
-                articleTitle_formControlName)
-                 */
-              this.articles = allArticlesWeGot.map(
-                  (eachPseudoArticleFromApi: {
-                      _id: string,
-                      articleTitle: string,
-                      articleUrl: string,
-                      articleCategory: string,
-                  }) => {
+      // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+      // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+      this.myArticleService.listArticles()
+          .subscribe(
+              (allArticlesWeGot: []) => {
+                  /*
+                  BE-to-FE Converter
+                  BE naming convention: articleTitle
+                  FE naming convention: articleTitle_name
 
-                      let eachRealArticleToReturn: Article;
+                  (and don't forget the FE *FORM* naming convention:
+                  articleTitle_formControlName)
 
-                      /* CATEGORY FIXER << from ArticleAddComponent
-Go get 'viewValue' for the 'value' returned from the DB.
-e.g. 'u.s.' as value will return 'U.S.' as viewValue
- */
-/* NAH NOPE
-                      ArticleAddComponent.categories;
-                      MyCategoriesEnumLikeClass.categories;
-NEMMENO
-                      CategoriesFromEnumLikeClassInModel.get
-*/
+                  And, now, CATEGORY FIXER too!
+                   */
+                  this.articles = allArticlesWeGot.map(
+                      (eachPseudoArticleFromApi: {
+                          _id: string,
+                          articleTitle: string,
+                          articleUrl: string,
+                          articleCategory: string,
+                      }) => {
 
-                      const whatCategoriesFromService: Category[] = this.myArticleService.getCategoriesInService();
-                      console.log('9999999 whatCategoriesFromService ', whatCategoriesFromService);
-/*
-[{…}, {…}, {…}, {…}, {…}, {…}, {…}]
-0: {value: "world", viewValue: "World-ENUM-LIKE-IN-SERVICE"}
-1: {value: "u.s.", viewValue: "U.S."}
- */
+                          let eachRealArticleToReturn: Article;
 
-                      let categoryViewValueNoCategory: boolean;
-                      // let categoryThatMatches: Category; // declared now as Class Member (have I got that right?)
-                      this.categoryThatMatches = {
-                        value: 'no value',
-                        viewValue: 'no viewValue'
-                      };
-                      console.log('0099A this.categoryThatMatches ', this.categoryThatMatches);
-                      /* yep
-                     {value: "no value", viewValue: "no viewValue"}
-                       */
+                          /* CATEGORY FIXER
+    Go get 'viewValue' for the (stored) 'value'
+    returned from the DB.
+    e.g. 'u.s.' as value will return 'U.S.' as viewValue
+     */
+                          let categorySuchAsItIsReturned: string;
 
-                      this.categoryThatMatches = whatCategoriesFromService.find(
-                          /* .find() "finding" !
-                          https://www.w3schools.com/jsref/jsref_find.asp
-                          "where the function returns a true value"
-                           */
-                          (eachCategoryPair: Category) => {
-                              console.log('eachPseudoArticleFromApi.articleCategory ', eachPseudoArticleFromApi.articleCategory); // undefined :o(
-                              console.log('eachCategoryPair.value ', eachCategoryPair.value); // yes u.s., world, etc.
-
-                              console.log('typeof eachPseudoArticleFromApi.articleCategory ', typeof eachPseudoArticleFromApi.articleCategory); // Yeah! typeof eachPseudoArticleFromApi.articleCategory  undefined
-
-                              // YES this if() WORKED
-                              if (typeof eachPseudoArticleFromApi.articleCategory === "undefined") {
-/* https://flaviocopes.com/how-to-check-undefined-property-javascript/
-                              if (typeof car.color === 'undefined') {
-                                     // color is undefined
-                               }
-*/
-                                  /* YES this if() also WORKED
-                              if (eachPseudoArticleFromApi.articleCategory === undefined) {
-*/
-                                  console.log('Do We Get Here?'); // yassa! 109 times. hmmph!
-                                  // return 'no category!'; // << No
-                                  // return {value: "no category value", viewValue: "no category viewValue"}; // << No
-                                  // TODONE set a flag; use that below in another statement to assign "no category" to our categoryViewValue. cheers.
-                                  categoryViewValueNoCategory = true;
-
-/* NAH. EXPERIMENT. */
-                                  if (eachCategoryPair.value === eachPseudoArticleFromApi.articleCategory) {
-                                      // should not match; it's undefined
-                                      console.log('444 SHOULD NOT GET HERE'); // << correct-a-mundo
-                                  } else {
-                                      console.log('555 OUGHTA GET HERE ALRIGHT'); // << yeppers
-                                      /*
-                                      OK bit of ".find()" finding:
-                                      See also below
-                                      // This LOOKS like the object to return I want, but (see above) I do NOT NEED to do this.
-And in fact, this bit of code below is NOT REALLY what is getting returned by .find()
-cheers.
-
-That is, THIS is why the first value was always getting returned for these items with No Category:  { "business" "Business" }   cheers.
-                                       */
-                                  //     return {
-                                  //         value: 'there was no category VALUE',
-                                  //         viewValue: 'there is no category VIEWVALUE',
-                                  //     };
-                                  }
-
-                                 // return true; // << ??
-
-                              } else {
-/* Apparently, "returning" off an Array.find() is NOT gonna work... << RIGHT YOU ARE. Read below. */
-                                  console.log('888 there IS A CATEGORY');
-                                  console.log('777 and it is: ', eachPseudoArticleFromApi.articleCategory); // e.g., u.s.
-                                  if (eachCategoryPair.value === eachPseudoArticleFromApi.articleCategory) {
-                                      console.log('666 and the match is on ', eachCategoryPair.value); // e.g., u.s.
-                                      return true; // ? << YES! (whoa who knew)
-                                      /*
-                                      Hah. All ya gotta do (off Array.find()) is figure out when to holler "true!"
-                                      .find() will return the array element you are on.
-
-                                      No need (see my code below) to "construct" the "value" you think
-                                      you are "returning". Nope.
-                                       */
-/* // This LOOKS like the object to return I want, but (see above) I do NOT NEED to do this.
-And in fact, this bit of code below is NOT REALLY what is getting returned by .find()
-cheers.
-                                      return {
-                                          value: eachPseudoArticleFromApi.articleCategory, // e.g. u.s.
-                                          viewValue: eachCategoryPair.viewValue, // e.g., U.S.
-                                      };
-*/
-                                  }
-                              }
-                          }
-                      ); // /.find()
-
-                      console.log('333 this.categoryThatMatches ', this.categoryThatMatches);
-                      /*
-                      Dang. how'd that happen
-                      {value: "business", viewValue: "Business"}
-                       */
-
-                      if (categoryViewValueNoCategory) {
-                          console.log('00 categoryViewValueNoCategory is true!'); // << Yes.
-                          const NO_CATEGORY = 'no category (thx Boolean!)';
+                          categorySuchAsItIsReturned = this.myArticleService.getCategoryViewValue(eachPseudoArticleFromApi.articleCategory);
 
                           eachRealArticleToReturn = {
                               articleId_name: eachPseudoArticleFromApi._id,
                               articleTitle_name: eachPseudoArticleFromApi.articleTitle,
                               articleUrl_name: eachPseudoArticleFromApi.articleUrl,
-                              articleCategory_name: NO_CATEGORY, // 'viewValue' e.g. 'no category!...' // << YES WORKS
-                              // articleCategory_name: this.categoryThatMatches.viewValue, // 'viewValue' e.g. 'solly! no categolly!'
+                              articleCategory_name: categorySuchAsItIsReturned, // 'viewValue' e.g. 'no category!...' --OR-- category viewValue
                           }
-                      } else {
-                          // There IS A CATEGORY by gum
-                          eachRealArticleToReturn = {
-                              articleId_name: eachPseudoArticleFromApi._id,
-                              articleTitle_name: eachPseudoArticleFromApi.articleTitle,
-                              articleUrl_name: eachPseudoArticleFromApi.articleUrl,
-                              articleCategory_name: this.categoryThatMatches.viewValue, // 'viewValue' e.g. 'U.S.'
-                          }
+
+                          return eachRealArticleToReturn;
                       }
-                    return eachRealArticleToReturn;
-                  }
-              ) // /allArticlesWeGot.map()
 
-                this.latestArticleDate = this.myDateFromObjectId(this.articles[this.articles.length - 1].articleId_name);
-                this.latestArticleAnchorId = this.articles[this.articles.length - 1].articleId_name;
-                this.articlesCount = this.articles.length;
+                  ) // /allArticlesWeGot.map()
 
-            } // /next(allArticlesWeGot)
+                  this.latestArticleDate = this.myDateFromObjectId(this.articles[this.articles.length - 1].articleId_name);
+                  this.latestArticleAnchorId = this.articles[this.articles.length - 1].articleId_name;
+                  this.articlesCount = this.articles.length;
 
-        ); // /listArticles.subscribe()
+              } // /next(allArticlesWeGot)
+
+          ); // /listArticles.subscribe()
+      // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+      // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   } // /ngOnInit()
 
