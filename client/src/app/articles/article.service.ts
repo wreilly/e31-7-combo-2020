@@ -179,7 +179,7 @@ July 14th P.M. from noon to midnight
 
         let categoryViewValueNoCategory: boolean;
         // let categoryThatMatches: Category; // see above...
-        const NO_CATEGORY = 'no category (thx Service!)';
+        const NO_CATEGORY = 'No Category "viewValue" (thx Service!)';
         let categorySuchAsItIsToReturn: string;
 
         this.categoryThatMatches = {

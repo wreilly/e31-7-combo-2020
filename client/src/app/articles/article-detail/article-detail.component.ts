@@ -1,7 +1,13 @@
-import {Component, EventEmitter, OnInit, Output, OnDestroy} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output, OnDestroy, forwardRef} from '@angular/core';
 
 // ****   FORM for EDIT MODE  **********
-import { FormGroup, FormControl, Validators, FormGroupDirective, NgForm } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormGroupDirective, NgForm, SelectControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+/* CRAZED MAN 999
+SelectControlValueAccessor, NG_VALUE_ACCESSOR ... WUL (Wish Us Luck)
+Hmm, not the "Select" version but just plain ControlValueAccessor is what we implement.
+Okay!
+ */
+
 import { ErrorStateMatcher } from '@angular/material/core';
 // Interesting. Above not needed; we get it from ArticleAddComponent instead as "My"...
 import { MyErrorStateMatcher, MyCategoriesEnumLikeClass } from '../article-add/article-add.component';
@@ -13,7 +19,7 @@ Hokey, hard-coded, But it DID WORK, to get that value of '20' over from ArticleA
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { ArticleService } from '../article.service';
-import { Article } from '../article.model';
+import {Article, Category} from '../article.model';
 import {BehaviorSubject, Observable} from 'rxjs'; // << ?? t.b.d.
 import { map, tap } from 'rxjs/operators';
 /* ??
@@ -28,12 +34,27 @@ import * as fromRoot from '../../store/app.reducer'; // But we do not need/do .s
 // Before, we were just sending out that info (are we editing or not) to other (parent) Component to know.
 // cheers
 
+/* CRAZED MAN 999
+
+https://angular.io/api/core/forwardRef << who knew
+ */
+
 @Component({
     selector: 'app-article-detail',
     templateUrl: 'article-detail.component.html',
-    styleUrls: ['article-detail.component.scss']
+    styleUrls: ['article-detail.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => ArticleDetailComponent),
+            // multi: true,
+        }
+    ],
 })
-export class ArticleDetailComponent implements OnInit, OnDestroy {
+export class ArticleDetailComponent implements OnInit, OnDestroy, ControlValueAccessor {
+
+    // https://stackoverflow.com/questions/40009149/creating-custom-form-controls-in-angular-2
+    private _myCategoryValue: any = '';
 
     // ****   FORM for EDIT MODE  **********
 
@@ -43,6 +64,138 @@ export class ArticleDetailComponent implements OnInit, OnDestroy {
     on the variables, from ArticleAddComponent.
     cheers
      */
+
+    /*
+    O LA. *Hopefully* (ye gods)
+    this will get us the EXISTING Category
+    on the item being edited,
+    to populate the G.D. <select> field already!
+    YEESH
+     */
+    selectedCategoryToEdit: Category;
+    /*
+    e.g. {value: "living", viewValue: "Living"}
+     */
+
+    /* CRAZED MAN 999
+    SelectControlValueAccessor
+    IMPLEMENTATION
+    https://angular.io/api/forms/SelectControlValueAccessor
+    https://indepth.dev/never-again-be-confused-when-implementing-controlvalueaccessor-in-angular-forms/
+    https://blog.angulartraining.com/tutorial-custom-form-controls-with-angular-22fc31c8c4cc
+    https://www.digitalocean.com/community/tutorials/angular-custom-form-control
+    https://stackoverflow.com/questions/40009149/creating-custom-form-controls-in-angular-2
+     */
+/* ? needed ?
+    onChanged() {
+
+    }
+*/
+    // https://www.positronx.io/angular-7-select-dropdown-examples-with-reactive-forms/#tc_2968_06
+
+
+    get articleCategory_formControlName() { // << NEVER WORKED? CALLED? oi
+        console.log('00 this.articleCategory_formControl.value ', this.articleCategory_formControl.value);
+        return this.articleCategory_formControl.value;
+    }
+
+    get myCategoryValue() {
+        return this._myCategoryValue;
+    }
+    set myCategoryValue(categoryValuePassedIn: any) {
+        if (categoryValuePassedIn) {
+            this._myCategoryValue = categoryValuePassedIn;
+            this.onChange(categoryValuePassedIn); // << ??
+        }
+    }
+
+
+
+    writeValue(value: any) {
+        if (value) {
+            console.log('writeValue value passed in: ', value);
+            /* Yes
+            {value: "living", viewValue: "Living"}
+             */
+
+            // this.value = value; // << ???????????
+            console.log('writeValue what in the world is this ? ', this);
+            /*
+            ArticleDetailComponent {myArticleService: ArticleService, myActivatedRoute: ActivatedRoute, myRouter: Ro ...
+             */
+            console.log('writeValue what in the world is this.articleCategory_formControl.value ? ', this.articleCategory_formControl.value);
+            /* boo-hoo
+            null
+             */
+            console.log('writeValue what in the world is this.articleCategory_formControl ? ', this.articleCategory_formControl);
+            /*
+            FormControl asyncValidator: null, pristine: true, to...
+            value:  {value: "living", viewValue: "Living"}
+             */
+
+            if (this.selectedCategoryToEdit) {
+                console.log('writeValue() this.selectedCategoryToEdit be: ', this.selectedCategoryToEdit);
+                /* Yes
+                {value: "living", viewValue: "Living"}
+                 */
+
+                console.log('BEFORE - DIDITWORKORWHAT writeValue what in the world is this.articleCategory_formControl ? ', this.articleCategory_formControl);
+
+                this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.selectedCategoryToEdit, { onlySelf: true }); // maybe this does nothing ?? ??
+                /*
+same as after - whole FormControl, with value: {value: "living", viewValue: "Living"}
+WTF
+ */
+
+                console.log('AFTER - DIDITWORKORWHAT writeValue what in the world is this.articleCategory_formControl ? ', this.articleCategory_formControl);
+                /*
+                same as before - whole FormControl, with value: {value: "living", viewValue: "Living"}
+                WTF
+                 */
+                // this.articleCategory_formControl.value = this.selectedCategoryToEdit;
+
+                console.log('BEFORE - this._myCategoryValue ', this._myCategoryValue);
+                /*
+                empty !
+                 */
+
+                // this._myCategoryValue = this.selectedCategoryToEdit;
+/* These did NOT work to get the edit in the form to load the right option (sigh)
+But they of course did work to put the expected value onto this._myCategoryValue. oi.
+                this._myCategoryValue = this.categories[3]; // hell hard-coded y not  {value: "politics", viewValue: "Politics"}
+                this._myCategoryValue = this.categories[3].value; // hell hard-coded y not  politics
+                this._myCategoryValue = this.categories[3].viewValue; // hell hard-coded y not  Politics
+*/
+
+                console.log('AFTER - this._myCategoryValue ', this._myCategoryValue);
+/* YES
+{value: "living", viewValue: "Living"}
+ */
+                /* YES with categories[3] hard-coded
+                {value: "politics", viewValue: "Politics"}
+                 */
+
+
+            } else {
+                console.log('writeValue. Hmm! this.selectedCategoryToEdit is falsy & Etc.?');
+            }
+        } else {
+            console.log('writeValue. Hmm, writeValue got nothing ? for passed-in value? ');
+        }
+    }
+    propagateChange = () => {}; // << ?
+    registerOnChange(fn: (value: any) => any): void {
+        this.onChange = fn;
+    }
+    registerOnTouched(fn: () => any): void {
+        this.onTouched = fn;
+    }
+    // Optional ...
+    setDisabledState(isDisabled: boolean): void {
+
+    }
+    onChange: any = () => { };
+    onTouched: any = () => { };
 
     myFormFieldsData: FormData = new FormData();
 
@@ -54,6 +207,9 @@ export class ArticleDetailComponent implements OnInit, OnDestroy {
 
     myOwnErrorStateMatcher: MyErrorStateMatcher; // << imported ! very nice.
     myOwnCategoriesEnumLikeClass: MyCategoriesEnumLikeClass;
+
+    public categories: Category[]; // << from ArticleService now. :o)
+
 
     // ****   /FORM for EDIT MODE  **********
 
@@ -130,7 +286,18 @@ Now handling TWO different events/pieces-of-info:
         articleAsObservableHereInDetailPage$: Observable<any[]>;
         // articleAsObservableHereInDetailPage$: Observable<Object>;
 */
-        articleHereInDetailPage;
+
+/* NOPE. This is *not* a "FE" Article.
+We (kinda lazily) just use the BE Article returned
+    articleHereInDetailPage: Article;
+*/
+    articleHereInDetailPage: {
+        _id: string,
+        articlePhotos: string[],
+        articleUrl: string,
+        articleTitle: string,
+        articleCategory: string,
+    };
 
 /* Dev testing etc.
         articleHereInDetailPageAttempt01: Article = {
@@ -223,10 +390,15 @@ Now handling TWO different events/pieces-of-info:
 https://github.com/angular/angular.js/commit/ffb6b2fb56d9ffcb051284965dd538629ea9687a
  */
 
-        this.articleCategory_formControl = new FormControl('News',
+        this.articleCategory_formControl = new FormControl(null,
             [
                 Validators.required,
             ]);
+        /* As noted on ArticleAddComponent:
+Here on a SELECT form element, this "default formState" does *NOT* work (boo).
+'News'   nor  'News-SERVICE'
+Nope. Kinda sucks.
+*/
 
         this.editArticleFormGroup = new FormGroup({
             'articleTitle_formControlName': this.articleTitle_formControl,
@@ -241,6 +413,8 @@ https://github.com/angular/angular.js/commit/ffb6b2fb56d9ffcb051284965dd538629ea
 
         // TODO this.myUIIsLoadingStore$ = this.myStore.select(fromRoot.getIsLoading);
 
+        this.categories = this.myArticleService.getCategoriesInService();
+
         // ****   /FORM for EDIT MODE  **********
 
         this.getArticle();
@@ -250,6 +424,16 @@ https://github.com/angular/angular.js/commit/ffb6b2fb56d9ffcb051284965dd538629ea
         this.tellingYouMyId.emit(this.articleHereInDetailPage.articleId_name);
         // SENDING TO PARENT ARTICLES.COMPONENT
 */
+    } // /ngOnInit()
+
+/*
+    myCompareOptionCategoryValues(optionCategory1: Category, optionCategory2: Category): boolean { // << Hmm, why didn't type : Category complain ?
+*/
+    myCompareOptionCategoryValues(optionCategory1: any, optionCategory2: any): boolean {
+        console.log('COMPARE 1 ', optionCategory1); // news
+        // console.log('COMPARE 1.value ', optionCategory1.value); // undefined
+        console.log('COMPARE 2 ', optionCategory1);
+            return optionCategory1 && optionCategory2 ? optionCategory1.value === optionCategory2.value : optionCategory1 === optionCategory2;
     }
 
     getArticle() {
@@ -439,7 +623,8 @@ ERROR:
 length: 1
 __proto__: Array(0)
 articleTitle: "Trump’s WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers"
-articleUrl: "myhttp"
+articleUrl: "myhttp",
+articleCategory: "living", // << e.g.
 __v: 0
 _id: "5af746cea7008520ae732e2c"
                              */
@@ -460,6 +645,40 @@ _id: "5af746cea7008520ae732e2c"
                             cf. example where we DO do the "converting":
                             src/app/articles/article-add/article-add.component.ts:174
                              */
+
+                            /* CATEGORY FIXER
+                            Okay - in this Component (ArticleDetail), apparently I (decided?) to
+                            just work with the BE Naming Convention for the field names - rather
+                            than bother converting to FE Naming Convention for field names.
+                            No biggie.
+                            BUT - we *DO* still need to convert the Category DB-stored 'value'
+                            to the U/I presentation 'viewValue'.
+                            e.g. 'u.s.' to become 'U.S.'
+                             */
+                            let categorySuchAsItIsReturned: string;
+                            categorySuchAsItIsReturned = this.myArticleService.getCategoryViewValue(articleIGot.articleCategory);
+                            // console.log('articleIGot.articleCategory ', articleIGot.articleCategory); // yes. world
+
+
+                            // *****   'SCUSE ME   ********************************
+                            console.log('PATCHVALUE articleIGot.articleCategory ', articleIGot.articleCategory); // Yep  living
+                            this.editArticleFormGroup.controls['articleCategory_formControlName'].patchValue(
+                                articleIGot.articleCategory // e.g. 'world'
+                            );
+
+                            // /*************************************
+
+
+
+
+
+                            // console.log('categorySuchAsItIsReturned: ', categorySuchAsItIsReturned); // yes! World
+                            this.articleHereInDetailPage.articleCategory = categorySuchAsItIsReturned; // yes. okay. whamma-jamma one field
+                            console.log('1111B getArticle. this.articleHereInDetailPage: CATEGORY FIXER? ', this.articleHereInDetailPage);
+                            /*
+                            articleCategory: "Living" // << Yep "viewValue"
+                             */
+
 
 /* NAH. Worked, but not necessary.
                             this.articleAsOneItemArrayHereInDetailPage.push( articleIGot);
@@ -582,6 +801,20 @@ But then, sadly, the Store 'state' somehow ( ? ) *loses* this property of articl
                                 PatchValue
                                 **********************************
                              */
+                            /* PERHAPS NOT INTUITIVE...
+                            Coming back to this code, later ---
+                            O la. Apparently, here in getArticle(),
+                            you prepare this EDIT PATCHVALUE() biz
+                            below *regardless*.
+                            You do not prepare it, only "if editing".
+                            No.
+                            You prepare it regardless.
+                            There is no "if()" test here in the TypeScript
+                            as to preparing it, or not. You just prepare it.
+                            Then, on the template U/I, the *ngIf()
+                            takes care of displaying it or not.
+                            Hmmph.
+                             */
                             /*
                             Another "AH-HAH" moment: PATCH VALUE !!!
 Hey! Big Point!
@@ -590,7 +823,7 @@ It puts the value into the input field. Fine.
 But it does NOT get you "2-WAY Binding". No.
 Maybe you don't need it. Fine. Jus' saying.
 
---------------------------------------
+-----  From 2018 CLIENT  ---------------------------------
 src/app/article-detail/article-detail.component.ts:173
 /Users/william.reilly/dev/JavaScript/CSCI-E31/Assignments/07-final-CODE-CLEAN-UP/client/src/app/article-detail/article-detail.component.ts
 --------------------------------------
@@ -607,11 +840,150 @@ this.myArticleEditFormGroup.patchValue({
 https://angular.io/api/forms/FormControl#patchvalue
                              */
 
-                            this.editArticleFormGroup.patchValue({
-                                articleTitle_formControlName: articleIGot.articleTitle
-                                // N.B. "BE" convention: articleTitle, not FE articleTitle_name. cheers
-                            })
+                            /* ***  TEST  - COMMENT OUT PATCHVALUE - STILL WORKS ??? - WTF ?
+                            OK OK OK
+                            False alarm.
+                            Fer whatever reason, the edit change(s) here were *NOT* picked up
+                            by compile etc.
+                            The browser wasn't seeing/getting this "Comment Out" biz. !!!
+                            OK OK OK
+                            patchValue DOES work okay, at least for this simple string <input> field.
+                            On to the <select> options field below, for Categories. Yeesh.
+                            */
 
+                            this.editArticleFormGroup.patchValue({
+                                articleTitle_formControlName: articleIGot.articleTitle,
+                                articleUrl_formControlName: articleIGot.articleUrl,
+                                // articleCategory_formControlName: articleIGot.articleCategory, // << No suh! Not so simple, for SELECT field
+                            });
+                            // N.B. Above - "BE" convention: articleIGot.articleTitle, not FE: articleTitle_name. cheers
+                            //                                                                             ^^^^^
+
+                            // NEW. Let's add editing the damned CATEGORY
+                            console.log(' PATCHVALUE articleIGot.articleCategory ', articleIGot.articleCategory); // << Yep. ??? IS THIS TRUE ??? 'Living' ???  << nah, just console.log() twiggery. This bad boy is really just 'living' I am like 99% sure.
+                            console.log(' PATCHVALUE categorySuchAsItIsReturned ', categorySuchAsItIsReturned); // << Yep.  'Living'
+/* Nope. Already did this, couple hundred (yeesh) lines above!
+                            const categorySuchAsItIsReturned = this.myArticleService.getCategoryViewValue(articleIGot.articleCategory);
+*/
+
+
+/*
+                            this.editArticleFormGroup.patchValue( {
+/!* Old Skool. Wrong-o.
+                                articleCategory_formControlName: articleIGot.articleCategory // << 'living' :(
+*!/
+                            /!* Well, maybe "New School" but still Not Working. sigh.
+                                articleCategory_formControlName: categorySuchAsItIsReturned // << 'Living' :)
+                            *!/
+                            });
+*/
+
+/* No.
+This "writeValue()" is 1 of 4 methods on the thing you gotta implement: controlValueAccessor, selectControlValueAccessor
+Not for me, now, I hope/think.
+                            this.editArticleFormGroup.controls['articleCategory_formControlName'].writeValue(categorySuchAsItIsReturned);
+*/
+
+                            /* Hmm. I've been working off FormGROUP. Should it be off the CONTROL ??
+                            - FormGROUP patch worked for plain input
+                            - But maybe for select I need to drill down to the Control. Hmm
+NO this did NOT "set" nor "patch" the value into the select field, for Editing. sigh-issimo.
+                             */
+/* No. Not working neither! sigh.
+                            this.editArticleFormGroup.controls['articleCategory_formControlName'].setValue(
+                                categorySuchAsItIsReturned,
+                                { onlySelf: true}
+                                );
+*/
+                            /*
+                            Q. What (the hell) is "onlySelf"?
+                            A. https://stackoverflow.com/questions/39602837/angular-2-formcontrol-setvalue-onlyself-parameter?answertab=votes#tab-top
+                            Didn't make it work, but, benign, anyway. (I expect.)
+                             */
+
+                            /* https://stackoverflow.com/questions/39766029/angular2-reactive-forms-set-default-value-for-form-fields-with-dropdown
+                            Hard-coding [3] for the moment.
+                            'politics' 'Politics'
+
+                            NO. That did NOT work. o la.
+                             */
+                            console.log('this.categories[3] ', this.categories[3]);
+                            /* Yep
+                              {value: "politics", viewValue: "Politics"}
+                            */
+
+                            console.log('this.categories[3].viewValue ', this.categories[3].viewValue);
+                            /* Yep
+                              Politics
+                             */
+
+/* NO.
+                            this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.categories[3], { onlySelf: true });
+*/
+/* No. undefined for selectedCategoryToEdit sigh
+Odd, I guess. Following line works, but this one breaks. (".value")
+Breaks on ArticleDetailComponent for DISPLAY.
+Then on ArticleDetailComponent for EDIT this is okay: this.selectedCategoryToEdit.value
+Okay, I guess I get it.
+After all, 'selectedCategoryToEdit' is declared way up above as a class member. All right.
+
+
+ No:                           this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.selectedCategoryToEdit.value, { onlySelf: true });
+*/
+                            // Yes:
+                            this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.selectedCategoryToEdit, { onlySelf: true });
+
+                            /* NO.
+                            this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.categories[3].viewValue, { onlySelf: true });
+*/
+                            console.log('XXX this.editArticleFormGroup ', this.editArticleFormGroup);
+                            /* STRANGE. Here you DO find the Category... << hmm, do I ? o la << yes, I do! o la 2
+                            FormGroup {validator: null, asyncValidator: null, pristine....
+
+                            articleCategory_formControlName: {value: "living", viewValue: "Living"}
+                            articleUrl_formControlName: null
+                            articleTitle_formControlName: "As Colleges Move Classes Online, Families Rebel Against the Cost"
+                             */
+
+                            console.log('XXXZZZ this.editArticleFormGroup.getRawValue() ', this.editArticleFormGroup.getRawValue());
+                            /* HELL. Here, it's UNDEFINED
+                            {articleTitle_formControlName: "As Colleges Move Classes Online, Families Rebel Against the Cost", articleUrl_formControlName: null, articleCategory_formControlName: undefined}
+                             */
+
+                            console.log('XXXYYY this.editArticleFormGroup.controls[\'articleCategory_formControlName\'] ', this.editArticleFormGroup.controls['articleCategory_formControlName']);
+
+
+                            /* Oh boy.
+                            https://stackoverflow.com/questions/39105905/angular-2-bind-object-to-dropdown-and-select-value-based-on-an-event
+                             */
+                            let localCategoryToBeSelected: Category;
+                            localCategoryToBeSelected = this.localGiveMeFullCategoryObject(categorySuchAsItIsReturned);
+                            console.log('localCategoryToBeSelected ', localCategoryToBeSelected);
+                            /* YES.
+                               {value: "living", viewValue: "Living"}
+                             */
+
+/* Still no. oi
+                            this.editArticleFormGroup.get('articleCategory_formControlName').setValue(localCategoryToBeSelected, { onlySelf: true });
+*/
+/* Also still no. I am ready to GIVE UP.
+                            this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.selectedCategoryToEdit, { onlySelf: true });
+*/
+                            /* CRAZED MAN 999
+                            https://stackoverflow.com/questions/40009149/creating-custom-form-controls-in-angular-2
+            1. angular forms imports at top: SelectControlValueAccessor, NG_VALUE_ACCESSOR
+            2. providers: in @Component at top o la
+            3. Component implements SelectControlValueAccessor also at top
+            https://angular.io/api/forms/NG_VALUE_ACCESSOR
+                             */
+/* sent okay, but let's try .value
+                            this.writeValue(this.selectedCategoryToEdit);
+*/
+                            /* This is sending:
+                            {value: "living", viewValue: "Living"}
+                             */
+                            console.log('4444 this.selectedCategoryToEdit.value ', this.selectedCategoryToEdit.value);
+                            this.writeValue(this.selectedCategoryToEdit.value); // << ??
 
                             /* ***********************************
                                 /FORM EDIT
@@ -619,8 +991,8 @@ https://angular.io/api/forms/FormControl#patchvalue
                              */
 
 
-                                                } // /next(articleIGot)
-                                            ); // /.subscribe()  ...Service.getArticle()
+                        } // /next(articleIGot)
+                    ); // /.subscribe()  ...Service.getArticle()
 
 
                         /* NO
@@ -637,7 +1009,45 @@ https://angular.io/api/forms/FormControl#patchvalue
         ) // /.subscribe()  myActivatedRoute.params
     } // /getArticle()
 
+    localGiveMeFullCategoryObject(viewValuePassedIn: string): Category {
+        console.log('localGiveMeFullCategoryObject - viewValuePassedIn ', viewValuePassedIn);
+        const NO_CATEGORY = 'No Category "viewValue" (thx Service!)'; // << Same as in ArticleService
+
+        if (viewValuePassedIn === NO_CATEGORY) {
+            let noCategory: Category = {
+                value: 'No Category "value" (thx ArticleDetail!)',
+                viewValue: NO_CATEGORY
+            }
+            this.selectedCategoryToEdit = noCategory;
+
+        } else {
+
+            let viewValueToCompare: string = viewValuePassedIn;
+            let found: boolean = false;
+            for (let i = 0; i < this.categories.length; i++) {
+                let thisCategory: Category = this.categories[i];
+                if (thisCategory.viewValue === viewValueToCompare) {
+                    found = true;
+                    this.selectedCategoryToEdit = thisCategory;
+                }
+            }
+        }
+        console.log('555 local blah blah this.selectedCategoryToEdit ', this.selectedCategoryToEdit);
+        /* Yeah!
+        {value: "living", viewValue: "Living"}
+         */
+        console.log('555a local blah blah this.selectedCategoryToEdit ', this.selectedCategoryToEdit.value);
+        /* Yep
+        living
+         */
+
+        return this.selectedCategoryToEdit; // ( ? ) does this need to be 'returned'? (can't hurt I guess)
+    }
+
     getArticleViaSubscribe() {
+            /* ***  NOT BEING CALLED !!! ***
+               *****************************
+             */
         this.myActivatedRoute.params.subscribe(
             (paramsIGot) => {
                 const articleIdHereInDetailPage = paramsIGot['article_id'];
@@ -647,7 +1057,12 @@ https://angular.io/api/forms/FormControl#patchvalue
                  */
                 this.myArticleService.getArticle(articleIdHereInDetailPage)
                     .subscribe(
+                        (articleIGot: any) => {
+/* No. Don't "type" this returned article we got from BE, as
+a FE 'Article' type. It isn't. Just use : any, like done in getArticle() above.
+cheers.
                         (articleIGot: Article) => {
+*/
                             console.log('9999 getArticle. articleIGot: ', articleIGot);
                             this.articleHereInDetailPage = articleIGot; // whamma-jamma?
                             console.log('9999 getArticle. this.articleHereInDetailPage ', this.articleHereInDetailPage);
@@ -655,7 +1070,7 @@ https://angular.io/api/forms/FormControl#patchvalue
                     );
             }
         )
-    }
+    } // /getArticleViaSubscribe()
 
     processReactiveFormEdit() {
         // ****   FORM for EDIT MODE  **********

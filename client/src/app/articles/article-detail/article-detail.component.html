@@ -35,8 +35,7 @@
             <div>
                 <a href="{{ articleHereInDetailPage.articleUrl }}" target="_blank">{{ articleHereInDetailPage.articleUrl }}</a>
             </div>
-            <div>
-                {{ articleHereInDetailPage.articleTitle}}            </div>
+            <div>News Category: {{ articleHereInDetailPage.articleCategory}}</div>
         </mat-card-content>
     </mat-card>
 
@@ -69,7 +68,7 @@
             -->
         </mat-card-subtitle>
         <mat-card-content>
-            {{ articleHereInDetailPage.articleTitle}}
+<!--            {{ articleHereInDetailPage.articleTitle}}-->
             <p>*******   FORM EDITING   *********</p>
             <form
                     bind-formGroup="editArticleFormGroup"
@@ -79,7 +78,7 @@
                     fxLayoutGap="10px"
             >
                 <mat-form-field>
-                    <mat-label>Label for Title EDIT</mat-label>
+                    <mat-label>Label for Title EDITING</mat-label>
                     <input
                             type="text"
                             matInput
@@ -94,16 +93,80 @@ NOPE:                    formControlName="'articleTitle_formControlName'"
 
 Hmm, for EDIT mode? hmm       placeholder="placey title EDIT"-->
                     <mat-hint>
-                        Hint for Title EDIT
+                        Hint for Title EDITING
                     </mat-hint>
                     <mat-error>
-                        Error for Title EDIT: 10 chars pls! btw you typed/pasted {{ myHowManyCharsTyped('articleTitle_formControlName')}} of /10
+                        Error for Title EDITING: 10 chars pls! btw you typed/pasted {{ myHowManyCharsTyped('articleTitle_formControlName')}} of /10
                     </mat-error>
 <!-- But it DID WORK, to get that value of '20' over from ArticleAddComponent. cheers
                     <mat-error>
                         Error for Title EDIT: 10 chars pls! btw you typed/pasted {{ myOwnCategoriesEnumLikeClass.myHowManyCharsTypedFromEnumLikeClass()}} of /10
                     </mat-error>
 -->
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>
+                        Label for URL EDITING
+                    </mat-label>
+                    <input
+                            type="text"
+                            matInput
+                            formControlName="articleUrl_formControlName"
+                            [errorStateMatcher]="myOwnErrorStateMatcher"
+                    >
+                    <mat-hint>
+                        Hint for URL EDITING
+                    </mat-hint>
+                    <mat-error>
+                        Error for URL EDITING (didn't match our RegEx! solly!)
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>
+                        Label for Category EDITING
+                    </mat-label>
+                    <!--
+                    https://v9.material.angular.io/components/select/api#MatSelect
+                    Hmm I tried couple things. No Way.
+                     <mat-select
+                            value="value we plunked into HTML?"
+                            selected
+                      >
+
+                      Hmm. https://medium.com/@kastepanyan24/how-to-set-selected-option-dynamically-in-angular-6-85c99958cca5
+                      [compareWith]
+                      https://angular.io/api/forms/SelectControlValueAccessor#customizing-option-selection
+                    -->
+                    <mat-select
+                            formControlName="articleCategory_formControlName"
+                            bind-compareWith="myCompareOptionCategoryValues"
+                            [errorStateMatcher]="myOwnErrorStateMatcher"
+                    >
+<!-- No. I saw this [ngValue] on an Angular doc page, but it isn't
+for Angular Material. cheers
+https://angular.io/api/forms/SelectControlValueAccessor#using-select-controls-in-a-reactive-form
+
+                        <mat-option
+                                *ngFor="let category of categories"
+                                bind-ngValue="category.value"
+                        >       NOPE
+-->
+<!-- "Property ngValue is not provided by any applicable directives nor by mat-option element " -->
+<!-- Yeah this 'bind-value' was working for other form fields... -->
+                            <mat-option
+                                    *ngFor="let category of categories"
+                                    bind-value="category.value"
+                            >
+
+                            {{ category.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-hint>
+                        Hint for Category EDITING
+                    </mat-hint>
+                    <mat-error>
+                        Error for Category EDITING
+                    </mat-error>
                 </mat-form-field>
                 <div
                         fxLayout="column"

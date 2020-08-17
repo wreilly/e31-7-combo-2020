@@ -54,8 +54,7 @@ cheers.
     <mat-card-content
             *ngIf="articleHere"
     >
-        <p>Article Category: {{articleHere.articleCategory_name}}</p> <!-- Shows: u.s. -->
-        <p>Article Category: {{articleHere.articleCategory_name}}</p> <!-- We want: U.S. -->
+        <p>News Category: {{articleHere.articleCategory_name}}</p> <!-- viewValue: U.S. -->
         <p class="tiny">Article ID: {{articleHere.articleId_name}}</p>
         <p class="teeny">Article added: {{myDate}}</p>
         <!-- Yep:

@@ -202,6 +202,11 @@ export class ArticleAddComponent implements OnInit {
         Validators.required,
         Validators.minLength(10),
     ]);
+    /* Note:
+    Yes, the "default formState" works here on plain string input:
+    'little default TITLE for ya'
+    But see below re: select (don't work!) boo.
+     */
 
     this.articleUrl_formControl = new FormControl(null,
         [
@@ -212,9 +217,15 @@ export class ArticleAddComponent implements OnInit {
     https://github.com/angular/angular.js/commit/ffb6b2fb56d9ffcb051284965dd538629ea9687a
      */
 
-    this.articleCategory_formControl = new FormControl('News-DEFAULT',[
+    this.articleCategory_formControl = new FormControl(null,[
         Validators.required,
-    ])
+    ]);
+    /* Note:
+Here on a SELECT form element, this "default formState" does *NOT* work (boo).
+'News-DEFAULT'   nor  'News-SERVICE'
+Nope. Kinda sucks.
+ */
+
 
     this.addArticleFormGroup = new FormGroup({
       'articleTitle_formControlName': this.articleTitle_formControl,
