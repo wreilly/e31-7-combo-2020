@@ -7,6 +7,7 @@ import { ArticleComponent } from './article/article.component';
 import { ArticleListComponent } from './article-list/article-list.component';
 import { ArticleAddComponent } from './article-add/article-add.component';
 import { ArticleDetailComponent } from './article-detail/article-detail.component';
+import { ArticleDetailTwoComponent } from './article-detail-two/article-detail-two.component';
 import { ArticlesComponent } from './articles.component';
 
 
@@ -17,6 +18,7 @@ import { ArticlesComponent } from './articles.component';
     ArticleListComponent,
     ArticleAddComponent,
     ArticleDetailComponent,
+    ArticleDetailTwoComponent,
     ArticlesComponent,
   ],
   exports: [ // << I needed to EXPORT these; they are used in other Module scope (e.g. WelcomeComponent)

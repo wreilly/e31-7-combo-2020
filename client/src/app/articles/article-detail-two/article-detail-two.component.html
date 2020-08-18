@@ -1,0 +1,317 @@
+<div class="component-label"
+     fxLayout="column">ARTICLE-DETAIL-TWO.COMPONENT</div>
+
+<!--<div *ngIf="articleAsObservableHereInDetailPage$">-->
+<!--<div *ngIf="articleAsOneItemArrayHereInDetailPage">  Apparently not needed! << WAAL no. -->
+<!--<div>-->
+<div *ngIf="articleHereInDetailPage">
+    <!--
+    <h3>{{articleHereInDetailPage.articleTitle_name}}</h3>
+
+    OBJECT for article, not array for article:
+-->
+
+    <!-- **************   1.  DISPLAY   ************** -->
+    <mat-card
+            *ngIf="!(areWeEditingObservable$ | async)"
+    >
+
+        <!--
+            <mat-card
+                    *ngIf="!areWeEditing"
+            >
+        -->
+        <mat-card-title>
+            {{ articleHereInDetailPage.articleTitle}}
+        </mat-card-title>
+        <mat-card-subtitle>
+            DISPLAY: {{ articleHereInDetailPage.articleUrl}} |
+            {{urlHereToSeeWhetherEditingObservable$ | async}}
+            <!--
+            5b01e393b810e02daf607239/edit
+            -->
+        </mat-card-subtitle>
+        <mat-card-content>
+            <div>
+                <a href="{{ articleHereInDetailPage.articleUrl }}" target="_blank">{{ articleHereInDetailPage.articleUrl }}</a>
+            </div>
+            <div>News Category: {{ articleHereInDetailPage.articleCategory}}</div>
+        </mat-card-content>
+    </mat-card>
+
+
+    <!--
+    <h3>{{articleHereInDetailPage.articleTitle_name}}</h3>
+
+    OBJECT for article, not array for article:
+-->
+    <!-- **************   2.  EDITING   ************** -->
+    <mat-card
+            *ngIf="areWeEditingObservable$ | async"
+    >
+        <div class="component-label"
+             fxLayout="column">*EDITING* &lt;FORM&gt; - (ARTICLE-DETAIL-TWO)</div>
+
+        <!--
+            <mat-card
+                    *ngIf="areWeEditing"
+            >
+        -->
+        <mat-card-title>
+            {{ articleHereInDetailPage.articleTitle}}
+        </mat-card-title>
+        <mat-card-subtitle>
+            EDITING: {{ articleHereInDetailPage.articleUrl}} |
+            {{urlHereToSeeWhetherEditingObservable$ | async}}
+            <!--
+            5b01e393b810e02daf607239/edit
+            -->
+        </mat-card-subtitle>
+        <mat-card-content>
+            <!--            {{ articleHereInDetailPage.articleTitle}}-->
+            <p>*******   FORM EDITING   *********</p>
+            <form
+                    bind-formGroup="editArticleFormGroup"
+                    on-ngSubmit="processReactiveFormEdit()"
+                    enctype="multipart/form-data"
+                    fxLayout="column"
+                    fxLayoutGap="10px"
+            >
+                <mat-form-field>
+                    <mat-label>Label for Title EDITING</mat-label>
+                    <input
+                            type="text"
+                            matInput
+
+                            appInputFocus
+                            formControlName="articleTitle_formControlName"
+                            [errorStateMatcher]="myOwnErrorStateMatcher"
+                    >
+                    <!--
+                    NOPE:               bind-formControlName="'articleTitle_formControlName'"
+                    NOPE:                    formControlName="'articleTitle_formControlName'"
+
+                    Hmm, for EDIT mode? hmm       placeholder="placey title EDIT"-->
+                    <mat-hint>
+                        Hint for Title EDITING
+                    </mat-hint>
+                    <mat-error>
+                        Error for Title EDITING: 10 chars pls! btw you typed/pasted {{ myHowManyCharsTyped('articleTitle_formControlName')}} of /10
+                    </mat-error>
+                    <!-- But it DID WORK, to get that value of '20' over from ArticleAddComponent. cheers
+                                        <mat-error>
+                                            Error for Title EDIT: 10 chars pls! btw you typed/pasted {{ myOwnCategoriesEnumLikeClass.myHowManyCharsTypedFromEnumLikeClass()}} of /10
+                                        </mat-error>
+                    -->
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>
+                        Label for URL EDITING
+                    </mat-label>
+                    <input
+                            type="text"
+                            matInput
+                            formControlName="articleUrl_formControlName"
+                            [errorStateMatcher]="myOwnErrorStateMatcher"
+                    >
+                    <mat-hint>
+                        Hint for URL EDITING
+                    </mat-hint>
+                    <mat-error>
+                        Error for URL EDITING (didn't match our RegEx! solly!)
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>
+                        Label for Category EDITING
+                    </mat-label>
+                    <!--
+                    https://v9.material.angular.io/components/select/api#MatSelect
+                    Hmm I tried couple things. No Way.
+                     <mat-select
+                            value="value we plunked into HTML?"
+                            selected
+                      >
+
+                      Hmm. https://medium.com/@kastepanyan24/how-to-set-selected-option-dynamically-in-angular-6-85c99958cca5
+                      [compareWith]
+                      https://angular.io/api/forms/SelectControlValueAccessor#customizing-option-selection
+                    -->
+                    <mat-select
+                            formControlName="articleCategory_formControlName"
+                            bind-compareWith="myCompareOptionCategoryValues"
+                            [errorStateMatcher]="myOwnErrorStateMatcher"
+                    >
+                        <!-- No. I saw this [ngValue] on an Angular doc page, but it isn't
+                        for Angular Material. cheers
+                        https://angular.io/api/forms/SelectControlValueAccessor#using-select-controls-in-a-reactive-form
+
+                                                <mat-option
+                                                        *ngFor="let category of categories"
+                                                        bind-ngValue="category.value"
+                                                >       NOPE
+                        -->
+                        <!-- "Property ngValue is not provided by any applicable directives nor by mat-option element " -->
+                        <!-- Yeah this 'bind-value' was working for other form fields... -->
+                        <mat-option
+                                *ngFor="let category of categories"
+                                bind-value="category.value"
+                        >
+
+                            {{ category.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-hint>
+                        Hint for Category EDITING
+                    </mat-hint>
+                    <mat-error>
+                        Error for Category EDITING
+                    </mat-error>
+                </mat-form-field>
+                <div
+                        fxLayout="column"
+                        fxLayoutAlign="center center"
+                >
+                    <!--
+                                <button
+                                        type="submit" mat-raised-button
+                                        color="accent"
+                                        style="width: 6em;"
+                                        bind-disabled="!addArticleFormGroup.valid"
+                                >
+                    &lt;!&ndash;                <mat-icon>note_add</mat-icon>&ndash;&gt;
+                                    <span style="margin-left: 5px;">Post!</span>
+                                </button>
+                    -->
+                    <button
+                            mat-icon-button
+                            type="submit"
+                    >
+                        <!-- TODO Hide that button while spinner appears
+                            bind-disabled="!editArticleFormGroup.valid"
+                            *ngIf="!(myUIIsLoadingStore$ | async)"
+                            *ngIf="myUIIsLoadingStore$ | async"
+                        -->
+                        <mat-icon>note_add</mat-icon>
+                        <span style="margin-left: 5px;" class="tiny">Update Your Article</span>
+                        <!--
+                        This TERNARY logic works, but, isn't needed. This whole FORM is already in "areWeEditing === true" mode. cheers
+                        {{areWeEditing ? 'Update' : 'Post'}} Your Article
+                        -->
+                    </button>
+                    <!--
+                          TODO      <mat-progress-spinner
+                                        mode="indeterminate"
+
+                                >
+                                </mat-progress-spinner>
+                    -->
+                    <div>
+                        <button
+                                mat-raised-button
+                                color="warn"
+                                type="button"
+                                on-click="letUsDelete()"
+                        >
+                            Delete Article
+                        </button>
+                        <button
+                                mat-raised-button
+                                color="accent"
+                                type="button"
+                                on-click="letUsCancelEditing()"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <p>*******   /FORM EDITING  *********</p>
+        </mat-card-content>
+    </mat-card>
+    <!--
+        <div>
+            {{articleHereInDetailPage}} [object Object]
+        </div>
+    -->
+    <!-- OK but does not get MatDes font; plain serif Times.
+        <div>
+            {{articleHereInDetailPage.articleTitle}}
+        </div>
+    -->
+    <!--        No:
+    {{articleHereInDetailPage.articleTitle_name}}-->
+
+    <!--
+    <h3>ONE {{articleAsObservableHereInDetailPage$ | async}}</h3>
+    [object Object]
+-->
+
+    <!--
+        <h3>TWO {{articleAsObservableHereInDetailPage$.articleTitle | async}}</h3>
+
+        TS2339: Property 'articleTitle' does not exist on type 'Observable<Object>'.
+    -->
+    <!--
+        <h3>THREE {{articleAsObservableHereInDetailPage$ | async}}.articleTitle</h3>
+    -->
+    <!--    WORKS FINE (but does not need to be <li>)
+    <div>
+            <ul>
+                <li *ngFor="let theOne of articleAsOneItemArrayHereInDetailPage">
+    &lt;!&ndash;with _name|                {{ theOne.articleTitle_name}}&ndash;&gt;
+                    {{ theOne.articleTitle}}
+                </li>
+            </ul>
+        </div>
+    -->
+    <!-- NO NO WAY
+        <mat-card
+                *ngFor="let theArticle of articleAsObservableHereInDetailPage$ | async"
+        >
+            <mat-card-title>
+             $OBS   {{ theArticle.articleTitle}} $OBS2 {{articleAsObservableHereInDetailPage$ | async}}
+            </mat-card-title>
+            <mat-card-subtitle>
+                {{ theArticle.articleUrl}}
+            </mat-card-subtitle>
+            <mat-card-content>
+    &lt;!&ndash;            {{ theArticle.articleTitle}}&ndash;&gt;
+            </mat-card-content>
+        </mat-card>
+
+    -->
+    <!--  ***** NOT USING "Array" (!)  ***** -->
+    <!--
+        <mat-card
+                *ngFor="let theOne of articleAsOneItemArrayHereInDetailPage"
+        >
+            <mat-card-title>
+             ARRAY   {{ theOne.articleTitle}}
+            </mat-card-title>
+            <mat-card-subtitle>
+                {{ theOne.articleUrl}} | URL HERE$ etc.
+    {{urlHereToSeeWhetherEditingObservable$ | async}}
+                &lt;!&ndash;
+                5b01e393b810e02daf607239edit
+                &ndash;&gt;
+            </mat-card-subtitle>
+            <mat-card-content>
+                <div *ngIf="areWeEditing">
+                    EDITING!
+                </div>
+                {{ theOne.articleTitle}}
+                {{ theOne.articleTitle}}
+                {{ theOne.articleTitle}}
+            </mat-card-content>
+        </mat-card>
+    -->
+    <!--  ***** /NOT USING "Array" (!)  ***** -->
+
+    <!-- WORKS FINE
+    <div *ngFor="let theOne of articleAsOneItemArrayHereInDetailPage">
+        {{ theOne.articleTitle}}
+    </div>
+-->
+
+</div>

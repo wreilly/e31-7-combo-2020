@@ -6,6 +6,7 @@ import {ArticlesComponent} from "./articles.component";
 import {ArticleListComponent} from "./article-list/article-list.component";
 import { ArticleAddComponent } from "./article-add/article-add.component";
 import { ArticleDetailComponent } from './article-detail/article-detail.component';
+import { ArticleDetailTwoComponent } from './article-detail-two/article-detail-two.component';
 
 
 const myArticleRoutes: Routes = [
@@ -27,11 +28,13 @@ const myArticleRoutes: Routes = [
             },
             {
                 path: ':article_id',
-                component: ArticleDetailComponent,
+                // component: ArticleDetailComponent,
+                component: ArticleDetailTwoComponent,
             },
             {
                 path: ':article_id/edit',
-                component: ArticleDetailComponent,
+                // component: ArticleDetailComponent,
+                component: ArticleDetailTwoComponent,
             },
         ]
     },

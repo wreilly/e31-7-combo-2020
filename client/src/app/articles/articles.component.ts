@@ -16,6 +16,7 @@ import { Article } from './article.model';
 import { ArticleService } from './article.service';
 import {Observable} from "rxjs";
 import {ArticleDetailComponent} from "./article-detail/article-detail.component";
+import {ArticleDetailTwoComponent} from "./article-detail-two/article-detail-two.component";
 
 
 @Component({
@@ -316,7 +317,10 @@ Now handling TWO different events/pieces-of-info:
         // Therefore, more better "if" test is based on
         // WHICH COMPONENT TYPE, << good
         // not some particular "flag" property on it. << bit hack-y
+        if(componentReferenceFromRouterOutlet instanceof ArticleDetailTwoComponent) {
+/* OLD Now Superseded...
         if(componentReferenceFromRouterOutlet instanceof ArticleDetailComponent) {
+*/
           /* THX, StackOverflow!
           if(componentRef instanceof ChildWithWorksMethodComponent){ ...
           https://stackoverflow.com/questions/45720655/access-router-outlet-component-from-parent
