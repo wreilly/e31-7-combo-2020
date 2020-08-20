@@ -1,0 +1,106 @@
+<div class="component-label"
+     fxLayout="column">REACTIVE-FORM-SELECT-FORM-CONTROL.COMPONENT</div>
+<div>What We Got: {{ articleHereInSpecialComponent.articleTitle }}</div>
+<div>What We Got: {{ articleHereInSpecialComponent.articleUrl }}</div>
+<div>What We Got: {{ articleHereInSpecialComponent.articleCategory }}</div>
+
+<form
+        bind-formGroup="editArticleInSpecialComponentFormGroup"
+        on-ngSubmit="processSpecialComponentEdit()"
+        enctype="multipart/form-data"
+        fxLayout="column"
+        fxLayoutGap="10px"
+>
+
+    <mat-form-field>
+        <mat-label>
+            Label for Title EDITING
+        </mat-label>
+        <input
+                type="text"
+                matInput
+                formControlName="articleTitle_formControlName"
+                bind-errorStateMatcher="myOwnErrorStateMatcher"
+        >
+        <mat-hint>
+            Hint for Title EDITING
+        </mat-hint>
+        <mat-error>
+            Error for Title EDITING
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>
+            Label for URL EDITING
+        </mat-label>
+        <input
+                type="text"
+                matInput
+                formControlName="articleUrl_formControlName"
+                [errorStateMatcher]="myOwnErrorStateMatcher"
+        >
+        <mat-hint>
+            Hint for URL EDITING
+        </mat-hint>
+        <mat-error>
+            Error for URL EDITING (didn't match our RegEx! solly!)
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>
+            Label for Category EDITING
+        </mat-label>
+        <mat-select
+                formControlName="articleCategory_formControlName"
+                bind-compareWith="myCompareOptionCategoryValues"
+                bind-errorStateMatcher="myOwnErrorStateMatcher"
+        >
+
+            <mat-option
+                    *ngFor="let category of categories"
+                    bind-value="category.value"
+            >
+                {{ category.viewValue }}
+            </mat-option>
+            <!-- N.B.
+            re: compareWith()
+            Because I do bind-value to category.value (instead of say,
+            category), then the *value* of each 'option' is indeed
+            'living' or 'world' etc.
+            Such that the IF TEST in compareWith needed to be simply:
+            c1 === c2
+            NOT
+            c1.value === c2.value
+            The "c1" was *already* just 'living'
+            I did not need to be trying to get a ".value" off of the "c1"
+            No.
+            oi.
+
+            This other project did it differently
+            https://ng-run.com/edit/NlAgMrt1Wt2KEKdlKwXE?open=app%2Fapp.component.html
+            bind-value="country"
+            "country" is an object w. 3 properties {id:, name: etc.}
+            so the compareWith() had:
+            c1.id === c2.id  << that is appropriate
+            -->
+        </mat-select>
+    </mat-form-field>
+
+    <div style="background-color: darkseagreen">
+        SPECIAL COMPONENT articleCategory_formControl.value |   {{ articleCategory_formControl.value | json }}
+    </div>
+    <div
+            fxLayout="column"
+            fxLayoutAlign="center center"
+    >
+        <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+        >
+            Submit UPDATE
+        </button>
+    </div>
+</form>

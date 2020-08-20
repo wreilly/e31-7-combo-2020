@@ -245,7 +245,15 @@ __v: 0}
 
                             let categoryViewValueSuchAsItIsReturned: string;
                             categoryViewValueSuchAsItIsReturned = this.myArticleService.getCategoryViewValue(articleIGot.articleCategory); // e.g. 'U.S.' or 'World'
+
+
+/* TEST. Let's SKIP doing the "value-to-viewValue" biz here.
+Leave it lowercased 'world', vs. 'World'. Okay? OKay.
+
                             this.articleHereInDetailPage.articleCategory = categoryViewValueSuchAsItIsReturned; // yes. okay. whamma-jamma one field  'Politics' viewValue OK
+*/
+
+
 
                             this.myStore.dispatch(new UIActions.TellingYouMyId(
                                 {myIdIsInAction: articleIdHereInDetailPage}
@@ -277,11 +285,18 @@ __v: 0}
                             this.editArticleFormGroup.patchValue({
                                 articleTitle_formControlName: articleIGot.articleTitle,
                                 articleUrl_formControlName: articleIGot.articleUrl,
-                                /* SEEMINGLY N-O-T. Harrumph. ?? */
+
+                                articleCategory_formControlName: articleIGot.articleCategory, // 'politics'
+
+/* SEEMINGLY N-O-T. Harrumph. ??
+Nah. Don't create a Category object here, to store on that FormControl.
+Just leave as simple string value, for the BE stored version: 'world' or 'politics'
+
                                 articleCategory_formControlName: {
                                     value: articleIGot.articleCategory, // 'politics'
                                     viewValue: this.articleHereInDetailPage.articleCategory // 'Politics'
                                 }
+*/
 
                             });
 
@@ -305,7 +320,7 @@ __v: 0}
             }) // /.subscribe()  myActivatedRoute.params
     } // /getArticle()
 
-    myCompareOptionCategoryValues(
+    myCompareOptionCategoryValuesIFLOGIC( // << attempt at full IF logic, vs. Ternary
         optionCategory1: any,
         optionCategory2: any
     ): boolean {
@@ -315,8 +330,15 @@ __v: 0}
 
         if (optionCategory1 && optionCategory2) {
             console.log('COMP 00 if (optionCategory1 && optionCategory2) ', optionCategory1);
-            if (optionCategory1.viewValue === optionCategory2.viewValue) {
-                console.log('COMP 01 if (optionCategory1.viewValue === optionCategory2.viewValue)  ', optionCategory1.viewValue);
+            if (optionCategory1 === optionCategory2) { // None!
+/*
+            if (optionCategory1.value === optionCategory2.value) { // VALUE
+*/
+            // if (optionCategory1.viewValue === optionCategory2.viewValue) { // VIEWVALUE
+                console.log('COMP 01-NO!V-1 if (optionCategory1 === optionCategory2)  1: ', optionCategory1);
+                console.log('COMP 01-NO!V-2 if (optionCategory1 === optionCategory2)  2: ', optionCategory2);
+                console.log('COMP 01-V if (optionCategory1.value === optionCategory2.value)  ', optionCategory1.value);
+                console.log('COMP 01-VV if (optionCategory1.viewValue === optionCategory2.viewValue)  ', optionCategory1.viewValue);
                 return true;
             } else {
                 if (optionCategory1 === optionCategory2) {
@@ -329,15 +351,20 @@ __v: 0}
             }
         }
 
-
+/* Hmm, I *think* I meant to Comment this out!
         return optionCategory1 && optionCategory2 ? optionCategory1.viewValue === optionCategory2.viewValue : optionCategory1 === optionCategory2;
-    }
+*/
+    } // /myCompareOptionCategoryValues() << attempt at full IF logic, vs. Ternary
 
-    myCompareOptionCategoryValuesORIGINALTERNARY(optionCategory1: any, optionCategory2: any): boolean {
+    myCompareOptionCategoryValues(optionCategory1: any, optionCategory2: any): boolean {
+        // myCompareOptionCategoryValuesORIGINALTERNARY
         console.log('COMPARE 1 ', optionCategory1); // news
         // console.log('COMPARE 1.value ', optionCategory1.value); // undefined
         console.log('COMPARE 2 ', optionCategory1);
+        return optionCategory1 && optionCategory2 ? optionCategory1 === optionCategory2 : optionCategory1 === optionCategory2;
+/*
         return optionCategory1 && optionCategory2 ? optionCategory1.viewValue === optionCategory2.viewValue : optionCategory1 === optionCategory2;
+*/
     }
 
 

@@ -173,7 +173,7 @@ July 14th P.M. from noon to midnight
     categoryThatMatches: Category; // declare here?
 
     getCategoryViewValue(storedCategoryValue: string): string {
-        console.log('PASSED IN storedCategoryValue ', storedCategoryValue);
+        console.log('PASSED IN storedCategoryValue ', storedCategoryValue); // e.g. living (lowercase, BE value)
         /* WAS IN ArticleListComponent (and ArticleAdd)
 
          */
@@ -195,10 +195,12 @@ July 14th P.M. from noon to midnight
                 } else {
                     // we DO have a Category on the Article
 
+/* Done with the temporary hard-coded madness. I think.
                     if (storedCategoryValue === 'politics') {
                         // my temporary hard-coded madness
                         storedCategoryValue = 'Politics';
                     }
+*/
 
                     // now let's see if it matches the current entry from the array of possible Categories:
                     if (storedCategoryValue === eachCategoryPair.value) {
@@ -232,7 +234,7 @@ July 14th P.M. from noon to midnight
         // NO LONGER >> N.B. 'News' is default TODONOPE how is its *value* handled? hmm
         {
             value: 'news',
-            viewValue: 'News-SERVICE',
+            viewValue: 'News',  // 'News-SERVICE',
         },
         {
             value: 'world',
@@ -243,7 +245,7 @@ July 14th P.M. from noon to midnight
             viewValue: 'U.S.',
         },
         {
-            value: 'Politics', // TODO rename to 'politics'
+            value: 'politics', // TODO rename to 'politics'
             viewValue: 'Politics',
         },
         {

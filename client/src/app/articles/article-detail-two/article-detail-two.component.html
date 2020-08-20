@@ -15,7 +15,8 @@
     <mat-card
             *ngIf="!(areWeEditingObservable$ | async)"
     >
-
+        <div class="component-label"
+             fxLayout="column">*DISPLAY* - (ARTICLE-DETAIL-TWO)</div>
         <!--
             <mat-card
                     *ngIf="!areWeEditing"
@@ -46,9 +47,12 @@
     OBJECT for article, not array for article:
 -->
     <!-- **************   2.  EDITING   ************** -->
+    <mat-card>
+<!-- TODO: Put back in this IF logic. Kept out now for debug etc.
     <mat-card
             *ngIf="areWeEditingObservable$ | async"
     >
+-->
         <div class="component-label"
              fxLayout="column">*EDITING* &lt;FORM&gt; - (ARTICLE-DETAIL-TWO)</div>
 
@@ -311,6 +315,32 @@
             <p>*******   /REACTIVE FORM EDITING  *********</p>
         </mat-card-content>
     </mat-card>
+
+    <mat-card>
+<!-- TODO: Put back in this IF logic. Kept out now for debug etc.
+        <mat-card
+                *ngIf="areWeEditingObservable$ | async"
+        >
+-->
+        <p>******* DROP IN HERE:  *COMPONENT* REACTIVE FORM SELECT FORM CONTROL - EDITING  *********</p>
+        <div class="component-label"
+             fxLayout="column">*EDITING* &lt;FORM&gt; - (REACTIVE-FORM-SELECT-FORM-CONTROL)</div>
+        <mat-card-title>{{ articleHereInDetailPage.articleTitle }}</mat-card-title>
+        <mat-card-content>
+
+            <app-reactive-form-select-form-control
+                    bind-articlePassedInName="articleHereInDetailPage"
+            ></app-reactive-form-select-form-control>
+
+        </mat-card-content>
+        <p>*******   /*COMPONENT* REACTIVE FORM SELECT FORM CONTROL - EDITING  *********</p>
+    </mat-card>
+
+
+
+
+
+
     <!--
         <div>
             {{articleHereInDetailPage}} [object Object]

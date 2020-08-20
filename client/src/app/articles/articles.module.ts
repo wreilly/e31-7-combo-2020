@@ -8,8 +8,8 @@ import { ArticleListComponent } from './article-list/article-list.component';
 import { ArticleAddComponent } from './article-add/article-add.component';
 import { ArticleDetailComponent } from './article-detail/article-detail.component';
 import { ArticleDetailTwoComponent } from './article-detail-two/article-detail-two.component';
+import { ReactiveFormSelectFormControlComponent } from './reactive-form-select-form-control/reactive-form-select-form-control.component';
 import { ArticlesComponent } from './articles.component';
-
 
 
 @NgModule({
@@ -19,6 +19,7 @@ import { ArticlesComponent } from './articles.component';
     ArticleAddComponent,
     ArticleDetailComponent,
     ArticleDetailTwoComponent,
+    ReactiveFormSelectFormControlComponent,
     ArticlesComponent,
   ],
   exports: [ // << I needed to EXPORT these; they are used in other Module scope (e.g. WelcomeComponent)
