@@ -173,6 +173,7 @@ July 14th P.M. from noon to midnight
     categoryThatMatches: Category; // declare here?
 
     getCategoryViewValue(storedCategoryValue: string): string {
+        console.log('PASSED IN storedCategoryValue ', storedCategoryValue);
         /* WAS IN ArticleListComponent (and ArticleAdd)
 
          */
@@ -193,6 +194,12 @@ July 14th P.M. from noon to midnight
                     categoryViewValueNoCategory = true;
                 } else {
                     // we DO have a Category on the Article
+
+                    if (storedCategoryValue === 'politics') {
+                        // my temporary hard-coded madness
+                        storedCategoryValue = 'Politics';
+                    }
+
                     // now let's see if it matches the current entry from the array of possible Categories:
                     if (storedCategoryValue === eachCategoryPair.value) {
                         return true;
@@ -202,6 +209,10 @@ July 14th P.M. from noon to midnight
                         which is what we want.
                         cheers.
                          */
+                    } else {
+                        // my temporary value: 'Politics' for what should be 'politics'
+                        console.log('eachCategoryPair.value Politics ? ', eachCategoryPair.value);
+                        // return true; // ?
                     }
                 }
             }
@@ -232,7 +243,7 @@ July 14th P.M. from noon to midnight
             viewValue: 'U.S.',
         },
         {
-            value: 'politics',
+            value: 'Politics', // TODO rename to 'politics'
             viewValue: 'Politics',
         },
         {

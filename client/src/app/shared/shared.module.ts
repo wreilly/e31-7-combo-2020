@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common'; // Kind of subset of BrowserModule
 // yep: https://guide.freecodecamp.org/angular/ngmodules/
 
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 /* CRAP
 import { NgxPageScrollCoreModule } from 'ngx-page-scroll-core';
@@ -23,6 +23,7 @@ import { ScrollTopComponent } from './scroll-top/scroll-top.component';
         CommonModule,
         FlexLayoutModule,
         ReactiveFormsModule,
+        FormsModule, // << ArticleDetailTwoComponent: template-driven form
         // NgxPageScrollCoreModule, // << CRAP
         // NgxPageScrollModule,
         MyMaterialModule,
@@ -31,6 +32,7 @@ import { ScrollTopComponent } from './scroll-top/scroll-top.component';
         CommonModule,
         FlexLayoutModule,
         ReactiveFormsModule,
+        FormsModule,
         // NgxPageScrollCoreModule, // << CRAP
         // NgxPageScrollModule,
         MyMaterialModule,

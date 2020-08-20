@@ -1,5 +1,11 @@
 import { NgModule } from '@angular/core';
 
+/* ?
+import { VERSION } from '@angular/material';
+
+Version {full: "6.1.0", major: "6", minor: "1", patch: "0"…}
+*/
+
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';

@@ -68,8 +68,100 @@
             -->
         </mat-card-subtitle>
         <mat-card-content>
+            <p>*******   TEMPLATE-DRIVEN FORM EDITING  *********</p>
+            <form
+                    ref-myTemplateDrivenForm_ref="ngForm"
+                    on-ngSubmit="processTemplateDrivenFormEdit(myTemplateDrivenForm_ref.value)"
+                    enctype="multipart/form-data"
+                    fxLayout="column"
+                    fxLayoutGap="10px"
+            >
+                <mat-form-field>
+                    <mat-label>TD Label Title</mat-label>
+                    <input
+                            matInput
+                            type="text"
+                            bind-ngModel="tdArticle.articleTitle_name"
+                            name="articleTitleNameInTemplate"
+                    >
+
+                    <!-- RECOLLECT:
+                            https://blog.thoughtram.io/angular/2016/10/13/two-way-data-binding-in-angular-2.html
+        [(ngModel)]
+        syntactic sugar for:
+          bind-value="theArticleHereInDetailPage.articleTitle"
+          on-input="theArticleHereInDetailPage.articleTitle = $event.target.value"
+          OR:
+        [value]=...
+        (input)=...
+          OR:
+         [(ngModel)]=...
+        -->
+<!--
+         1. bind-ngModel="tdArticle.articleTitle_name" // << YES
+         2. bind-value="tdArticle.articleTitle_name" // << NOPE
+         # 2. does SHOW the value, but, it does not get processed with
+         the form etc. ... Cheers
+-->
+                    <!--
+                    Worked: if you do want bi-directional...
+                    If, as you edit, you wish to see it also
+                    rendered immediately to the page, too.
+                    Not really such a great idea, but, flashy.
+      on-input="tdArticle.articleTitle_name = $event.target.value"
+                    WHOA LOOKEE: {{ tdArticle.articleTitle_name }}
+
+                      value="Test Article Title Value"
+                    -->
+                    <mat-hint>TD Hint Title</mat-hint>
+                    <mat-error>TD Error Title</mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>TD Label Category</mat-label>
+                    <mat-select
+                            [(ngModel)]="tdArticle.articleCategory_name"
+                            name="articleCategoryNameInTemplate"
+                    >
+                        <!--
+             can't beat 'em join 'em. [(ngModel)] y not sez I
+             WAS: bind-ngModel="tdArticle.articleCategory_name"
+                        -->
+                        <mat-option
+                                *ngFor="let category of categories"
+                                bind-value="category.value"
+                        >
+                            {{ category.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-hint>TD Hint Category</mat-hint>
+                    <mat-error>TD Error Category</mat-error>
+                </mat-form-field>
+                <div>
+                    TD (hard-coded) CATEGORY: {{ tdArticle.articleCategory_name }}
+                </div>
+
+
+                <button
+                        mat-raised-button
+                        color="primary"
+                        type="submit"
+                >
+                    SUBMIT Template-Driven Form
+                </button>
+                <button
+                        mat-raised-button
+                        color="accent"
+                        type="button"
+                        on-click="myTemplateDrivenForm_ref.reset()"
+                >
+                    RESET Template-Driven Form
+                </button>
+            </form>
+            <p>*******   /TEMPLATE-DRIVEN FORM EDITING  *********</p>
+
             <!--            {{ articleHereInDetailPage.articleTitle}}-->
-            <p>*******   FORM EDITING   *********</p>
+            <p>*******   REACTIVE FORM EDITING   *********</p>
             <form
                     bind-formGroup="editArticleFormGroup"
                     on-ngSubmit="processReactiveFormEdit()"
@@ -127,12 +219,6 @@
                     </mat-label>
                     <!--
                     https://v9.material.angular.io/components/select/api#MatSelect
-                    Hmm I tried couple things. No Way.
-                     <mat-select
-                            value="value we plunked into HTML?"
-                            selected
-                      >
-
                       Hmm. https://medium.com/@kastepanyan24/how-to-set-selected-option-dynamically-in-angular-6-85c99958cca5
                       [compareWith]
                       https://angular.io/api/forms/SelectControlValueAccessor#customizing-option-selection
@@ -142,22 +228,10 @@
                             bind-compareWith="myCompareOptionCategoryValues"
                             [errorStateMatcher]="myOwnErrorStateMatcher"
                     >
-                        <!-- No. I saw this [ngValue] on an Angular doc page, but it isn't
-                        for Angular Material. cheers
-                        https://angular.io/api/forms/SelectControlValueAccessor#using-select-controls-in-a-reactive-form
-
-                                                <mat-option
-                                                        *ngFor="let category of categories"
-                                                        bind-ngValue="category.value"
-                                                >       NOPE
-                        -->
-                        <!-- "Property ngValue is not provided by any applicable directives nor by mat-option element " -->
-                        <!-- Yeah this 'bind-value' was working for other form fields... -->
                         <mat-option
                                 *ngFor="let category of categories"
                                 bind-value="category.value"
                         >
-
                             {{ category.viewValue }}
                         </mat-option>
                     </mat-select>
@@ -168,6 +242,14 @@
                         Error for Category EDITING
                     </mat-error>
                 </mat-form-field>
+                <div style="background-color: aqua">
+                    articleCategory_formControl.value |   {{ articleCategory_formControl.value | json }}
+                </div>
+<!-- No. Non c'é.
+                <div style="background-color: cadetblue">
+                    articleCategory_formControl.viewValue |  {{articleCategory_formControl.viewValue}}
+                </div>
+-->
                 <div
                         fxLayout="column"
                         fxLayoutAlign="center center"
@@ -226,7 +308,7 @@
                     </div>
                 </div>
             </form>
-            <p>*******   /FORM EDITING  *********</p>
+            <p>*******   /REACTIVE FORM EDITING  *********</p>
         </mat-card-content>
     </mat-card>
     <!--

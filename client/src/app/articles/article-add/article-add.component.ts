@@ -198,7 +198,7 @@ export class ArticleAddComponent implements OnInit {
     this.categories = this.myArticleService.getCategoriesInService();
 
     // INITIATE FORM GROUP, CONTROLS
-    this.articleTitle_formControl = new FormControl(null, [
+    this.articleTitle_formControl = new FormControl( null, [
         Validators.required,
         Validators.minLength(10),
     ]);
@@ -223,7 +223,8 @@ export class ArticleAddComponent implements OnInit {
     /* Note:
 Here on a SELECT form element, this "default formState" does *NOT* work (boo).
 'News-DEFAULT'   nor  'News-SERVICE'
-Nope. Kinda sucks.
+Nor:
+{ value: 'default value', viewValue: 'default viewValue'}
  */
 
 

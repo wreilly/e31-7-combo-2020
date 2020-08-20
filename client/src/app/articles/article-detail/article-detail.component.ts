@@ -1,5 +1,5 @@
 import {Component, EventEmitter, OnInit, Output, OnDestroy, forwardRef} from '@angular/core';
-
+// ARTICLE-DETAIL.COMPONENT.TS
 // ****   FORM for EDIT MODE  **********
 import { FormGroup, FormControl, Validators, FormGroupDirective, NgForm, SelectControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 /* CRAZED MAN 999
@@ -182,7 +182,8 @@ But they of course did work to put the expected value onto this._myCategoryValue
         } else {
             console.log('writeValue. Hmm, writeValue got nothing ? for passed-in value? ');
         }
-    }
+    } // /writeValue()
+
     propagateChange = () => {}; // << ?
     registerOnChange(fn: (value: any) => any): void {
         this.onChange = fn;
@@ -1307,3 +1308,4 @@ myHowManyCharsTyped(formControlNamePassedIn: string):number {
     }
 
 }
+// ARTICLE-DETAIL.COMPONENT.TS
