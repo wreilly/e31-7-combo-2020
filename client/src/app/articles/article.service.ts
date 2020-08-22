@@ -173,7 +173,7 @@ July 14th P.M. from noon to midnight
     categoryThatMatches: Category; // declare here?
 
     getCategoryViewValue(storedCategoryValue: string): string {
-        console.log('PASSED IN storedCategoryValue ', storedCategoryValue); // e.g. living (lowercase, BE value)
+        // console.log('PASSED IN storedCategoryValue ', storedCategoryValue); // e.g. living (lowercase, BE value)
         /* WAS IN ArticleListComponent (and ArticleAdd)
 
          */
@@ -195,7 +195,7 @@ July 14th P.M. from noon to midnight
                 } else {
                     // we DO have a Category on the Article
 
-/* Done with the temporary hard-coded madness. I think.
+/* DONE with the temporary hard-coded madness. I think.
                     if (storedCategoryValue === 'politics') {
                         // my temporary hard-coded madness
                         storedCategoryValue = 'Politics';
@@ -213,7 +213,7 @@ July 14th P.M. from noon to midnight
                          */
                     } else {
                         // my temporary value: 'Politics' for what should be 'politics'
-                        console.log('eachCategoryPair.value Politics ? ', eachCategoryPair.value);
+                        // console.log('eachCategoryPair.value Politics ? ', eachCategoryPair.value);
                         // return true; // ?
                     }
                 }
@@ -267,6 +267,20 @@ July 14th P.M. from noon to midnight
     ];
 
 
+    // ***  UTILITIES  **************************************
+
+    // ***  DATE UTILITIES  **************************************
+    // Now in our DateService (under /core/)
+    // https://steveridout.github.io/mongo-object-time/
+/*
+    myDateFromObjectId = function (objectId): Date {
+        return new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
+    };
+
+    myObjectIdFromDate = function (date) {
+        return Math.floor(date.getTime() / 1000).toString(16) + "0000000000000000";
+    };
+*/
 
 
 

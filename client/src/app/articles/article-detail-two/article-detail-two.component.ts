@@ -23,6 +23,8 @@ import * as fromRoot from '../../store/app.reducer'; // But we do not need/do .s
 // Before, we were just sending out that info (are we editing or not) to other (parent) Component to know.
 // cheers
 
+import { DateService } from '../../core/services/date.service';
+
 @Component({
     selector: 'app-article-detail-two',
     templateUrl: 'article-detail-two.component.html',
@@ -41,11 +43,17 @@ export class ArticleDetailTwoComponent implements OnInit, OnDestroy, ControlValu
 
     /*  ***  TEMPLATE-DRIVEN BIZ  *********
      */
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    displayTemplateDrivenForm = false; // <<<<<<<<<<<  NOW *HIDING* (temporary, experimental) Form
+    displayReactiveFormSelectFormControlComponent = false; // <<<<<<<<<<<  NOW ALSO *HIDING* (temporary, experimental) Component
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     tdArticle: Article = {
         articleTitle_name: 'Our First TD Article hard-coded',
         articleId_name: 'hmm id',
         articleUrl_name: 'https://nytimes.com',
-        articleCategory_name: 'Politics', // 'category TD viewValue like World'
+        // articleCategory_name: 'Politics', // 'category TD viewValue like World'
+        articleCategory_name: 'politics', // 'category TD value like world'
     }
 
     // UH-OH, MIXING METHODS AND MEMBERS. O DEAR.
@@ -119,6 +127,7 @@ export class ArticleDetailTwoComponent implements OnInit, OnDestroy, ControlValu
     areWeEditing = false;
 
     articleHereInDetailPage: { // BE version of an "Article". cheers
+        // This "type" gets "BOOM-ed" onto, from .getArticle() BE retrieval, "whatIGot"
         _id: string,
         articlePhotos: string[],
         articleUrl: string,
@@ -131,6 +140,7 @@ export class ArticleDetailTwoComponent implements OnInit, OnDestroy, ControlValu
         private myActivatedRoute: ActivatedRoute,
         private myRouter: Router,
         private myStore: Store,
+        private myDateService: DateService,
     ) {
         /*
         https://angular.io/api/router/ActivatedRoute
@@ -196,6 +206,27 @@ Nor:
             'articleCategory_formControlName': this.articleCategory_formControl,
         });
 
+        console.log('XXX-000111 ngOnInit(). JUST CREATED this.editArticleFormGroup ', this.editArticleFormGroup);
+        /* Weird.
+        While *NOT* DEBUGGING (just RUNNING):
+        - >>>>>   console.log() *mistakenly* (sez I) shows that this JUST-CREATED thing has VALUES. << WRONG-O.
+        articleCategory_formControlName: "politics"
+articleTitle_formControlName: "Trump Must Turn Over Tax Returns to D.A., Judge Rules"
+articleUrl_formControlName: "https://www.nytimes.com/2020/08/20/nyregion/donald-trump-taxes-cyrus-vance.html"
+
+          But, it don't got values!
+
+
+        **DEBUGGING** shows you that it don't:   :o)
+
+        Variables:
+{
+  "articleTitle_formControlName": null,
+  "articleUrl_formControlName": null,
+  "articleCategory_formControlName": null
+}
+         */
+
         this.myOwnErrorStateMatcher = new MyErrorStateMatcher(); // << imported.
 
         // TODO this.myUIIsLoadingStore$ = this.myStore.select(fromRoot.getIsLoading);
@@ -234,6 +265,13 @@ Nor:
                     .subscribe(
                         (articleIGot: any) => {
                             this.articleHereInDetailPage = articleIGot; // BOOM. whamma-jamma
+                            this.tdArticle = articleIGot; // BOOM # 2. whamma-jamma for TEMPLATE-DRIVEN FORM (experiment)
+                            // console.log('this.tdArticle ', this.tdArticle);
+                            /* Hah. Boom a no-go for tdArticle
+articleCategory: "politics"
+articleTitle: "Trump Must Turn Over Tax Returns to D.A., Judge Rules"
+articleUrl: "https://www.nytimes.com/2020/08/20/nyregion/donald-trump-taxes-cyrus-vanc
+                             */
                             console.log('this.articleHereInDetailPage ', this.articleHereInDetailPage);
                             /*
 {_id: "5f3bc1b45f54a09d485800ca",
@@ -274,22 +312,45 @@ Leave it lowercased 'world', vs. 'World'. Okay? OKay.
 
 
                             // NEW. Let's add editing the damned CATEGORY
-
-                            this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.selectedCategoryToEdit, { onlySelf: true });
-
-                            console.log('XXX-111 this.editArticleFormGroup ', this.editArticleFormGroup);
-                            console.log('XXXZZZ-111 this.editArticleFormGroup.getRawValue() ', this.editArticleFormGroup.getRawValue());
-                            console.log('XXXYYYCategory-111 this.editArticleFormGroup.controls[\'articleCategory_formControlName\'] ', this.editArticleFormGroup.controls['articleCategory_formControlName']);
+                            // console.log('XXXYYYCategory-111-BEFORE this.editArticleFormGroup.controls[\'articleCategory_formControlName\'] ', this.editArticleFormGroup.controls['articleCategory_formControlName']);
 
 
+                            this.editArticleFormGroup.get('articleCategory_formControlName').setValue(categoryViewValueSuchAsItIsReturned, { onlySelf: true }); // << you're setting a type: string. (But, note! - this puts the ViewValue on! (not what we want) 'Politics' not 'politics'. Oi!
+
+/* Nope! Too Early, for "this.selectedCategoryToEdit", kid.
+                            this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.selectedCategoryToEdit, { onlySelf: true }); // << hmm, we were: 1) trying to set a value that's undefined, right now. and 2) (I think?) trying to set a whole Object (Category {}), not just a string. Hmm.
+*/
+
+                            // console.log('XXX-111 this.editArticleFormGroup ', this.editArticleFormGroup);
+                            /* DEBUG vs. CONSOLE.LOG() note
+                            As elsewhere, the console.log() does not truly display the values that Debugging does show.
+                            In this case, namely, empty or null or undefined or whatever they are.
+                            cheers.
+                             */
+                            // console.log('XXXZZZ-111 this.editArticleFormGroup.getRawValue() ', this.editArticleFormGroup.getRawValue());
+                            /* DEBUG vs. CONSOLE.LOG() note
+                            Hah. This ".getRawValue()" appears to behave more like the Debugger, when it comes to "truthful" display
+                            of what the variable has, at this moment.
+                            Interesting.
+                             */
+
+                            // console.log('XXXYYYCategory-111-AFTER this.editArticleFormGroup.controls[\'articleCategory_formControlName\'] ', this.editArticleFormGroup.controls['articleCategory_formControlName']);
+
+// WORKS TOO. EQUALLY LOVELY.
                             this.editArticleFormGroup.patchValue({
+                                articleTitle_formControlName: this.articleHereInDetailPage.articleTitle,
+                                articleUrl_formControlName: this.articleHereInDetailPage.articleUrl,
+
+                                articleCategory_formControlName: this.articleHereInDetailPage.articleCategory, // 'politics'
+/* WORKS. LOVELY.
                                 articleTitle_formControlName: articleIGot.articleTitle,
                                 articleUrl_formControlName: articleIGot.articleUrl,
 
                                 articleCategory_formControlName: articleIGot.articleCategory, // 'politics'
+*/
 
 /* SEEMINGLY N-O-T. Harrumph. ??
-Nah. Don't create a Category object here, to store on that FormControl.
+Nah. Below - Don't create a Category object here, to store on that FormControl.
 Just leave as simple string value, for the BE stored version: 'world' or 'politics'
 
                                 articleCategory_formControlName: {
@@ -300,10 +361,10 @@ Just leave as simple string value, for the BE stored version: 'world' or 'politi
 
                             });
 
-                            console.log('XXX-222 this.editArticleFormGroup ', this.editArticleFormGroup);
-                            console.log('XXXZZZ-222 this.editArticleFormGroup.getRawValue() ', this.editArticleFormGroup.getRawValue());
-                            console.log('XXXYYYCategory-222 this.editArticleFormGroup.controls[\'articleCategory_formControlName\'] ', this.editArticleFormGroup.controls['articleCategory_formControlName']);
-                            console.log('XXXYYYTitle-222 this.editArticleFormGroup.controls[\'articleTitle_formControlName\'] ', this.editArticleFormGroup.controls['articleTitle_formControlName']);
+                            // console.log('XXX-222 this.editArticleFormGroup ', this.editArticleFormGroup);
+                            // console.log('XXXZZZ-222 this.editArticleFormGroup.getRawValue() ', this.editArticleFormGroup.getRawValue());
+                            // console.log('XXXYYYCategory-222 this.editArticleFormGroup.controls[\'articleCategory_formControlName\'] ', this.editArticleFormGroup.controls['articleCategory_formControlName']);
+                            // console.log('XXXYYYTitle-222 this.editArticleFormGroup.controls[\'articleTitle_formControlName\'] ', this.editArticleFormGroup.controls['articleTitle_formControlName']);
 
 
                             let localCategoryToBeSelected: Category;
@@ -320,7 +381,9 @@ Just leave as simple string value, for the BE stored version: 'world' or 'politi
             }) // /.subscribe()  myActivatedRoute.params
     } // /getArticle()
 
-    myCompareOptionCategoryValuesIFLOGIC( // << attempt at full IF logic, vs. Ternary
+    myCompareOptionCategoryValuesIFLOGIC( // THIS *DOES* WORK :o)
+        // myCompareOptionCategoryValuesIFLOGIC << attempt at full IF logic, vs. Ternary
+        // ***  IFLOGIC NO LONGER USED  *********  (Was Experiment)
         optionCategory1: any,
         optionCategory2: any
     ): boolean {
@@ -330,7 +393,7 @@ Just leave as simple string value, for the BE stored version: 'world' or 'politi
 
         if (optionCategory1 && optionCategory2) {
             console.log('COMP 00 if (optionCategory1 && optionCategory2) ', optionCategory1);
-            if (optionCategory1 === optionCategory2) { // None!
+            if (optionCategory1 === optionCategory2) { // WORKS. None!
 /*
             if (optionCategory1.value === optionCategory2.value) { // VALUE
 */
@@ -354,22 +417,24 @@ Just leave as simple string value, for the BE stored version: 'world' or 'politi
 /* Hmm, I *think* I meant to Comment this out!
         return optionCategory1 && optionCategory2 ? optionCategory1.viewValue === optionCategory2.viewValue : optionCategory1 === optionCategory2;
 */
-    } // /myCompareOptionCategoryValues() << attempt at full IF logic, vs. Ternary
+    } // /myCompareOptionCategoryValuesIFLOGIC() << attempt at full IF logic, vs. Ternary
+
 
     myCompareOptionCategoryValues(optionCategory1: any, optionCategory2: any): boolean {
+        // myCompareOptionCategoryValuesTERNARYTHISWORKS
         // myCompareOptionCategoryValuesORIGINALTERNARY
-        console.log('COMPARE 1 ', optionCategory1); // news
+        // console.log('COMPARE 1 ', optionCategory1); // news
         // console.log('COMPARE 1.value ', optionCategory1.value); // undefined
-        console.log('COMPARE 2 ', optionCategory1);
+        // console.log('COMPARE 2 ', optionCategory1);
         return optionCategory1 && optionCategory2 ? optionCategory1 === optionCategory2 : optionCategory1 === optionCategory2;
 /*
         return optionCategory1 && optionCategory2 ? optionCategory1.viewValue === optionCategory2.viewValue : optionCategory1 === optionCategory2;
 */
-    }
+    } // myCompareOptionCategoryValues
 
 
     localGiveMeFullCategoryObject(viewValuePassedIn: string): Category {
-        console.log('localGiveMeFullCategoryObject - viewValuePassedIn ', viewValuePassedIn); // Yes. e.g. 'Politics', or, could be 'No Category "viewValue" (thx Service!)'
+        // console.log('localGiveMeFullCategoryObject - viewValuePassedIn ', viewValuePassedIn); // Yes. e.g. 'Politics', or, could be 'No Category "viewValue" (thx Service!)'
         const NO_CATEGORY = 'No Category "viewValue" (thx Service!)'; // << Same as in ArticleService
 
         if (viewValuePassedIn === NO_CATEGORY) {
@@ -399,7 +464,7 @@ Just leave as simple string value, for the BE stored version: 'world' or 'politi
         /* Yeah!
         {value: "living", viewValue: "Living"}
          */
-        console.log('555a local blah blah this.selectedCategoryToEdit ', this.selectedCategoryToEdit.value);
+        // console.log('555a local blah blah this.selectedCategoryToEdit ', this.selectedCategoryToEdit.value);
         /* Yep
         living
          */
@@ -407,7 +472,10 @@ Just leave as simple string value, for the BE stored version: 'world' or 'politi
         return this.selectedCategoryToEdit; // ( ? ) does this need to be 'returned'? (can't hurt I guess)
     } // /localGiveMeFullCategoryObject()
 
+
     processTemplateDrivenFormEdit(whatFormRefValueIsPassedIn: any): void {
+        // ***  NO LONGER USED   ********** (was Experiment)
+
         console.log('TD !! processTemplateDrivenFormEdit - whatFormRefValueIsPassedIn ', whatFormRefValueIsPassedIn);
         /*
         {articleTitle: "Our First TD Article hard-coded"}
@@ -645,6 +713,40 @@ _id: "5af746cea7008520ae732e2c"
         );
         return howMany;
     }
+
+    // Now in our DateService (under /core/services)
+/* NOT CALLED FROM HERE
+    // https://steveridout.github.io/mongo-object-time/
+    myDateFromObjectId = function (objectId): Date {
+        return new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
+    };
+
+    myObjectIdFromDate = function (date) {
+        return Math.floor(date.getTime() / 1000).toString(16) + "0000000000000000";
+    };
+*/
+    myFullDateFromObjectId = (objectIdPassedIn): Date => {
+        return this.myDateService.myDateFromObjectIdFunctionTerm(objectIdPassedIn);
+    }
+
+    myFormattedStringDateFromObjectId = (objectIdPassedIn): string => {
+        return this.myDateService.myStringDateFromObjectIdFunctionTerm(objectIdPassedIn);
+
+        /* WebStorm all complainy:
+"Local variable 'myFormattedStringDateToReturn' is redundant"
+Better the one-liner above.
+cheers
+
+        const myFormattedStringDateToReturn = this.myDateService.myStringDateFromObjectIdFunctionTerm(objectIdPassedIn)
+        return myFormattedStringDateToReturn;
+*/
+        /* DATE FORMAT we are using:
+          stringDateToReturn = momentINeed.format('ddd MMMM Do, YYYY'); // Thu August 20th, 2020
+          https://momentjs.com/
+         */
+    } // /myFormattedStringDateFromObjectId()
+
+
 
     ngOnDestroy() {
         /* using (again) now */

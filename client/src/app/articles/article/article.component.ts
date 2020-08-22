@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { Article } from '../article.model';
+import { DateService } from '../../core/services/date.service';
 
 @Component({
     selector: 'app-article',
@@ -39,6 +40,11 @@ export class ArticleComponent implements OnInit, OnChanges {
     article-by-article - no delay. ngOnInit() works OK.
      */
 
+    constructor(
+        private myDateService: DateService
+    ) {
+    }
+
     ngOnInit() {
         // console.log('ARTICLE. ngOnInit(). this.articleHere: ', this.articleHere);
         /* Yes. but hmm "Object" ?
@@ -67,14 +73,27 @@ this.myDate be  Tue Jul 14 2020 15:51:12 GMT-0400 (Eastern Daylight Time)
         // if (false) {
         if (this.articleHere) {
 
-// https://stackoverflow.com/questions/13350642/how-to-get-creation-date-from-object-id-in-mongoose
+            // No Longer Using. See below ...
+            // Thanks, StackOverflow!
+/*
+            // https://stackoverflow.com/questions/13350642/how-to-get-creation-date-from-object-id-in-mongoose
             const myTimestamp = this.articleHere.articleId_name.toString().substring(0,8);
 
             this.myDate = new Date( parseInt( myTimestamp, 16 ) * 1000 );
 
             // console.log('CHANGES this.myDate be ', this.myDate);
-            /*
+            /!*
             this.myDate be  Tue Jul 14 2020 15:51:12 GMT-0400 (Eastern Daylight Time)
+             *!/
+*/
+
+            // NEW. Let's use our DateService :o)
+            this.myDate = this.myDateService.myDateFromObjectIdFunctionTerm(this.articleHere.articleId_name);
+            /*
+            Just send in the objectId (it's a string).
+            The function in the Service does the same (bit niftier)
+            as the couple of lines from SO (StackOverflow) above.
+            cheers.
              */
         }
     }

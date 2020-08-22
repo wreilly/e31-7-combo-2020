@@ -36,7 +36,21 @@
             <div>
                 <a href="{{ articleHereInDetailPage.articleUrl }}" target="_blank">{{ articleHereInDetailPage.articleUrl }}</a>
             </div>
-            <div>News Category: {{ articleHereInDetailPage.articleCategory}}</div>
+            <div>News Category: {{ selectedCategoryToEdit.viewValue }}</div>
+            <div
+                    class="teeny"
+                    style="background-color: aliceblue"
+            >
+                ID #: {{ articleHereInDetailPage._id }}
+                <br />
+                Article Added: {{ myFormattedStringDateFromObjectId(articleHereInDetailPage._id) }}
+                <!--
+  "FORMATTED"        Thu August 20th, 2020
+  "FULL"             Thu Aug 20 2020 18:14:22 GMT-0400 (Eastern Daylight Time)
+  "FULL" | date      Aug 20, 2020
+                -->
+            </div>
+
         </mat-card-content>
     </mat-card>
 
@@ -47,12 +61,12 @@
     OBJECT for article, not array for article:
 -->
     <!-- **************   2.  EDITING   ************** -->
-    <mat-card>
-<!-- TODO: Put back in this IF logic. Kept out now for debug etc.
+<!--    <mat-card>-->
+<!-- TODONE: Put back in this IF logic. Kept out now for debug etc. -->
     <mat-card
             *ngIf="areWeEditingObservable$ | async"
     >
--->
+
         <div class="component-label"
              fxLayout="column">*EDITING* &lt;FORM&gt; - (ARTICLE-DETAIL-TWO)</div>
 
@@ -65,107 +79,15 @@
             {{ articleHereInDetailPage.articleTitle}}
         </mat-card-title>
         <mat-card-subtitle>
-            EDITING: {{ articleHereInDetailPage.articleUrl}} |
-            {{urlHereToSeeWhetherEditingObservable$ | async}}
-            <!--
+<!--            EDITING: {{ articleHereInDetailPage.articleUrl}} |-->
+<!--            {{urlHereToSeeWhetherEditingObservable$ | async}}-->
+            <!-- Yes:
             5b01e393b810e02daf607239/edit
             -->
         </mat-card-subtitle>
         <mat-card-content>
-            <p>*******   TEMPLATE-DRIVEN FORM EDITING  *********</p>
-            <form
-                    ref-myTemplateDrivenForm_ref="ngForm"
-                    on-ngSubmit="processTemplateDrivenFormEdit(myTemplateDrivenForm_ref.value)"
-                    enctype="multipart/form-data"
-                    fxLayout="column"
-                    fxLayoutGap="10px"
-            >
-                <mat-form-field>
-                    <mat-label>TD Label Title</mat-label>
-                    <input
-                            matInput
-                            type="text"
-                            bind-ngModel="tdArticle.articleTitle_name"
-                            name="articleTitleNameInTemplate"
-                    >
-
-                    <!-- RECOLLECT:
-                            https://blog.thoughtram.io/angular/2016/10/13/two-way-data-binding-in-angular-2.html
-        [(ngModel)]
-        syntactic sugar for:
-          bind-value="theArticleHereInDetailPage.articleTitle"
-          on-input="theArticleHereInDetailPage.articleTitle = $event.target.value"
-          OR:
-        [value]=...
-        (input)=...
-          OR:
-         [(ngModel)]=...
-        -->
-<!--
-         1. bind-ngModel="tdArticle.articleTitle_name" // << YES
-         2. bind-value="tdArticle.articleTitle_name" // << NOPE
-         # 2. does SHOW the value, but, it does not get processed with
-         the form etc. ... Cheers
--->
-                    <!--
-                    Worked: if you do want bi-directional...
-                    If, as you edit, you wish to see it also
-                    rendered immediately to the page, too.
-                    Not really such a great idea, but, flashy.
-      on-input="tdArticle.articleTitle_name = $event.target.value"
-                    WHOA LOOKEE: {{ tdArticle.articleTitle_name }}
-
-                      value="Test Article Title Value"
-                    -->
-                    <mat-hint>TD Hint Title</mat-hint>
-                    <mat-error>TD Error Title</mat-error>
-                </mat-form-field>
-
-                <mat-form-field>
-                    <mat-label>TD Label Category</mat-label>
-                    <mat-select
-                            [(ngModel)]="tdArticle.articleCategory_name"
-                            name="articleCategoryNameInTemplate"
-                    >
-                        <!--
-             can't beat 'em join 'em. [(ngModel)] y not sez I
-             WAS: bind-ngModel="tdArticle.articleCategory_name"
-                        -->
-                        <mat-option
-                                *ngFor="let category of categories"
-                                bind-value="category.value"
-                        >
-                            {{ category.viewValue }}
-                        </mat-option>
-                    </mat-select>
-                    <mat-hint>TD Hint Category</mat-hint>
-                    <mat-error>TD Error Category</mat-error>
-                </mat-form-field>
-                <div>
-                    TD (hard-coded) CATEGORY: {{ tdArticle.articleCategory_name }}
-                </div>
-
-
-                <button
-                        mat-raised-button
-                        color="primary"
-                        type="submit"
-                >
-                    SUBMIT Template-Driven Form
-                </button>
-                <button
-                        mat-raised-button
-                        color="accent"
-                        type="button"
-                        on-click="myTemplateDrivenForm_ref.reset()"
-                >
-                    RESET Template-Driven Form
-                </button>
-            </form>
-            <p>*******   /TEMPLATE-DRIVEN FORM EDITING  *********</p>
-
             <!--            {{ articleHereInDetailPage.articleTitle}}-->
-            <p>*******   REACTIVE FORM EDITING   *********</p>
+<!--            <p>*******   REACTIVE FORM EDITING   *********</p>-->
             <form
                     bind-formGroup="editArticleFormGroup"
                     on-ngSubmit="processReactiveFormEdit()"
@@ -246,8 +168,29 @@
                         Error for Category EDITING
                     </mat-error>
                 </mat-form-field>
-                <div style="background-color: aqua">
-                    articleCategory_formControl.value |   {{ articleCategory_formControl.value | json }}
+                <div
+                        class="teeny"
+                        style="background-color: aliceblue"
+                >
+<!-- Yes. 'politics'        articleCategory_formControl.value |   {{ articleCategory_formControl.value | json }}-->
+                    ID #: {{ articleHereInDetailPage._id }}
+<!--                    | Date Added, Formatted: {{ myFormattedStringDateFromObjectId(articleHereInDetailPage._id) }}-->
+                    <br />
+                    Article Added: {{ myFullDateFromObjectId(articleHereInDetailPage._id) }}
+<!--                    | Date Added, Full | date {{ myFullDateFromObjectId(articleHereInDetailPage._id) | date }}-->
+                    <!--
+      "FORMATTED"        Thu August 20th, 2020
+      "FULL"             Thu Aug 20 2020 18:14:22 GMT-0400 (Eastern Daylight Time)
+      "PIPE" | date      Aug 20, 2020
+                    -->
+<!--
+2020-08-20        // << Perennial WR__ fave.
+August 20th, 2020 // << Y NOT. My "Formatted". cheers
+August 20, 2020
+Aug 20, 2020      // << Angular pipe: | date
+Thu Aug 20 2020
+Thu Aug 20 2020 18:14:22 GMT-0400 (Eastern Daylight Time) // << FULL
+-->
                 </div>
 <!-- No. Non c'é.
                 <div style="background-color: cadetblue">
@@ -312,30 +255,131 @@
                     </div>
                 </div>
             </form>
-            <p>*******   /REACTIVE FORM EDITING  *********</p>
+<!--            <p>*******   /REACTIVE FORM EDITING  *********</p>-->
+
+            <div
+                    *ngIf="displayTemplateDrivenForm"
+            >
+
+            <p>*******   TEMPLATE-DRIVEN FORM EDITING  *********</p>
+            <form
+                ref-myTemplateDrivenForm_ref="ngForm"
+                on-ngSubmit="processTemplateDrivenFormEdit(myTemplateDrivenForm_ref.value)"
+                enctype="multipart/form-data"
+                fxLayout="column"
+                fxLayoutGap="10px"
+            >
+                <mat-form-field>
+                    <mat-label>TD Label Title</mat-label>
+                    <input
+                            matInput
+                            type="text"
+                            bind-ngModel="tdArticle.articleTitle_name"
+                            name="articleTitleNameInTemplate"
+                    >
+
+                    <!-- RECOLLECT:
+                            https://blog.thoughtram.io/angular/2016/10/13/two-way-data-binding-in-angular-2.html
+        [(ngModel)]
+        syntactic sugar for:
+          bind-value="theArticleHereInDetailPage.articleTitle"
+          on-input="theArticleHereInDetailPage.articleTitle = $event.target.value"
+          OR:
+        [value]=...
+        (input)=...
+          OR:
+         [(ngModel)]=...
+        -->
+                    <!--
+                             1. bind-ngModel="tdArticle.articleTitle_name" // << YES
+                             2. bind-value="tdArticle.articleTitle_name" // << NOPE
+                             # 2. does SHOW the value, but, it does not get processed with
+                             the form etc. ... Cheers
+                    -->
+                    <!--
+                    Worked: if you do want bi-directional...
+                    If, as you edit, you wish to see it also
+                    rendered immediately to the page, too.
+                    Not really such a great idea, but, flashy.
+      on-input="tdArticle.articleTitle_name = $event.target.value"
+                    WHOA LOOKEE: {{ tdArticle.articleTitle_name }}
+
+                      value="Test Article Title Value"
+                    -->
+                    <mat-hint>TD Hint Title</mat-hint>
+                    <mat-error>TD Error Title</mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>TD Label Category</mat-label>
+                    <mat-select
+                            [(ngModel)]="tdArticle.articleCategory_name"
+                            bind-compareWith="myCompareOptionCategoryValues"
+                            name="articleCategoryNameInTemplate"
+                    >
+                        <!--
+             can't beat 'em join 'em. [(ngModel)] y not sez I
+             WAS: bind-ngModel="tdArticle.articleCategory_name"
+                        -->
+                        <mat-option
+                                *ngFor="let category of categories"
+                                bind-value="category.value"
+                        >
+                            {{ category.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-hint>TD Hint Category</mat-hint>
+                    <mat-error>TD Error Category</mat-error>
+                </mat-form-field>
+                <div>
+                    TD (hard-coded) CATEGORY: {{ tdArticle.articleCategory_name }}
+                </div>
+
+
+                <button
+                        mat-raised-button
+                        color="primary"
+                        type="submit"
+                >
+                    SUBMIT Template-Driven Form
+                </button>
+                <button
+                        mat-raised-button
+                        color="accent"
+                        type="button"
+                        on-click="myTemplateDrivenForm_ref.reset()"
+                >
+                    RESET Template-Driven Form
+                </button>
+            </form>
+            <p>*******   /TEMPLATE-DRIVEN FORM EDITING  *********</p>
+            </div>
+
         </mat-card-content>
     </mat-card>
 
-    <mat-card>
-<!-- TODO: Put back in this IF logic. Kept out now for debug etc.
+    <div
+            *ngIf="displayReactiveFormSelectFormControlComponent"
+    >
+    <!--    <mat-card>-->
+    <!-- TODONE: Put back in this IF logic. Kept out now for debug etc. -->
         <mat-card
-                *ngIf="areWeEditingObservable$ | async"
+            *ngIf="areWeEditingObservable$ | async"
         >
--->
-        <p>******* DROP IN HERE:  *COMPONENT* REACTIVE FORM SELECT FORM CONTROL - EDITING  *********</p>
-        <div class="component-label"
-             fxLayout="column">*EDITING* &lt;FORM&gt; - (REACTIVE-FORM-SELECT-FORM-CONTROL)</div>
-        <mat-card-title>{{ articleHereInDetailPage.articleTitle }}</mat-card-title>
-        <mat-card-content>
+            <p>******* DROP IN HERE:  *COMPONENT* REACTIVE FORM SELECT FORM CONTROL - EDITING  *********</p>
+            <div class="component-label"
+                 fxLayout="column">*EDITING* &lt;FORM&gt; - (REACTIVE-FORM-SELECT-FORM-CONTROL)</div>
+            <mat-card-title>{{ articleHereInDetailPage.articleTitle }}</mat-card-title>
+            <mat-card-content>
 
-            <app-reactive-form-select-form-control
-                    bind-articlePassedInName="articleHereInDetailPage"
-            ></app-reactive-form-select-form-control>
+                <app-reactive-form-select-form-control
+                        bind-articlePassedInName="articleHereInDetailPage"
+                ></app-reactive-form-select-form-control>
 
-        </mat-card-content>
-        <p>*******   /*COMPONENT* REACTIVE FORM SELECT FORM CONTROL - EDITING  *********</p>
-    </mat-card>
-
+            </mat-card-content>
+            <p>*******   /*COMPONENT* REACTIVE FORM SELECT FORM CONTROL - EDITING  *********</p>
+        </mat-card>
+    </div>
 
 
 
