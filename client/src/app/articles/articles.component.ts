@@ -381,7 +381,11 @@ UPDATE. We *do* have to still do this down here in myOnActivate().
         // Therefore, more better "if" test is based on
         // WHICH COMPONENT TYPE, << good
         // not some particular "flag" property on it. << bit hack-y
-        if(componentReferenceFromRouterOutlet instanceof ArticleDetailComponent) {
+        if(componentReferenceFromRouterOutlet instanceof ArticleDetailTwoComponent) {
+        /*  OLD Now Superseded...
+              if(componentReferenceFromRouterOutlet instanceof ArticleDetailComponent) {
+        */
+
           /* THX, StackOverflow!
           if(componentRef instanceof ChildWithWorksMethodComponent){ ...
           https://stackoverflow.com/questions/45720655/access-router-outlet-component-from-parent

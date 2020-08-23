@@ -187,6 +187,8 @@ apiArticleController.apiUpdateArticle = function (req, res, next) {
 
     articleDataToUpdate.articleTitle_name = req.body.articleTitle_name;
     articleDataToUpdate.articleUrl_name = req.body.articleUrl_name;
+    // CATEGORY TIME!
+    articleDataToUpdate.articleCategory_name = req.body.articleCategory_name;
 
     // Hmm 2018 has 'return' prefixed here... I'll do same now in 2020
    return articleDataServiceHereInApiController.updateArticle(

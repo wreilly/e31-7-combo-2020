@@ -317,9 +317,16 @@ Leave it lowercased 'world', vs. 'World'. Okay? OKay.
 
                             this.editArticleFormGroup.get('articleCategory_formControlName').setValue(categoryViewValueSuchAsItIsReturned, { onlySelf: true }); // << you're setting a type: string. (But, note! - this puts the ViewValue on! (not what we want) 'Politics' not 'politics'. Oi!
 
-/* Nope! Too Early, for "this.selectedCategoryToEdit", kid.
-                            this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.selectedCategoryToEdit, { onlySelf: true }); // << hmm, we were: 1) trying to set a value that's undefined, right now. and 2) (I think?) trying to set a whole Object (Category {}), not just a string. Hmm.
-*/
+ // Yes:
+ /* .setValue() OK, but I prefer .patchValue() y not
+                            this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.selectedCategoryToEdit, { onlySelf: true });
+ */
+                            this.editArticleFormGroup.get('articleCategory_formControlName').patchValue(this.selectedCategoryToEdit, { onlySelf: true });
+
+
+                            /* Nope! Too Early, for "this.selectedCategoryToEdit", kid.
+                                                        this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.selectedCategoryToEdit, { onlySelf: true }); // << hmm, we were: 1) trying to set a value that's undefined, right now. and 2) (I think?) trying to set a whole Object (Category {}), not just a string. Hmm.
+                            */
 
                             // console.log('XXX-111 this.editArticleFormGroup ', this.editArticleFormGroup);
                             /* DEBUG vs. CONSOLE.LOG() note
@@ -342,7 +349,7 @@ Leave it lowercased 'world', vs. 'World'. Okay? OKay.
                                 articleUrl_formControlName: this.articleHereInDetailPage.articleUrl,
 
                                 articleCategory_formControlName: this.articleHereInDetailPage.articleCategory, // 'politics'
-/* WORKS. LOVELY.
+/* WORKS TOO. LOVELY.
                                 articleTitle_formControlName: articleIGot.articleTitle,
                                 articleUrl_formControlName: articleIGot.articleUrl,
 
@@ -358,8 +365,33 @@ Just leave as simple string value, for the BE stored version: 'world' or 'politi
                                     viewValue: this.articleHereInDetailPage.articleCategory // 'Politics'
                                 }
 */
-
                             });
+/* **  LITTLE EXPERIMENT ZONE.  **
+We do not use the line below that YES does WORK,
+because we already took care of this data value (for Category, on the Form)
+in the .patchValue just above, for the entire Form.
+cheers.
+
+/!* NO. Wrong. patches value of the complete Category object. No.  { value: , viewValue: }
+                            this.editArticleFormGroup.get('articleCategory_formControlName').patchValue(this.selectedCategoryToEdit, { onlySelf: true });
+*!/
+/!* NO. Wrong. sets value of the wrong property: the 'viewValue' property. No.   viewValue: 'Politics'
+                            this.editArticleFormGroup.get('articleCategory_formControlName').setValue(categoryViewValueSuchAsItIsReturned, { onlySelf: true }); // << you're setting a type: string. (But, note! - this puts the ViewValue on! (not what we want) 'Politics' not 'politics'. Oi!
+*!/
+/!* YES.  Right. patches value of the right property: the 'value' property,
+         as now stored in both:
+         1) the articleIGot.articleCategory (from the BE)
+         2) the articleHereInDetailPage.articleCategory (from the BE)
+ *!/
+
+// 1. yes
+                            this.editArticleFormGroup.get('articleCategory_formControlName').patchValue(articleIGot.articleCategory, { onlySelf: true });
+// 2. yes
+                            this.editArticleFormGroup.get('articleCategory_formControlName').patchValue(articleHereInDetailPage.articleCategory, { onlySelf: true });
+
+**  /LITTLE EXPERIMENT ZONE.  **
+*/
+
 
                             // console.log('XXX-222 this.editArticleFormGroup ', this.editArticleFormGroup);
                             // console.log('XXXZZZ-222 this.editArticleFormGroup.getRawValue() ', this.editArticleFormGroup.getRawValue());
@@ -367,9 +399,11 @@ Just leave as simple string value, for the BE stored version: 'world' or 'politi
                             // console.log('XXXYYYTitle-222 this.editArticleFormGroup.controls[\'articleTitle_formControlName\'] ', this.editArticleFormGroup.controls['articleTitle_formControlName']);
 
 
+                            /* *** These 3 Lines Don't Do Anything. Cheers. *** */
                             let localCategoryToBeSelected: Category;
                             localCategoryToBeSelected = this.localGiveMeFullCategoryObject(categoryViewValueSuchAsItIsReturned);
                             console.log('localCategoryToBeSelected ', localCategoryToBeSelected);
+                            /* *** /These 3 Lines Don't Do Anything. Cheers. *** */
 
                             /* ***********************************
                                  /FORM EDIT
@@ -625,6 +659,33 @@ News
                      */
 
                     this.editArticleFormGroup.reset(); // << hmm. not what we want ?
+                    /*
+                    I'd (apparently) forgotten this ( ? ). To "turn off editing" here!
+                    Tell NgRx Store!
+
+                    Q. Where (pray tell?) was I doing this, before?
+                    Could swear I saw the ArticlesComponent "header" properly showing:
+                    "(Editing) <!--NGRX (weAreEditingObservable$ = true)-->"
+                    Hmm.
+
+                    A. Dummkoppff. oi. I (once again (apparently)) got confused (wotta concept)
+                    on what status really needs to be dispatched & Etc.
+                    It is not so much "turning editing off" here. Here, we are about to
+                    navigate away, which will Destroy this Component, and in OnDestroy
+                    don't worry about it - we've got the "dispatch ... false" all taken care of.
+                    So no, not here was I missing or lacking a "dispatch ... false" about editing. No.
+                     */
+                    /*
+What DID need fixing was over in ArticlesComponent, where I'd missed updating one check
+on "ArticleDetailTWOComponent" - for this "are we editing" biz.
+Found in myOnActivate() ...
+All Set Now!
+ */
+                    // So, per above discussion, this is Not Needed Right Here:
+                    // this.myStore.dispatch(new UIActions.TellingYouIfWeAreEditing({areWeEditingInAction: false}));
+
+
+
                     this.myRouter.navigate([`/articles/${idPassedIn}`]); // back to page we just edited
 
                 },

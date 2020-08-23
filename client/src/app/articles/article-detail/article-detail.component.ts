@@ -769,7 +769,7 @@ But then, sadly, the Store 'state' somehow ( ? ) *loses* this property of articl
                           so immediately, as we first tried
                            up above, at beginning of getArticle().
                            Note how we set up that Observable$
-                           v. early in constructor() (normal)
+                           v. early in constructor() (normal).
                            But something about router-outlet
                            onActivate() ? and this same
                            Component getting re-used/loaded ?
@@ -933,6 +933,7 @@ After all, 'selectedCategoryToEdit' is declared way up above as a class member. 
 */
                             // Yes:
                             this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.selectedCategoryToEdit, { onlySelf: true });
+
 
                             /* NO.
                             this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.categories[3].viewValue, { onlySelf: true });

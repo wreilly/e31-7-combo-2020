@@ -180,6 +180,8 @@ class articleService {
             { $set: {
                     articleTitle: articleDataToUpdatePassedIn.articleTitle_name,
                     articleUrl: articleDataToUpdatePassedIn.articleUrl_name,
+                    // CATEGORY TIME!
+                    articleCategory: articleDataToUpdatePassedIn.articleCategory_name,
                 }},
             { new: true }
             // Gets you the NEW, just-edited doc (not the orig one)

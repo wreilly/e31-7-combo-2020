@@ -39,8 +39,10 @@
             <div>News Category: {{ selectedCategoryToEdit.viewValue }}</div>
             <div
                     class="teeny"
-                    style="background-color: aliceblue"
             >
+<!-- NOT GREAT with Material Design "Dark" Theme. sigh.
+               style="background-color: aliceblue"
+-->
                 ID #: {{ articleHereInDetailPage._id }}
                 <br />
                 Article Added: {{ myFormattedStringDateFromObjectId(articleHereInDetailPage._id) }}
@@ -170,8 +172,11 @@
                 </mat-form-field>
                 <div
                         class="teeny"
-                        style="background-color: aliceblue"
                 >
+                    <!-- NOT GREAT with Material Design "Dark" Theme. sigh.
+                                   style="background-color: aliceblue"
+                    -->
+
 <!-- Yes. 'politics'        articleCategory_formControl.value |   {{ articleCategory_formControl.value | json }}-->
                     ID #: {{ articleHereInDetailPage._id }}
 <!--                    | Date Added, Formatted: {{ myFormattedStringDateFromObjectId(articleHereInDetailPage._id) }}-->

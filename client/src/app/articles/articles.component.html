@@ -91,6 +91,7 @@
             (Editing) ORIG
         </a>
 -->
+<!--        <p>'weAreEditingObservable$' | {{ (weAreEditingObservable$ | async) }}</p>-->
         <a
                 *ngIf="(articleToEditIdObservable$ | async) && (weAreEditingObservable$ | async)"
                 mat-tab-link [disabled]="true"
