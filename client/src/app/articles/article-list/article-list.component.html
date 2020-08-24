@@ -57,7 +57,7 @@ NO. Nothing doing with "pageScroll" CRap.
 <a
         *ngIf="articleListOnArticlesListPage"
         routerLink="/articles/{{latestArticleAnchorId}}">
-    Latest: {{latestArticleDate | date}}
+    Articles List Latest: {{latestArticleDate | date}}
 <!-- | date gets:   May 13 2018 -->
 </a>
                 <!-- N.B. Not really "anchor" --
@@ -108,9 +108,13 @@ https://github.com/Nolanus/ngx-page-scroll/issues/403
                 <!--  ****** WELCOME  (01 WELCOME) ******** -->
                 <a
                         *ngIf="articleListOnWelcomePage"
-                        href="./#{{latestArticleAnchorId}}">
-                    Latest: {{latestArticleDate | date}}
+                        href="./#fake-bottom-id">
+                   Welcome Latest: {{latestArticleDate | date}}
                 </a>
+<!-- WORKED LOVELY BUT ... see explanation way below at "fake-bottom-id"
+
+                        href="./#{{latestArticleAnchorId}}">
+-->
 
 <!-- YES Worked, if imperfectly, for /    FAILED for /articles/list
 So that has driven the need (above) for *ngIf conditional. Yowza. -->
@@ -147,6 +151,121 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
 
         <mat-card-content><span>Count: {{articles.length}}</span> -&#45;&#45; <span fxLayoutAlign="flex-end">Latest: {{latestArticleDate | date}}</span></mat-card-content>
 -->
+
+        <!-- FILTER by CATEGORY Time !
+        TODONE: Dynamically generate these buttons from list of Categories
+        TODO: Fix now broken "Latest" #goto. (Only works for one Category! sigh.) (Welcome page. Works OK from Articles List page. cheers.)
+        TODONE: For 0 - provide "No articles in that category" message.
+        TODO: (Mebbe) Provide # of items in given Category y not  e.g.  Politics (12)
+        TODONE: Also, update "Count" at top of this Component to match the selected Category count (e.g. Count: 12)
+        TODO: Hmm, can I also get the "Latest" to reflect date of latest addition in this selected Category? Tlicky.
+        -->
+        <mat-card-content>
+            <div>
+<!--                <h2>Category: {{articlesInCategoryWhichCategory}}</h2>-->
+                <h2>{{articlesInCategoryWhichCategory}}</h2>
+            </div>
+            <span
+                    *ngFor="let oneCategory of categories"
+            >
+                <!-- Doing span wrapper, just to get in that "pipe" | separator. woot. -->
+                <button
+                        mat-raised-button
+                        color="{{oneCategory.viewValue === articlesInCategoryWhichCategory ? 'accent' : 'primary'}}"
+                        type="button"
+                        on-click="letUsFilterByCategory(oneCategory.viewValue)"
+                >
+                    {{ oneCategory.viewValue }}
+                </button> |
+            </span>
+            <!-- Couple of necessary exception-case manual entries: -->
+            <button
+                    mat-raised-button
+                    color="{{articlesInCategoryWhichCategory === 'No Category Assigned' ? 'accent' : ''}}"
+                    type="button"
+                    on-click="letUsFilterByCategory('No Category (thx Service!)')"
+            >
+                No Category Assigned
+            </button>
+            |
+            <button
+                    mat-raised-button
+                    color="{{articlesInCategoryWhichCategory === 'All Articles' ? 'accent' : ''}}"
+                    type="button"
+                    on-click="letUsFilterByCategory('ALL')"
+            >
+                <i>All Articles</i>
+            </button>
+
+            <!-- Bad Old Manual Entries: pah!
+                        <button
+                                mat-raised-button
+                                type="button"
+                                on-click="letUsFilterByCategory('News')"
+                        >
+                            News
+                        </button>
+                        |
+                        <button
+                                mat-raised-button
+                                type="button"
+                                on-click="letUsFilterByCategory('World')"
+                        >
+                            World
+                        </button>
+                        |
+                        <button
+                                mat-raised-button
+                                type="button"
+                                on-click="letUsFilterByCategory('U.S.')"
+                        >
+                            U.S.
+                        </button>
+                        |
+                        <button
+                                mat-raised-button
+                                type="button"
+                                on-click="letUsFilterByCategory('Politics')"
+                        >
+                            Politics
+                        </button>
+                        |
+                        <button
+                                mat-raised-button
+                                type="button"
+                                on-click="letUsFilterByCategory('Opinion')"
+                        >
+                            Opinion
+                        </button>
+                        |
+                        <button
+                                mat-raised-button
+                                type="button"
+                                on-click="letUsFilterByCategory('Business')"
+                        >
+                            Business
+                        </button>
+                        |
+                        <button
+                                mat-raised-button
+                                type="button"
+                                on-click="letUsFilterByCategory('Arts')"
+                        >
+                            Arts
+                        </button>
+                        |
+                        <button
+                                mat-raised-button
+                                type="button"
+                                on-click="letUsFilterByCategory('Living')"
+                        >
+                            Living
+                        </button>
+                        |
+            -->
+
+        </mat-card-content>
+
     </mat-card>
     <!-- style="background-color: lavenderblush" << No good for "dark-theme"!
 
@@ -157,11 +276,58 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
         As for WebStorm not recognizing mat-list-item as directive on my app-article, I simply "added as custom "HTML" attribute" (right-click). Warning goes away. Seems all totally benign, & Etc. Oi!
 >>  WebStorm Preferences | Editor | Inspections | HTML | Unknown HTML tag attribute
         -->
+<!--  NO  LONGER  NEEDED  *** Experimental
+    <ul>
+        <li
+                *ngFor="let nonArticle of articlesToDisplay"
+        >
+            {{ nonArticle.articleCategory_name}} | {{ nonArticle.articleTitle_name }}
+        </li>
+    </ul>
+-->
+    <div
+            *ngIf="noArticlesInCategory"
+    >
+        <div>
+            No articles in the "{{ noArticlesInCategoryWhichCategory }}" category. Consider adding one!
+        </div>
+    </div>
     <app-article
             mat-list-item
-            *ngFor="let article of articles"
+            *ngFor="let article of articlesToDisplay"
             [articleToSendDownName]="article"
     ></app-article>
+    <div
+            id="fake-bottom-id"
+    >
+        <!--
+        URL: http://0.0.0.0:4200/#fake-bottom-id
+
+        Bit of cheat.
+        Instead of (properly) anchor link jumping to
+        the _id of the "latest" item (most recently added),
+        (which was working fine, when ALL were always shown) ...
+        But now we have problem with filtering by Category. Read on:
+
+        So now with introducing this dummy/empty div and an "at the bottom" id,
+        we will always jump to very bottom, regardless
+        of which Category is selected. Muy bien.
+
+        (For you see, the "latest" item _id jump would only
+        work when the selected Category *included* that latest item!
+        Like, 'Politics' yes, the rest of them, no.
+        The other Categories just wouldn't have it displayed. No jump.)
+        cheers.
+
+        TODO: (minor) The "Latest" *DATE* is wrong. sigh. (from Welcome Page that is. from Articles List page, it's okay)
+        For the one Category (e.g. 'Politics') that actually HAS the Latest, the date tells the correct story.
+        But for all others, the "cheat" jump to bottom of page brings you to whatever is
+        "latest" *for that Category*  (which is okay), BUT, the *DATE* on that
+        "latest-in-Category" may or MAY NOT match that "Latest overall" date. sheesh.
+        Q. Rank of priority of caring about this?
+        A. Not Very (bloody) High.
+        -->
+    </div>
 <!-- WAS *NOT* WORKING. See above instead.
         <mat-list-item
                 *ngFor="let article of articles"

@@ -6,12 +6,22 @@ import * as myMoment from 'moment'; // << Try to *not* use the "*" (overload/blo
 import * as myMomentTs from 'moment/moment'; // << Try to *not* use the "*" (overload/bloat)
 
 @Injectable({
-    providedIn: "root" // << hmm is this correct ( ? )
+    providedIn: "root",
+    /*
+    Q. Hmm is this "root" biz here correct ( ? )
+    A. Yes. And, you can (should) leave "DateService" *out of* the CoreModule 'providers': []
+       I seem to recall this in fact is the preferred way. (I do it also for FilterSortService. cheers.)
+       (cf. ScrollService, ThemeService)
+     */
 })
 export class DateService {
 
     // ***  DATE UTILITIES  **************************************
     // We've npm-installed moment.js (2.27.0) https://momentjs.com/
+
+    // =-=-=-=---=-=-=--=-=-=-==-
+    // DATE ** >> FORMATTING << ** Is what this is all about ..... ( I kno - big whoop )
+    // =-=-=-=---=-=-=--=-=-=-==-
 
 /*
     2020-08-20        // << Perennial WR__ fave.

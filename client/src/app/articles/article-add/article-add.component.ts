@@ -523,6 +523,7 @@ _id: "5f0daf9584c76c1887b06e14"
               Go get 'viewValue' for the 'value' returned from the DB.
               e.g. 'u.s.' as value will return 'U.S.' as viewValue
                */
+              // TODO: You could go get this "categoryViewValue" now from ArticleService, n'est-ce pas?
               const categoryViewValue = this.categories.find( // << Array 'find()', not Array 'filter()' No.
                   (eachCategoryPair: Category) => {
                     return eachCategoryPair.value === whatIJustCreated.articleCategory;
@@ -540,6 +541,13 @@ _id: "5f0daf9584c76c1887b06e14"
               console.log('*MUCH* MORE BETTER fwiw, this.articleIJustCreatedDisplayFE !!! $$$ :o) ', this.articleIJustCreatedDisplayFE);
               /* "FE NAMING CONVENTION" = bueno
               This is officially of 'Type' 'Article' - good.
+
+              {
+              articleCategory_name: "U.S."
+articleId_name: "5f439278de0332f93052f8e6"
+articleTitle_name: "Why Are Coronavirus Cases Decreasing? Experts Say Restrictions Are Working"
+articleUrl_name: "https://www.nytimes.com/interactive/2020/08/24/us/coronavirus-cases-decreasing.html"
+              }
 
               {articleId_name: "5f0dd3a63c5a35425badb55f",
               articleTitle_name: "texas hold em",

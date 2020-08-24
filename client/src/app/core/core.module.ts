@@ -2,7 +2,13 @@ import { NgModule } from '@angular/core';
 
 import { ThemeService } from './services/theme.service';
 import { ScrollService } from './services/scroll.service';
-import { DateService } from './services/date.service';
+import {DatePipe} from "@angular/common";
+/*
+https://auth0.com/blog/real-world-angular-series-part-3/#L-span-id--angular-filterSort-service----span-Angular--Create-a-Filter-Sort-Service
+ */
+
+// import { DateService } from './services/date.service';
+// import { FilterSortService } from './services/filter-sort.service';
 
 @NgModule({
     imports: [
@@ -17,7 +23,9 @@ import { DateService } from './services/date.service';
     providers: [
         ThemeService,
         ScrollService,
-        DateService,
+        // DateService,
+        // FilterSortService,
+        DatePipe,
     ],
 })
 export class CoreModule { }

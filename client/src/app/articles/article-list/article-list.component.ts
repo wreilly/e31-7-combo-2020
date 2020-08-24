@@ -9,6 +9,7 @@ import { Category, CategoriesFromEnumLikeClassInModel } from '../article.model';
 import { ArticleAddComponent, MyCategoriesEnumLikeClass } from '../article-add/article-add.component'; // re: categories fixer. hmm.
 
 import { ArticleService } from '../article.service';
+import { FilterSortService } from '../../core/services/filter-sort.service';
 
 import {Article} from "../article.model";
 
@@ -20,6 +21,7 @@ import {Article} from "../article.model";
 export class ArticleListComponent implements OnInit {
 
   articles: Article[]; // empty to begin
+    articlesToDisplay: Article[]; // be that ALL, or FILTERED
   // articles: [Article]; // empty to begin
   /*
   Property '0' is missing in type 'Article[]' but required in type '[Article]'
@@ -30,6 +32,11 @@ export class ArticleListComponent implements OnInit {
     latestArticleDate: Date;
     latestArticleAnchorId: string; // articles[articles.length - 1].articleId_name
     articlesCount: number;
+    noArticlesInCategory = false; // init
+    noArticlesInCategoryWhichCategory: string; // e.g. 'Arts' when there are 0 articles
+    articlesInCategoryWhichCategory = 'All Articles'; // init  // string; // e.g. 'Politics' when there ARE articles
+
+    categories: Category[];
 
     @Output()
     testOutputDoesNotDoAnythingOnList: string;
@@ -62,6 +69,7 @@ export class ArticleListComponent implements OnInit {
 
   constructor(
       private myArticleService: ArticleService,
+      private myFilterSortService: FilterSortService,
       // private myPageScrollService: PageScrollService, // << CRAP
 /* Nah
       @Inject(DOCUMENT)
@@ -82,6 +90,8 @@ export class ArticleListComponent implements OnInit {
               this.articleListOnArticlesListPage = true;
           }
       }
+
+      this.categories = this.myArticleService.getCategoriesInService();
 
 /* COMPLETE CRAP
       this.myPageScrollService.scroll({
@@ -129,15 +139,18 @@ export class ArticleListComponent implements OnInit {
     returned from the DB.
     e.g. 'u.s.' as value will return 'U.S.' as viewValue
      */
-                          let categorySuchAsItIsReturned: string;
+                          let categoryViewValueSuchAsItIsReturned: string;
 
-                          categorySuchAsItIsReturned = this.myArticleService.getCategoryViewValue(eachPseudoArticleFromApi.articleCategory);
+                          categoryViewValueSuchAsItIsReturned = this.myArticleService.getCategoryViewValue(eachPseudoArticleFromApi.articleCategory);
+/*
+Returns 'viewValue' e.g. 'No Category "viewValue" (thx Service!)' --OR-- category viewValue
+ */
 
                           eachRealArticleToReturn = {
                               articleId_name: eachPseudoArticleFromApi._id,
                               articleTitle_name: eachPseudoArticleFromApi.articleTitle,
                               articleUrl_name: eachPseudoArticleFromApi.articleUrl,
-                              articleCategory_name: categorySuchAsItIsReturned, // 'viewValue' e.g. 'no category!...' --OR-- category viewValue
+                              articleCategory_name: categoryViewValueSuchAsItIsReturned,
                           }
 
                           return eachRealArticleToReturn;
@@ -145,9 +158,15 @@ export class ArticleListComponent implements OnInit {
 
                   ) // /allArticlesWeGot.map()
 
+                  this.articlesToDisplay = this.articles; // whamma-jamma ALL of them on, to begin
+
                   this.latestArticleDate = this.myDateFromObjectId(this.articles[this.articles.length - 1].articleId_name);
                   this.latestArticleAnchorId = this.articles[this.articles.length - 1].articleId_name;
+/* WAS:  (all Articles)
                   this.articlesCount = this.articles.length;
+*/
+                  // Need to re-run this inside letUsFilterByCategory() ...
+                  this.articlesCount = this.articlesToDisplay.length;
 
               } // /next(allArticlesWeGot)
 
@@ -157,6 +176,40 @@ export class ArticleListComponent implements OnInit {
 
   } // /ngOnInit()
 
+    letUsFilterByCategory(categoryStoredValuePassedIn: string) {
+        this.noArticlesInCategory = false; // << Make sure to reset!
+        this.noArticlesInCategoryWhichCategory = ''; // ditto
+
+        if (categoryStoredValuePassedIn === 'ALL') {
+            // SPECIAL CASE. We simply want All Articles.
+            // No consideration re: Category (or "No Category Assigned") value. All of 'em.
+            // We do NOT call the Filter Service
+            this.articlesToDisplay = this.articles;
+            this.articlesInCategoryWhichCategory = 'All Articles';
+
+        } else {
+
+            let articlesFilteredFromService: any[];
+
+            articlesFilteredFromService = this.myFilterSortService.myFilter(this.articles, 'articleCategory_name', categoryStoredValuePassedIn)
+
+            if (categoryStoredValuePassedIn === 'No Category (thx Service!)') { // << special case, kids
+                this.articlesInCategoryWhichCategory = 'No Category Assigned';
+            } else {
+                this.articlesInCategoryWhichCategory = categoryStoredValuePassedIn;
+            }
+
+            this.articlesToDisplay = articlesFilteredFromService;
+        }
+
+        this.articlesCount = this.articlesToDisplay.length;
+
+        if (this.articlesCount === 0) { // e.g. right now, 0 articles under "Arts" (sigh)
+            this.noArticlesInCategory = true;
+            this.noArticlesInCategoryWhichCategory = categoryStoredValuePassedIn;
+        }
+
+} // /letUsFilter()
 
 // Now in our DateService (under /core/services)
 /* NOT CALLED FROM HERE

@@ -11,8 +11,8 @@ export class ArticleComponent implements OnInit, OnChanges {
 
     @Input('articleToSendDownName')
     articleHere: Article;
-/* Better name above ^^
-    articleToSendDown: Article;
+/*  ^^^^^^^^^^^ Better name above
+    articleToSendDown: Article; // << I used to call it this. Not so good. Better "...Here". cheers.
 */
     myDate: Date;
     /* FINDING
