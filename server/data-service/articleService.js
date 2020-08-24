@@ -28,7 +28,19 @@ class articleService {
         /* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/static
         "Static methods aren't called on instances of the class. Instead, they're called on the class itself. These are often utility functions, such as functions to create or clone objects."
          */
+        return articleModelHereInService.find({}).sort({_id: -1})
+            /* WORKS. H'rrah.
+            This new line (above) gets us REVERSE CHRONOLOGICAL SORT.
+            NEWEST (most recently added) items at TOP. Makes more sense. :o)
+             */
+
+            /* YES. WORKS. LOVELY.
+This line (below) is super-duper basic default ".find()".
+Returns items in "natural" order = order in which they were added.
+Top/First is Oldest/First-Entered.
+
         return articleModelHereInService.find()
+*/
             .then(
                 (whatIGot) => { // all new2020articles!
                     // resolved

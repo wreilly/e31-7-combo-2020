@@ -54,12 +54,17 @@ NO. Nothing doing with "pageScroll" CRap.
 -->
 
 <!--  ****** ARTICLES LIST PAGE  (01 LIST) ******** -->
+<!-- This "latest" anchor link USED TO BE helpful, but no more.
+We USED TO use the "natural" sort of the database, putting the NEWEST item at BOTTOM of list.
+But NOW we do the reverse. Newest is on TOP (makes sense). No Need for anchor jump link any more.
+cheers.
 <a
         *ngIf="articleListOnArticlesListPage"
         routerLink="/articles/{{latestArticleAnchorId}}">
     Articles List Latest: {{latestArticleDate | date}}
-<!-- | date gets:   May 13 2018 -->
+&lt;!&ndash; | date gets:   May 13 2018 &ndash;&gt;
 </a>
+-->
                 <!-- N.B. Not really "anchor" --
                 Here above we navigate to route with
                 full URL including Article ID,
@@ -106,15 +111,20 @@ NO. None of this worked. CRap.
 https://github.com/Nolanus/ngx-page-scroll/issues/403
                 -->
                 <!--  ****** WELCOME  (01 WELCOME) ******** -->
-                <a
-                        *ngIf="articleListOnWelcomePage"
-                        href="./#fake-bottom-id">
-                   Welcome Latest: {{latestArticleDate | date}}
-                </a>
-<!-- WORKED LOVELY BUT ... see explanation way below at "fake-bottom-id"
-
-                        href="./#{{latestArticleAnchorId}}">
+                <!-- This "latest" anchor link USED TO BE helpful, but no more.
+                We USED TO use the "natural" sort of the database, putting the NEWEST item at BOTTOM of list.
+                But NOW we do the reverse. Newest is on TOP (makes sense). No Need for anchor jump link any more.
+                cheers.
+                                <a
+                                        *ngIf="articleListOnWelcomePage"
+                                        href="./#fake-bottom-id">
+                                   Welcome Latest: {{latestArticleDate | date}}
+                                </a>
 -->
+                <!-- WORKED LOVELY BUT ... see explanation way below at "fake-bottom-id"
+
+                                        href="./#{{latestArticleAnchorId}}">
+                -->
 
 <!-- YES Worked, if imperfectly, for /    FAILED for /articles/list
 So that has driven the need (above) for *ngIf conditional. Yowza. -->
