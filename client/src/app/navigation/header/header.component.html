@@ -1,5 +1,7 @@
 <div class="component-label">HEADER.COMPONENT</div>
 <mat-toolbar color="primary">
+
+    <!--  *** NARROW SCREEN VIEW *** -->
     <div
             fxHide.gt-xs
     >
@@ -7,8 +9,10 @@
                 mat-raised-button
                 color="accent"
                 on-click="myToggleMatSidenavHeader()"
+                class="tiny"
         >{{ myIsMatSidenavOpenFromParentApp ? 'Close' : 'Open' }}
-            <mat-icon>menu</mat-icon>
+            <mat-icon
+            >menu</mat-icon>
         </button>
     </div>
 
@@ -25,34 +29,61 @@
         display: flex;
         flex-direction: row; // default
         -->
-        <div>
-<!-- style="border-style: dotted; color: white;" << yuk
-            <mat-icon class="my-mat-icon-smaller">house</mat-icon>
--->
-            <a routerLink="">
-                <mat-icon color="accent">house</mat-icon>
-            </a>
-<!--
-            <a routerLink="">
-                <mat-icon [ngStyle]="{'color':'aquamarine'}">house</mat-icon>
-            </a>
--->
-<!--            <mat-icon>done</mat-icon>-->
-        </div>
+
+        <!--  *** WIDE(R) SCREEN VIEW *** -->
         <div
                 fxHide.xs
         >
+            <!--
+            vertical-align: center; // << "Invalid property value"
+            vertical-align: middle; // << Yep. Put it on both span and mat-icon.
+
+            With a little help from our (visualize it!) friends:
+            border: solid;
+            -->
             <span
                 on-click="myToggleMatSidenavHeader()"
-                style="cursor: pointer; font-size: xx-small"
+                style="
+                cursor: pointer;
+                vertical-align: middle;
+                "
+                class="tiny"
         >{{ myIsMatSidenavOpenFromParentApp ? 'Close' : 'Open' }}
+                <mat-icon
+                        style="
+                        vertical-align: middle;
+                        "
+                >menu</mat-icon>
             </span>
+
         </div>
+
         <div>
-            Hey Offset?
-            <!-- d'oh!      {{scrollOffsetWeJustGotToDisplay}}-->
+            <!-- style="border-style: dotted; color: white;" << yuk
+                        <mat-icon class="my-mat-icon-smaller">house</mat-icon>
+            -->
+            <a routerLink="">
+                <mat-icon color="accent">house</mat-icon>
+            </a>
+            <!--
+                        <a routerLink="">
+                            <mat-icon [ngStyle]="{'color':'aquamarine'}">house</mat-icon>
+                        </a>
+            -->
+            <!--            <mat-icon>done</mat-icon>-->
+        </div>
+
+<!-- WORKS. LOVELY. Just that "Offset #" not needed in Header anymore ...
+(See ScrollTopComponent)
+
+        <div
+                class="teeny"
+        >
+            Screen Offset:
+            &lt;!&ndash; d'oh!      {{scrollOffsetWeJustGotToDisplay}}&ndash;&gt;
             {{scrollPositionRounded}}
         </div>
+-->
 <!--        <div
                 on-click="myToggleMatSidenavHeader()"
                 style="cursor: pointer; font-size: 12px;"
