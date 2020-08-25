@@ -562,8 +562,10 @@ articleUrl_name: "https://www.nytimes.com/interactive/2020/08/24/us/coronavirus-
 
   letUsCancelAdding() {
     this.myRouter.navigate(
-        ['/articles'],
+        ['/'], // << WAS ['/articles'] Home seems better UX. cheers.
+        // And Home#top-header-anchor, even better. cheers.
         {
+          fragment: 'top-header-anchor', // Yeah, working (finally). See AppRoutingModule!
           state: {
             data: {
               articleMostRecentHideRouterLinkState: false

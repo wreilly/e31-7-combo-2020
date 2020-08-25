@@ -5,7 +5,11 @@
 <!-- Needed above? seems not.
 fxLayout="column"
 -->
-<div>
+<div
+        fxLayout="row wrap"
+
+>
+<!--    <div id="top-welcome-anchor">STUPY STUFF id="top-welcome-anchor"</div>-->
 <!-- Below WORKS. I changed to add (TEMPORARY) label above.
 <div
         fxLayout
@@ -16,13 +20,15 @@ fxLayout="column"
     So below on the 3 columns, I need to fuss with style margins explicitly (re: left, right, etc.) Meh.
     style="margin: 0 0 0 20px" -->
     <mat-card
+            fxFlex.lt-md="100%"
+            fxFlex="400px"
             style="margin: 10px 5px 0 10px;"
     >
         <mat-card-title>
             {{ title }}
         </mat-card-title>
         <mat-card-subtitle>
-            {{ subTitle }}
+            {{ subTitle }} <span class="teeny"> | WIDTH: 400px</span>
         </mat-card-subtitle>
         <mat-card-content>
             <p><i>"Some of the Times that's fit to post."</i></p>
@@ -62,10 +68,12 @@ fxLayout="column"
     border-right-color: aqua; border-right-width: thin;
     -->
     <div
-            fxFlex
+            fxFlex.lt-md="100%"
+            fxFlex="700px"
             fxLayout="column"
             style="height: 100%; margin: 10px 10px 0 5px;"
     >
+        <!-- fxFlex="400px" -->
         <mat-card
 
         >
@@ -73,10 +81,10 @@ fxLayout="column"
                 Articles
             </mat-card-title>
             <mat-card-subtitle>
-            Enjoy & Etc.
+            Enjoy<span class="teeny"> | WIDTH: 700px</span>
             </mat-card-subtitle>
             <mat-card-content>
-                <p>mat-card-content here in a paragraph. Below, outside the MatCard, is the app-article-list. Cheers.</p>
+                <p>Selected New York Times articles - links, categorized, (forthcoming) photos.</p>
             </mat-card-content>
         </mat-card>
         <app-article-list

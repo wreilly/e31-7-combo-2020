@@ -1,10 +1,29 @@
+<div class="component-label">ARTICLE-DETAIL-TWO.COMPONENT</div>
+<!-- FINDING
+Even though I use this class "component-label" to Show/Hide this developer info
+(see /src/styles.scss)
+when I had an 'fxLayout' attribute in the div element,
+the element would still SHOW (not be Hidden).
+Curious.
+Guess the presence of something 'truthy' (?) affecting
+the resultant CSS (namely an "FX" directive or whatever
+they're called) makes the element, in the end,
+(after all the "cascading") to be visible,
+despite my CSS indicating: display: none; // << Got overwritten/cascaded, would seem.
+cheers.
+-->
+<!-- NOPE. This was not hiding, owing to the FX biz. See comment above.
 <div class="component-label"
      fxLayout="column">ARTICLE-DETAIL-TWO.COMPONENT</div>
+-->
 
 <!--<div *ngIf="articleAsObservableHereInDetailPage$">-->
 <!--<div *ngIf="articleAsOneItemArrayHereInDetailPage">  Apparently not needed! << WAAL no. -->
 <!--<div>-->
-<div *ngIf="articleHereInDetailPage">
+<div
+        *ngIf="articleHereInDetailPage"
+        fxLayout="column"
+>
     <!--
     <h3>{{articleHereInDetailPage.articleTitle_name}}</h3>
 
@@ -15,8 +34,7 @@
     <mat-card
             *ngIf="!(areWeEditingObservable$ | async)"
     >
-        <div class="component-label"
-             fxLayout="column">*DISPLAY* - (ARTICLE-DETAIL-TWO)</div>
+        <div class="component-label">*DISPLAY* - (ARTICLE-DETAIL-TWO)</div>
         <!--
             <mat-card
                     *ngIf="!areWeEditing"
@@ -26,10 +44,11 @@
             {{ articleHereInDetailPage.articleTitle}}
         </mat-card-title>
         <mat-card-subtitle>
+<!--
             DISPLAY: {{ articleHereInDetailPage.articleUrl}} |
             {{urlHereToSeeWhetherEditingObservable$ | async}}
-            <!--
-            5b01e393b810e02daf607239/edit
+
+Yes:            5b01e393b810e02daf607239/edit
             -->
         </mat-card-subtitle>
         <mat-card-content>
@@ -37,21 +56,30 @@
                 <a href="{{ articleHereInDetailPage.articleUrl }}" target="_blank">{{ articleHereInDetailPage.articleUrl }}</a>
             </div>
             <div>News Category: {{ selectedCategoryToEdit.viewValue }}</div>
-            <div
-                    class="teeny"
-            >
-<!-- NOT GREAT with Material Design "Dark" Theme. sigh.
-               style="background-color: aliceblue"
+
+            <p class="tiny">
+                Article added: {{ myFormattedStringDateFromObjectId(articleHereInDetailPage._id) }}
+                    <!--
+      "FORMATTED"        Thu August 20th, 2020
+      "FULL"             Thu Aug 20 2020 18:14:22 GMT-0400 (Eastern Daylight Time)
+      "FULL" | date      Aug 20, 2020
+                    -->
+<!--  ***  re: DATE FORMATS   ***
+2020-08-20        // << Perennial WR__ fave.
+August 20th, 2020 // << Y NOT. My "Formatted". cheers
+August 20, 2020
+Aug 20, 2020      // << Angular pipe: | date
+Thu Aug 20 2020
+Thu Aug 20 2020 18:14:22 GMT-0400 (Eastern Daylight Time) // << FULL
 -->
-                ID #: {{ articleHereInDetailPage._id }}
-                <br />
-                Article Added: {{ myFormattedStringDateFromObjectId(articleHereInDetailPage._id) }}
-                <!--
-  "FORMATTED"        Thu August 20th, 2020
-  "FULL"             Thu Aug 20 2020 18:14:22 GMT-0400 (Eastern Daylight Time)
-  "FULL" | date      Aug 20, 2020
+
+                <!-- NOT GREAT with Material Design "Dark" Theme. sigh.
+                               style="background-color: aliceblue"
                 -->
-            </div>
+            </p>
+            <p class="teeny">
+                Article ID #: {{ articleHereInDetailPage._id }}
+            </p>
 
         </mat-card-content>
     </mat-card>
@@ -69,8 +97,7 @@
             *ngIf="areWeEditingObservable$ | async"
     >
 
-        <div class="component-label"
-             fxLayout="column">*EDITING* &lt;FORM&gt; - (ARTICLE-DETAIL-TWO)</div>
+        <div class="component-label">*EDITING* &lt;FORM&gt; - (ARTICLE-DETAIL-TWO)</div>
 
         <!--
             <mat-card
@@ -170,38 +197,18 @@
                         Error for Category EDITING
                     </mat-error>
                 </mat-form-field>
-                <div
-                        class="teeny"
-                >
-                    <!-- NOT GREAT with Material Design "Dark" Theme. sigh.
-                                   style="background-color: aliceblue"
-                    -->
-
-<!-- Yes. 'politics'        articleCategory_formControl.value |   {{ articleCategory_formControl.value | json }}-->
-                    ID #: {{ articleHereInDetailPage._id }}
-<!--                    | Date Added, Formatted: {{ myFormattedStringDateFromObjectId(articleHereInDetailPage._id) }}-->
-                    <br />
-                    Article Added: {{ myFullDateFromObjectId(articleHereInDetailPage._id) }}
-<!--                    | Date Added, Full | date {{ myFullDateFromObjectId(articleHereInDetailPage._id) | date }}-->
+                <p class="tiny">
+                    Article added: {{ myFullDateFromObjectId(articleHereInDetailPage._id) }}
                     <!--
       "FORMATTED"        Thu August 20th, 2020
       "FULL"             Thu Aug 20 2020 18:14:22 GMT-0400 (Eastern Daylight Time)
-      "PIPE" | date      Aug 20, 2020
+      "FULL" | date      Aug 20, 2020
                     -->
-<!--
-2020-08-20        // << Perennial WR__ fave.
-August 20th, 2020 // << Y NOT. My "Formatted". cheers
-August 20, 2020
-Aug 20, 2020      // << Angular pipe: | date
-Thu Aug 20 2020
-Thu Aug 20 2020 18:14:22 GMT-0400 (Eastern Daylight Time) // << FULL
--->
-                </div>
-<!-- No. Non c'é.
-                <div style="background-color: cadetblue">
-                    articleCategory_formControl.viewValue |  {{articleCategory_formControl.viewValue}}
-                </div>
--->
+                </p>
+                <p class="teeny">
+                    Article ID #: {{ articleHereInDetailPage._id }}
+                </p>
+
                 <div
                         fxLayout="column"
                         fxLayoutAlign="center center"
