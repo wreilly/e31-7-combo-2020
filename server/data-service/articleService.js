@@ -10,6 +10,7 @@ const articleModelHereInService = require('../models/articleModel');
 (not for Node/Express app)
 
 - .get('/') ==> findAllArticles
+- .get('/') ==> findAllArticlesPaginated // << NEW: *PAGINATION*
 - .get('/recent') ==> findArticleMostRecent
 - .get('/:id') ==> findArticleById
 - .put('/:id') ==> updateArticle
@@ -63,6 +64,60 @@ Top/First is Oldest/First-Entered.
                 }
             )
     } // /findAllArticles()
+
+    /* **************************** */
+    /* *** Find All Articles Paginated ****** */
+    /* **************************** */
+
+    static findAllArticlesPaginated(pageNumber, pageSize) {
+        /* Help from Max:
+        /Users/william.reilly/dev/MEAN/Udemy-MEAN-MaxS/07-Pagination/pagination-02-finished/backend/routes/posts.js
+         */
+        let fetchedArticles; // [] of Articles
+        return articleModelHereInService.find({})
+            .sort({_id: -1})
+            .skip(pageSize * (pageNumber - 1))
+            .limit(pageSize)
+            .then(
+                (whatIGot) => { // "pageSize" # [] of new2020articles!
+                    // resolved
+                    console.log('articleService. findAllArticles. resolved whatIGot[0].articleTitle', whatIGot[0].articleTitle);
+
+                    fetchedArticles = whatIGot; // whamma-jamma
+
+                    return articleModelHereInService.countDocuments();
+                    // Very handy. Model can get you the count. Nice.
+                    // Above line drops "countOfAllArticlesInCollection'
+                    // to the next ".then()"
+                    /* Hah!  ".count()" no more. Now .countDocuments(). OK.
+                    "DeprecationWarning: collection.count is deprecated, and will be removed in a future version. Use Collection.countDocuments or Collection.estimatedDocumentCount instead"
+                     */
+
+                    // return whatIGot; // << WAS (direct back to Controller)
+                },
+                (problemo) => {
+                    console.log('Here in articleService - findAllArticlesPaginated - Rejected Promise problemo: ', problemo)
+                    throw Error('AllArticlesFindPaginatedError ' + problemo);
+                }
+            ) // /.then() 1st
+            .then(
+                (countOfAllArticlesInCollection) => {
+                    return {
+                        message: "(Paginated) Articles fetched successfully. Total count in Collection is " + countOfAllArticlesInCollection + ".",
+                        articlesPaginated: fetchedArticles,
+                        maxArticles: countOfAllArticlesInCollection,
+                    }
+                }
+            ) // /.then() 2nd
+            .catch(
+                (err) => {
+                    console.log('Here in articleService - findAllArticlesPaginated - .catch err: ', err);
+                }
+            )
+    } // /findAllArticlesPaginated()
+
+
+
 
     /* **************************** */
     /* *** Find One Article, By ID *** */

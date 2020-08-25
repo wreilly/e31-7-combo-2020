@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {Article} from "./article.model";
 import {Observable} from "rxjs";
-import { tap } from 'rxjs/operators';
+import { tap, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import * as UIActions from '../shared/store/ui.actions';
 // import { ArticleAddComponent } from './article-add/article-add.component'; // << ?? used here ? re: categories fixer hmm.
@@ -130,6 +130,7 @@ _id: "5f1364e304e544a462218215"
     of lots of logic from ArticleListComponent
     over here to ArticleService
      */
+
   listArticles(): Observable<Object> {
     // GET ALL Articles
     // DON'T FORGET THAT BLOODY 'return' !!! !!! !!!
@@ -138,7 +139,34 @@ _id: "5f1364e304e544a462218215"
     );
   }
 
-  getArticle(idPassedIn) {
+    listArticlesPaginated(page, pagesize): any { // Hmm. t.b.d. what this returns ?
+/*
+    listArticlesPaginated(page, pagesize): Observable<Object> {
+*/
+        // GET "pagesize" # of Articles. TODO: HARD-CODED so far: 1, 5
+
+        // YES. DON'T FORGET THAT BLOODY 'return' !!! !!! !!!
+        return this.myHttp.get<{message: string, articlesPaginated: any, maxArticles: number}>(
+            `http://0.0.0.0:8089/api/v1/articles?page=${page}&pagesize=${pagesize}`,
+        )
+            .pipe(
+                map(
+                    (dataWeGotFromServer) => {
+                        console.log('Service. dataWeGotFromServer ', dataWeGotFromServer);
+/* Yes.
+{message: "(Paginated) Articles fetched successfully. Total count in Collection is 99.", paginatedArticles: Array(5), maxArticles: 99}
+ */
+                    return { // << RETURN GOES DOWN *HERE* YOU SEE
+                        articlesPaginatedFromServer: dataWeGotFromServer.articlesPaginated,
+                        maxArticlesFromServer: dataWeGotFromServer.maxArticles,
+                    }
+                    }
+                )
+            ); // /.pipe()
+    } // /listArticlesPaginated()
+
+
+    getArticle(idPassedIn) {
     return this.myHttp.get(
         `http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`
     );

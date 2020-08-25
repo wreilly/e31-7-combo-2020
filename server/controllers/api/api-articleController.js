@@ -5,6 +5,7 @@ const apiArticleController = {};
 /* **********  TOC  *************
    ********  API CONTROLLER  ****
 - GET '/' = apiGetAllArticles
+- GET '/api/v1/articles?page=0&pagesize=10' = = apiGetAllArticlesPaginated // << NEW: *PAGINATION*
 - GET '/recent' ==> '/api/v1/articles/recent' // 1, for now. NEW.
 - GET '/:id' = apiGetArticleById
 - PUT '/:id' = apiUpdateArticle
@@ -59,6 +60,53 @@ apiArticleController.apiGetAllArticles = function (req, res, next) {
         )
         .catch( (err) => console.log('Err in Catch API Controller for GET all articles ', err));
 } // /.apiGetAllArticles()
+
+
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+/* !!!!!  apiArticleController
+          .apiGetAllArticlesPaginated   !!!!! */
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+apiArticleController.apiGetAllArticlesPaginated = function (req, res, next, pageNumber, pageSize) {
+    articleDataServiceHereInApiController.findAllArticlesPaginated(pageNumber, pageSize)
+        .then(
+            (whatIGot) => {
+                // resolved
+                /* HERE is what we're GETTING !
+                   {
+                        message: "(Paginated) Articles fetched successfully. Total count in Collection is" + countOfAllArticlesInCollection + ".",
+                        paginatedArticles: fetchedArticles,
+                        maxArticles: countOfAllArticlesInCollection,
+                    }
+                 */
+
+                console.log('1.A.0. Controller - getAllArticlesPaginated - whatIGot.message (from data service) ', whatIGot.message);
+                console.log('1.A. Controller - getAllArticlesPaginated - whatIGot[0].articleTitle (from data service) ', whatIGot.articlesPaginated[0].articleTitle);
+                /*
+                               {
+                 _id: 5af746cea7008520ae732e2c,
+                 articlePhotos: [ '"justsomestring"' ],
+                 articleUrl: 'myhttp',
+                 articleTitle: 'Trump’s WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers',
+                 __v: 0
+               }
+                                */
+
+/*
+                const strungWhatIGot = JSON.stringify(whatIGot);
+                console.log('2. strungWhatIGot for 500... from Paginated ', strungWhatIGot.slice(0,500));
+*/
+
+                // Send data back in Response to API Request
+                // res.send(whatIGot); // << WORKS FINE TOO
+                res.send(JSON.stringify(whatIGot)); // << WORKS FINE
+            },
+            (problemo) => {
+                console.log('problemo in rejected Promise for \'/\' GET all articlesPaginated ', problemo)
+            }
+        )
+        .catch( (err) => console.log('Err in Catch API Controller for GET all articlesPaginated ', err));
+} // /.apiGetAllArticlesPaginated()
+
 
 
 /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */

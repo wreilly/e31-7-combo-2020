@@ -53,6 +53,7 @@ const apiArticleControllerHereInApi = require('.././../controllers/api/api-artic
 /* ***********  TOC  ********
    *****   API ROUTER  ******
 - GET '/' ==> '/api/v1/articles/'
+- GET '/' ==> '/api/v1/articles?page=1&pagesize=10' // << NEW: *PAGINATION*
 - GET '/recent' ==> '/api/v1/articles/recent' // 1, for now. NEW.
 - GET '/:id' ==> '/api/v1/articles/123456'
 - PUT '/:id' ==> '/api/v1/articles/123456'
@@ -126,10 +127,29 @@ apiArticlesRouter.get('/:idHere',
 /* ************************************************** */
 /* ******** GET '/api/v1/articles/' ************ */
 /* ************************************************** */
+/* ** NEW FOR PAGINATION (below) **
+Appears I must REMOVE (get out of the way) this default endpoint of '/'
+
 apiArticlesRouter.get('/',
     function(req, res, next) {
     apiArticleControllerHereInApi.apiGetAllArticles(req, res, next)
 })
+*/
+
+/* ************************************************** */
+/* ******** GET '/api/v1/articles?page=0&pagesize=10' ************ */
+/* ************************************************** */
+/* PAGINATION - See also (of course) api-articleController.js and articleService.js
+$ pwd
+/Users/william.reilly/dev/MEAN/Udemy-MEAN-MaxS/07-Pagination/pagination-02-finished/backend/routes/posts.js
+ */
+apiArticlesRouter.get('/', // << ? Q. Can that also be '' ? A. IDK.
+    function(req, res, next) {
+        const pageNumber = +req.query.page; // '+' makes string to number
+        const pageSize = +req.query.pagesize; // ditto
+
+        apiArticleControllerHereInApi.apiGetAllArticlesPaginated(req, res, next, pageNumber, pageSize);
+    })
 
 
 /* ************************************************** */

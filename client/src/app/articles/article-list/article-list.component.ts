@@ -36,6 +36,10 @@ export class ArticleListComponent implements OnInit {
     noArticlesInCategoryWhichCategory: string; // e.g. 'Arts' when there are 0 articles
     articlesInCategoryWhichCategory = 'All Articles'; // init  // string; // e.g. 'Politics' when there ARE articles
 
+    // PAGINATION biz
+    currentPageNumber: number; // 1-based...
+    pageSize = 5; // hard-coded for now
+
     categories: Category[];
 
     @Output()
@@ -93,88 +97,118 @@ export class ArticleListComponent implements OnInit {
 
       this.categories = this.myArticleService.getCategoriesInService();
 
-/* COMPLETE CRAP
-      this.myPageScrollService.scroll({
-          document: this.myDocument,
-          scrollTarget: '#foobarmaybe'
-      });
-*/
+      this.currentPageNumber = 1; // init
+      this.getArticlesPaginated(this.currentPageNumber, this.pageSize)
 
-    // TEST TIME!
-/*
-    this.articles = [ ...this.testArticles ];
-    console.log('this.(test)Articles! ', this.articles);
-*/
-
-    // REAL (no longer "Test") TIME!
-    // Service returns 'Observable<Object>', to which we .subscribe()
-
-      // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-      // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-      this.myArticleService.listArticles()
-          .subscribe(
-              (allArticlesWeGot: []) => {
-                  /*
-                  BE-to-FE Converter
-                  BE naming convention: articleTitle
-                  FE naming convention: articleTitle_name
-
-                  (and don't forget the FE *FORM* naming convention:
-                  articleTitle_formControlName)
-
-                  And, now, CATEGORY FIXER too!
-                   */
-                  this.articles = allArticlesWeGot.map(
-                      (eachPseudoArticleFromApi: {
-                          _id: string,
-                          articleTitle: string,
-                          articleUrl: string,
-                          articleCategory: string,
-                      }) => {
-
-                          let eachRealArticleToReturn: Article;
-
-                          /* CATEGORY FIXER
-    Go get 'viewValue' for the (stored) 'value'
-    returned from the DB.
-    e.g. 'u.s.' as value will return 'U.S.' as viewValue
-     */
-                          let categoryViewValueSuchAsItIsReturned: string;
-
-                          categoryViewValueSuchAsItIsReturned = this.myArticleService.getCategoryViewValue(eachPseudoArticleFromApi.articleCategory);
-/*
-Returns 'viewValue' e.g. 'No Category "viewValue" (thx Service!)' --OR-- category viewValue
- */
-
-                          eachRealArticleToReturn = {
-                              articleId_name: eachPseudoArticleFromApi._id,
-                              articleTitle_name: eachPseudoArticleFromApi.articleTitle,
-                              articleUrl_name: eachPseudoArticleFromApi.articleUrl,
-                              articleCategory_name: categoryViewValueSuchAsItIsReturned,
-                          }
-
-                          return eachRealArticleToReturn;
-                      }
-
-                  ) // /allArticlesWeGot.map()
-
-                  this.articlesToDisplay = this.articles; // whamma-jamma ALL of them on, to begin
-
-                  this.latestArticleDate = this.myDateFromObjectId(this.articles[this.articles.length - 1].articleId_name);
-                  this.latestArticleAnchorId = this.articles[this.articles.length - 1].articleId_name;
-/* WAS:  (all Articles)
-                  this.articlesCount = this.articles.length;
-*/
-                  // Need to re-run this inside letUsFilterByCategory() ...
-                  this.articlesCount = this.articlesToDisplay.length;
-
-              } // /next(allArticlesWeGot)
-
-          ); // /listArticles.subscribe()
-      // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-      // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   } // /ngOnInit()
+
+
+    getArticlesPaginated(page, pagesize) {
+        // REAL (no longer "Test") TIME!
+        // Service returns 'Observable<Object>', to which we .subscribe()
+
+        // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        this.myArticleService.listArticlesPaginated(page, pagesize)
+            .subscribe(
+                (allArticlesWeGot) => {
+                    /*
+                     // << HARD-CODED page, pagesize
+   WORKED! LOVELY
+        this.myArticleService.listArticles()
+
+                     */
+                    /* HERE IS WHAT WE GET! (NEW for PAGINATION)
+                    {
+                        articlesPaginatedFromServer: dataWeGotFromServer.articlesPaginated,
+                        maxArticlesFromServer: dataWeGotFromServer.maxArticles,
+                    }
+                     */
+                    console.log('Paginated. allArticlesWeGot {} ', allArticlesWeGot);
+                    /*
+                    {articlesPaginatedFromServer: undefined, maxArticlesFromServer: 99}
+                     */
+
+
+                    /*
+                    BE-to-FE Converter
+                    BE naming convention: articleTitle
+                    FE naming convention: articleTitle_name
+
+                    (and don't forget the FE *FORM* naming convention:
+                    articleTitle_formControlName)
+
+                    And, now, CATEGORY FIXER too!
+                     */
+
+                    this.articlesCount = allArticlesWeGot.maxArticlesFromServer;
+                    this.articles = allArticlesWeGot.articlesPaginatedFromServer.map(
+                        // this.articles = allArticlesWeGot.map(
+                        /* WAS:
+                                          this.articles = allArticlesWeGot.map(
+                        */
+                        (eachPseudoArticleFromApi: {
+                            _id: string,
+                            articleTitle: string,
+                            articleUrl: string,
+                            articleCategory: string,
+                        }) => {
+
+                            let eachRealArticleToReturn: Article;
+
+                            /* CATEGORY FIXER
+      Go get 'viewValue' for the (stored) 'value'
+      returned from the DB.
+      e.g. 'u.s.' as value will return 'U.S.' as viewValue
+       */
+                            let categoryViewValueSuchAsItIsReturned: string;
+
+                            categoryViewValueSuchAsItIsReturned = this.myArticleService.getCategoryViewValue(eachPseudoArticleFromApi.articleCategory);
+                            /*
+                            Returns 'viewValue' e.g. 'No Category "viewValue" (thx Service!)' --OR-- category viewValue
+                             */
+
+                            eachRealArticleToReturn = {
+                                articleId_name: eachPseudoArticleFromApi._id,
+                                articleTitle_name: eachPseudoArticleFromApi.articleTitle,
+                                articleUrl_name: eachPseudoArticleFromApi.articleUrl,
+                                articleCategory_name: categoryViewValueSuchAsItIsReturned,
+                            }
+
+                            return eachRealArticleToReturn;
+                        }
+                    ) // /allArticlesWeGot.map()
+
+                    this.articlesToDisplay = this.articles; // whamma-jamma the "pagesize" # of them on, to begin
+
+                    this.latestArticleDate = this.myDateFromObjectId(this.articles[this.articles.length - 1].articleId_name);
+                    this.latestArticleAnchorId = this.articles[this.articles.length - 1].articleId_name;
+                    /* WAS:  (all Articles)
+                                      this.articlesCount = this.articles.length;
+                    */
+                    // Need to re-run this inside letUsFilterByCategory() ...
+                    /* WAS:
+                                      this.articlesCount = this.articlesToDisplay.length;
+                    */
+
+
+                } // /next(allArticlesWeGot)
+
+                /* WAS:
+                          ); // /listArticles.subscribe()
+                */
+            ); // /listArticlesPaginated.subscribe()
+        // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+    } // /getArticlesPaginated()
+
+    loadMore() { // << Better name: "Load Another Little Slew"
+      this.currentPageNumber++;
+        // console.log(this.currentPageNumber); // 2
+      this.getArticlesPaginated(this.currentPageNumber, this.pageSize);
+    } // /loadMore()
 
     letUsFilterByCategory(categoryStoredValuePassedIn: string) {
         this.noArticlesInCategory = false; // << Make sure to reset!

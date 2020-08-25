@@ -2,7 +2,7 @@
 <mat-nav-list role="navigation">
     <mat-card class="spacing">
         <mat-card-subtitle>
-            <span>Count: {{articlesCount}}</span>
+            <span>Count (ALL Articles): {{articlesCount}}</span>
             <span
                 fxFlex
                 fxLayout
@@ -307,6 +307,14 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
             *ngFor="let article of articlesToDisplay"
             [articleToSendDownName]="article"
     ></app-article>
+    <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            on-click="loadMore()"
+    >
+        Load Another Little Slew y not
+    </button>
     <div
             id="fake-bottom-id"
     >
