@@ -102,11 +102,16 @@ Top/First is Oldest/First-Entered.
             ) // /.then() 1st
             .then(
                 (countOfAllArticlesInCollection) => {
+
                     return {
                         message: "(Paginated) Articles fetched successfully. Total count in Collection is " + countOfAllArticlesInCollection + ".",
                         articlesPaginated: fetchedArticles,
                         maxArticles: countOfAllArticlesInCollection,
                     }
+
+/*
+                    return fetchedArticles; // SUPER-TEMPORARY!
+*/
                 }
             ) // /.then() 2nd
             .catch(

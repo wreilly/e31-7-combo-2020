@@ -78,9 +78,10 @@ apiArticleController.apiGetAllArticlesPaginated = function (req, res, next, page
                         maxArticles: countOfAllArticlesInCollection,
                     }
                  */
-
                 console.log('1.A.0. Controller - getAllArticlesPaginated - whatIGot.message (from data service) ', whatIGot.message);
-                console.log('1.A. Controller - getAllArticlesPaginated - whatIGot[0].articleTitle (from data service) ', whatIGot.articlesPaginated[0].articleTitle);
+                console.log('1.A. Controller - getAllArticlesPaginated - whatIGot.articlesPaginated[0].articleTitle (from data service) ', whatIGot.articlesPaginated[0].articleTitle);
+                // console.log('1.A.SUPER-TEMPORARY Controller - getAllArticlesPaginated - whatIGot[0].articleTitle (from data service) ', whatIGot[0].articleTitle);
+                // YES. Nominating Trump, Republicans Rewrite His Record = BALDERDASH!
                 /*
                                {
                  _id: 5af746cea7008520ae732e2c,
