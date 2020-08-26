@@ -277,6 +277,15 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
         </mat-card-content>
 
     </mat-card>
+    <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            on-click="loadMore()"
+    >
+        (Top) Load Another Little Slew
+    </button>
+
     <!-- style="background-color: lavenderblush" << No good for "dark-theme"!
 
     Oi! Thank God I found this solution:
@@ -313,7 +322,7 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
             type="button"
             on-click="loadMore()"
     >
-        Load Another Little Slew y not
+        (Bottom) Load Another Little Slew
     </button>
     <div
             id="fake-bottom-id"

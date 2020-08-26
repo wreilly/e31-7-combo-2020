@@ -97,39 +97,49 @@ export class ArticleListComponent implements OnInit {
 
       this.categories = this.myArticleService.getCategoriesInService();
 
-      this.currentPageNumber = 1; // init
+      this.currentPageNumber = 1; // init, "1"-based.
+/*
+      this.getArticles(); // << OLDER. ALL. pre-PAGINATION.
+*/
       this.getArticlesPaginated(this.currentPageNumber, this.pageSize)
-
 
   } // /ngOnInit()
 
-
-    getArticlesPaginated(page, pagesize) {
-        // REAL (no longer "Test") TIME!
-        // Service returns 'Observable<Object>', to which we .subscribe()
+    getArticles() {
+        // << OLDER. ALL. pre-PAGINATION.
+        // OLDER: Service returns 'Observable<Object>', to which we .subscribe()
+        // Notes below on how we TYPE what is returned. Veddy carefully.
 
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        this.myArticleService.listArticlesPaginated(page, pagesize)
-            .subscribe(
-                (allArticlesWeGot) => {
-                    /*
-                     // << HARD-CODED page, pagesize
-   WORKED! LOVELY
         this.myArticleService.listArticles()
+            .subscribe(
+                (allArticlesWeGot:
+                     [ {
+                         _id: string,
+                         articleTitle: string,
+                         articleUrl: string,
+                         articleCategory: string,
+                     }]
+                ) => {
+                    /* WAY CRAZY FINDING
+                    Ok. Over in Service, been messing with return types of Observable<Object>, Observable<object>, Observable<any>
+                    And here in the Component, types here inside .subscribe(),
+                    of: Object, object, any, and []
+                    But, above, see how I can very explicitly "type" what
+                    we get back: [{}] with exact properties on that object.
+                    Very nice.
+                    (Here is where, if it were worth it, you would/could
+                    create (yet another) model. e.g. "BEArticle" or such.)
+                    cheers.
+                     */
+                    // << But WS IDE (apparently) lets me "override" ( ? ) the type as [] y not I guess ? Hmm
+                    // (allArticlesWeGot: Object) => { // << WS IDE automagically types this as : Object, or : object, depending on my Service method return type. ok.
 
+                    console.log('allArticlesWeGot ', allArticlesWeGot);
+                    /* Yes. [{}]
+                         [{…}, {…}, ]
                      */
-                    /* HERE IS WHAT WE GET! (NEW for PAGINATION)
-                    {
-                        articlesPaginatedFromServer: dataWeGotFromServer.articlesPaginated,
-                        maxArticlesFromServer: dataWeGotFromServer.maxArticles,
-                    }
-                     */
-                    console.log('Paginated. allArticlesWeGot {} ', allArticlesWeGot);
-                    /*
-                    {articlesPaginatedFromServer: undefined, maxArticlesFromServer: 99}
-                     */
-
 
                     /*
                     BE-to-FE Converter
@@ -142,12 +152,98 @@ export class ArticleListComponent implements OnInit {
                     And, now, CATEGORY FIXER too!
                      */
 
+                    this.articles = allArticlesWeGot.map(
+
+                        (eachPseudoArticleFromApi: {
+                            _id: string,
+                            articleTitle: string,
+                            articleUrl: string,
+                            articleCategory: string,
+                        }) => {
+
+                            let eachRealArticleToReturn: Article;
+
+                            /* CATEGORY FIXER
+      Go get 'viewValue' for the (stored) 'value' returned from the DB.
+      e.g. 'u.s.' as value will return 'U.S.' as viewValue
+       */
+                            let categoryViewValueSuchAsItIsReturned: string;
+
+                            categoryViewValueSuchAsItIsReturned = this.myArticleService.getCategoryViewValue(eachPseudoArticleFromApi.articleCategory);
+                            /*
+                            Returns 'viewValue' e.g. 'No Category (thx Service!)' --OR-- category viewValue
+                             */
+
+                            eachRealArticleToReturn = {
+                                articleId_name: eachPseudoArticleFromApi._id,
+                                articleTitle_name: eachPseudoArticleFromApi.articleTitle,
+                                articleUrl_name: eachPseudoArticleFromApi.articleUrl,
+                                articleCategory_name: categoryViewValueSuchAsItIsReturned,
+                            }
+
+                            return eachRealArticleToReturn;
+                        }
+                    ) // /allArticlesWeGot.map()
+
+                    this.articlesToDisplay = this.articles; // whamma-jamma the "pagesize" # of them on, to begin
+
+                    this.latestArticleDate = this.myDateFromObjectId(this.articles[this.articles.length - 1].articleId_name);
+                    this.latestArticleAnchorId = this.articles[this.articles.length - 1].articleId_name;
+
+                } // /next(allArticlesWeGot)
+
+            ); // /listArticles.subscribe()
+
+        // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+    } // /getArticles()
+
+
+    getArticlesPaginated(page, pagesize) {
+        // NEWER: Service ALSO returns 'Observable<Object>', to which we .subscribe()
+        // Notes below on how we TYPE what is returned. Veddy, veddy carefully.
+
+        // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        this.myArticleService.listArticlesPaginated(page, pagesize)
+            .subscribe(
+                (allArticlesWeGot: {
+                     articlesPaginatedFromServer: [],
+                     maxArticlesFromServer: number,
+                 }
+                 // allArticlesWeGot: any // << Yes.
+/* Yes.
+                     allArticlesWeGot: {
+                         articlesPaginatedFromServer: [],
+                         maxArticlesFromServer: number,
+                     }
+*/
+                 /*
+                 Typing as 'any' works.
+                 Typing as full Object literal/interface (above) works.
+                 Leaving to default type of ': Object' or ': object' does not work.
+                  */
+                     ) => {
+
+                    /* HERE IS WHAT WE GET! (NEW for PAGINATION)
+                    {
+                        articlesPaginatedFromServer: dataWeGotFromServer.articlesPaginated,
+                        maxArticlesFromServer: dataWeGotFromServer.maxArticles,
+                    }
+                     */
+                    console.log('Paginated. allArticlesWeGot {} ', allArticlesWeGot);
+                    /* Yes.
+                      {
+                          articlesPaginatedFromServer: Array(5),
+                          maxArticlesFromServer: 99
+                       }
+                     */
+
+
                     this.articlesCount = allArticlesWeGot.maxArticlesFromServer;
+
                     this.articles = allArticlesWeGot.articlesPaginatedFromServer.map(
-                        // this.articles = allArticlesWeGot.map(
-                        /* WAS:
-                                          this.articles = allArticlesWeGot.map(
-                        */
                         (eachPseudoArticleFromApi: {
                             _id: string,
                             articleTitle: string,
@@ -206,7 +302,6 @@ export class ArticleListComponent implements OnInit {
 
     loadMore() { // << Better name: "Load Another Little Slew"
       this.currentPageNumber++;
-        // console.log(this.currentPageNumber); // 2
       this.getArticlesPaginated(this.currentPageNumber, this.pageSize);
     } // /loadMore()
 

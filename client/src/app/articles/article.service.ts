@@ -22,9 +22,10 @@ export class ArticleService {
 
       this.myStore.dispatch(new UIActions.StartLoading());
       /*
-      Hmm, we will StopLoading (via Store)
+      Q. Hmm, we will StopLoading (via Store)
       over in the calling ArticleAddComponent
       (I think?)
+      A. No, looks like you (wound up) doing so just below, here, in the Service.
        */
 
       /* PLAN B. NGRX for SPINNER */
@@ -131,7 +132,13 @@ _id: "5f1364e304e544a462218215"
     over here to ArticleService
      */
 
-  listArticles(): Observable<Object> {
+    // listArticles(): Observable<any> { // yeah, <any> works.
+/* Hmm. That durned return type. wtf. */
+    listArticles(): Observable<Object> { // Same story for <Object> and <object>. Hmm. o well.
+    // listArticles(): Observable<object> { // No. Well, Yeah, IF/WHEN I put : [] to type the calling Component's .subscribe() { (allArticlesWeGot: [])
+/*    Q. Where, how, why did I get this whole <object> <Object> thing anyways. Sheesh.
+ */
+
     // GET ALL Articles
     // DON'T FORGET THAT BLOODY 'return' !!! !!! !!!
     return this.myHttp.get(
@@ -139,7 +146,14 @@ _id: "5f1364e304e544a462218215"
     );
   }
 
-    listArticlesPaginated(page, pagesize): any { // Hmm. t.b.d. what this returns ?
+    listArticlesPaginated(page, pagesize): Observable<object> { // Hmm. t.b.d. what this returns ?
+      /*
+      About that type, for the return.
+      As seen over in (calling) ArticleListComponent:
+      1. No. - : Observable<object> // << No. "Property 'maxArticlesFromServer' does not exist on type 'object'"
+      2. No. - : Observable<Object> // << No. "Property 'maxArticlesFromServer' does not exist on type 'Object'"
+      3.     - : any
+       */
 /*
     listArticlesPaginated(page, pagesize): Observable<Object> {
 */
@@ -154,9 +168,13 @@ _id: "5f1364e304e544a462218215"
                     (dataWeGotFromServer) => {
                         console.log('Service. dataWeGotFromServer ', dataWeGotFromServer);
 /* Yes.
-{message: "(Paginated) Articles fetched successfully. Total count in Collection is 99.", paginatedArticles: Array(5), maxArticles: 99}
+{
+   message: "(Paginated) Articles fetched successfully. Total count in Collection is 99.",
+   paginatedArticles: Array(5),
+   maxArticles: 99
+}
  */
-                    return { // << RETURN GOES DOWN *HERE* YOU SEE
+                    return {
                         articlesPaginatedFromServer: dataWeGotFromServer.articlesPaginated,
                         maxArticlesFromServer: dataWeGotFromServer.maxArticles,
                     }
