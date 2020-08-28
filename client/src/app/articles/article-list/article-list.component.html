@@ -277,14 +277,95 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
         </mat-card-content>
 
     </mat-card>
+    <div>
+        <!-- ***  PAGINATOR TIME!  *** -->
+
+        <!-- ***  "CONTROLLED" PAGINATOR  *** -->
+        <button
+                mat-raised-button
+                color="primary"
+                type="button"
+                class="my-smaller-button"
+                on-click="getArticlesPaginated( 1, pageSize)"
+        >
+            First (1)
+        </button>
+        <button
+                mat-raised-button
+                color="primary"
+                class="my-smaller-button"
+                type="button"
+                on-click="getArticlesPaginated( (currentPageNumber - 1), pageSize)"
+        >
+            << Prev
+        </button>
+
+        <button
+                mat-raised-button
+                color="{{currentPageNumber === paginationButton.valueOf() ? 'accent' : 'primary'}}"
+                class="my-smaller-button"
+                type="button"
+                *ngFor="let paginationButton of paginationButtonsControlledArray"
+                on-click="getArticlesPaginated(paginationButton.valueOf(), pageSize)"
+        >
+            {{ (paginationButton.valueOf() === currentPageNumber - RANGE_AROUND) ? '... ' : '' }} {{paginationButton.valueOf()}} {{ (paginationButton.valueOf() === currentPageNumber + RANGE_AROUND) ? ' ...' : '' }}
+        </button>
+        <button
+                mat-raised-button
+                color="primary"
+                class="my-smaller-button"
+                type="button"
+                on-click="getArticlesPaginated( (currentPageNumber + 1), pageSize)"
+        >
+            Next >>
+        </button>
+        <button
+                mat-raised-button
+                color="primary"
+                class="my-smaller-button"
+                type="button"
+
+                on-click="getArticlesPaginated( (articlesCount % pageSize > 0) ? (MyJavaScriptMath.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize), pageSize)"
+        >
+            Last ({{lastPaginationNumber}})
+        </button>
+<!-- YES WORKS        on-click="getArticlesPaginated( lastPaginationNumber, pageSize)"-->
+        <!-- Not working. Sending 19.8, not 20. Hmm -->
+        <!-- Nope. Can't get MATH here in the template, kids!
+        Had to do it back in the TypeScript, using MATH there to create "lastPaginationNumber"
+           Nope:    on-click="getArticlesPaginated( (articlesCount % pageSize > 0) ? (Math.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize), pageSize)"
+
+YES WORKS KINDA KOOKY KRAZY:   on-click="getArticlesPaginated( (articlesCount % pageSize > 0) ? (MyJavaScriptMath.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize), pageSize)"
+        -->
+
+        currentPageNumber: {{currentPageNumber}}
+    </div>
+    <!-- ***  /"CONTROLLED" PAGINATOR  *** -->
+
+    <!-- ***  INITIAL PAGINATOR  *** -->
+    <div>
+        <button
+                mat-raised-button
+                color="{{currentPageNumber === paginationButton.valueOf() ? 'accent' : 'primary'}}"
+                type="button"
+                class="my-smaller-button"
+                *ngFor="let paginationButton of paginationButtonsArray"
+                on-click="getArticlesPaginated(paginationButton.valueOf(), pageSize)"
+        >
+            {{paginationButton.valueOf()}}
+        </button>
+         currentPageNumber: {{currentPageNumber}}
+    </div>
     <button
             mat-raised-button
             color="primary"
             type="button"
-            on-click="loadMore()"
+            on-click="loadAnotherLittleSlew()"
     >
         (Top) Load Another Little Slew
     </button>
+    <!-- ***  /PAGINATOR TIME!  *** -->
+
 
     <!-- style="background-color: lavenderblush" << No good for "dark-theme"!
 
@@ -320,7 +401,7 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
             mat-raised-button
             color="primary"
             type="button"
-            on-click="loadMore()"
+            on-click="loadAnotherLittleSlew()"
     >
         (Bottom) Load Another Little Slew
     </button>

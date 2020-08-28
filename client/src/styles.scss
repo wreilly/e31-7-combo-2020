@@ -50,8 +50,8 @@ https://gist.github.com/jareware/4738651
 See also all this complexity:
 https://medium.com/@amcdnl/theming-angular-with-css-variables-3c78a5b20b24   O la!
  */
-$wr__hide: true; // yeah, Hide those (ugly though useful!) Component labels...
-//$wr__hide: false; // don't hide. Show!
+//$wr__hide: true; // yeah, Hide those (ugly though useful!) Component labels...
+$wr__hide: false; // don't hide. Show!
 // Q. How to programmatically change above ?? ?? o well...
 
 .component-label {

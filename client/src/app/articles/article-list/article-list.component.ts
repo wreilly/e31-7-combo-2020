@@ -12,6 +12,8 @@ import { ArticleService } from '../article.service';
 import { FilterSortService } from '../../core/services/filter-sort.service';
 
 import {Article} from "../article.model";
+import {calcPossibleSecurityContexts} from "@angular/compiler/src/template_parser/binding_parser";
+
 
 @Component({
   selector: 'app-article-list',
@@ -38,46 +40,61 @@ export class ArticleListComponent implements OnInit {
 
     // PAGINATION biz
     currentPageNumber: number; // 1-based...
-    pageSize = 5; // hard-coded for now
+    pageSize = 5;  // hard-coded for now
+    // pageSize = 20; // hard-coded for now
+    // pageSize = 50; // hard-coded for now
+    HARD_CODED_SMALLER_NUMBER_OF_ALL_ARTICLES_IN_COLLECTION = 15; // vs. actual ca. 99
+    paginationButtonsArray: number[]; // e.g. [1,2,3,4...15] simply
+    paginationButtonsControlledArray: number[]; // e.g. [1,2,3,4...15] simply
+    lastPaginationNumber: number;
+    // RANGE_AROUND = 0; // (on each side of currentPageNumber)
+    // RANGE_AROUND = 1; // (on each side of currentPageNumber)
+    RANGE_AROUND = 2; // (on each side of currentPageNumber)
+    /* Hmm. Good idea? Not good idea?
+        https://stackoverflow.com/questions/48450349/math-function-not-working-in-angular-4-html
+        YES WORKS KINDA KOOKY KRAZY
+    */
+    MyJavaScriptMath = Math; // << ??
 
-    categories: Category[];
 
-    @Output()
-    testOutputDoesNotDoAnythingOnList: string;
+categories: Category[];
 
-    @Input('articleListOnWelcomePage')
-    articleListOnWelcomePage: boolean; // From WelcomeComponent
+@Output()
+testOutputDoesNotDoAnythingOnList: string;
 
-    articleListOnArticlesListPage: boolean; // From routerLinks {data}
-    // Links from 3 locations: Header, Sidenav, ArticlesComponent
+@Input('articleListOnWelcomePage')
+articleListOnWelcomePage: boolean; // From WelcomeComponent
 
-  testArticles = [
-    {
-      articleId_name: 'article-list', // 'one_id',
-      articleTitle_name: 'Article One',
-      articleUrl_name: 'http://nytimes.com/one',
-    },
-    {
-      articleId_name: 'two_id',
-      articleTitle_name: 'Article Two',
-      articleUrl_name: 'http://nytimes.com/two',
-    },
-    {
-      articleId_name: 'three_id',
-      articleTitle_name: 'Article Three',
-      articleUrl_name: 'http://nytimes.com/three',
-    },
-  ];
+articleListOnArticlesListPage: boolean; // From routerLinks {data}
+// Links from 3 locations: Header, Sidenav, ArticlesComponent
 
-    categoryThatMatches: Category;
+testArticles = [
+{
+articleId_name: 'article-list', // 'one_id',
+articleTitle_name: 'Article One',
+articleUrl_name: 'http://nytimes.com/one',
+},
+{
+articleId_name: 'two_id',
+articleTitle_name: 'Article Two',
+articleUrl_name: 'http://nytimes.com/two',
+},
+{
+articleId_name: 'three_id',
+articleTitle_name: 'Article Three',
+articleUrl_name: 'http://nytimes.com/three',
+},
+];
 
-  constructor(
-      private myArticleService: ArticleService,
-      private myFilterSortService: FilterSortService,
-      // private myPageScrollService: PageScrollService, // << CRAP
+categoryThatMatches: Category;
+
+constructor(
+private myArticleService: ArticleService,
+private myFilterSortService: FilterSortService,
+// private myPageScrollService: PageScrollService, // << CRAP
 /* Nah
-      @Inject(DOCUMENT)
-      private myDocument: Document,
+@Inject(DOCUMENT)
+private myDocument: Document,
 */
   ) { }
 
@@ -102,6 +119,13 @@ export class ArticleListComponent implements OnInit {
       this.getArticles(); // << OLDER. ALL. pre-PAGINATION.
 */
       this.getArticlesPaginated(this.currentPageNumber, this.pageSize)
+/* Too Early!
+      this.generateArticlesPaginator(this.currentPageNumber, this.pageSize, this.articlesCount);
+      console.log('this.paginationButtonsArray ', this.paginationButtonsArray);
+*/
+      /*
+      []  << :o(  articlesCount is undefined. Need to invoke this LATER, not right here
+       */
 
   } // /ngOnInit()
 
@@ -242,6 +266,11 @@ export class ArticleListComponent implements OnInit {
 
 
                     this.articlesCount = allArticlesWeGot.maxArticlesFromServer;
+                    // this.articlesCount = this.HARD_CODED_SMALLER_NUMBER_OF_ALL_ARTICLES_IN_COLLECTION; // like, 15, instead of 99
+
+                    // You could do generateArticlesPaginator() from here .... but I'll do at bottom of this method
+
+                    this.currentPageNumber = page;
 
                     this.articles = allArticlesWeGot.articlesPaginatedFromServer.map(
                         (eachPseudoArticleFromApi: {
@@ -288,6 +317,12 @@ export class ArticleListComponent implements OnInit {
                                       this.articlesCount = this.articlesToDisplay.length;
                     */
 
+                    this.generateArticlesPaginator(this.currentPageNumber, this.pageSize, this.articlesCount);
+                    console.log('this.paginationButtonsArray ', this.paginationButtonsArray);
+                    /*
+
+                     */
+                    this.generateArticlesControlledPaginator(this.currentPageNumber, this.pageSize, this.articlesCount);
 
                 } // /next(allArticlesWeGot)
 
@@ -300,10 +335,151 @@ export class ArticleListComponent implements OnInit {
 
     } // /getArticlesPaginated()
 
-    loadMore() { // << Better name: "Load Another Little Slew"
+
+
+    generateArticlesControlledPaginator(currentPageNumber, pageSize, articlesCount) {
+/*
+        this.paginationButtonsControlledArray = Array.from(
+            {length: ( (articlesCount % pageSize > 0) ? (articlesCount/pageSize + 1) : (articlesCount/pageSize) )},
+            (myValue, myKey) => { return (myKey + 1); }
+        );
+*/
+        // const RANGE_AROUND = 2; // (on each side of currentPageNumber) // make more global
+        /* Output
+        This makes you an Array of numbers. It is "1-based" (vs. 0).
+        But it is "Controlled" in following sense:
+
+        RANGE_AROUND: 2 (on each side of CURRPAGE)
+
+        CURRPAGE: 1 (first)
+        So: First | Prev | *1*, 2, 3, ... | Next | Last
+        (THREE numeric entries) 1 + RANGE_AROUND + 1 ellipsis
+
+        CURRPAGE: 2 (second)
+        So: First | Prev | 1, *2*, 3, 4, ... | Next | Last
+        (FOUR numeric entries) 1 + 1 + RANGE_AROUND + 1 ellipsis
+
+        CURRPAGE: 3 (1 + RANGE_AROUND)
+        So: First | Prev | 1, 2, *3*, 4, 5, ... | Next | Last
+        (FIVE numeric entries) 1 + (RANGE_AROUND * 2) + 1 ellipsis
+
+        CURRPAGE: 4 (e.g. in middle somewhere; not within RANGE_AROUND of either end)
+        So: First | Prev | ..., 2, 3, *4*, 5, 6, ... | Next | Last
+        (will get ellipsis on BOTH ends: '...'  <---->  '...')
+        (FIVE numeric entries) 1 + (RANGE_AROUND * 2) + 2 ellipses
+
+
+        CURRPAGE: 19 (last)
+        So: First | Prev | ..., 17, 18, *19* | Next | Last
+        (THREE numeric entries) 1 + RANGE_AROUND + 1 ellipsis
+
+        CURRPAGE: 18 (penultimate)
+        So: First | Prev | ..., 16, 17, *18*, 19 | Next | Last
+        (FOUR numeric entries) 1 + 1 + RANGE_AROUND + 1 ellipsis
+
+        CURRPAGE: 17 (terzultimate) (lastPaginationNumber - RANGE_AROUND)
+        So: First | Prev | ..., 15, 16, *17*, 18, 19 | Next | Last
+        (FIVE numeric entries) 1 + (RANGE_AROUND * 2) + 1 ellipsis
+
+        CURRPAGE: 16 (not within RANGE_AROUND of either end)
+        So: First | Prev | ..., 14, 15, *16*, 17, 18, ... | Next | Last
+        (will get ellipsis on BOTH ends: '...'  <---->  '...')
+        (FIVE numeric entries) 1 + (RANGE_AROUND * 2) + 2 ellipses
+
+         */
+
+        // if ( currentPageNumber === 9 ) { // << Initial testing hard-coded; now removed :o)
+        if ( currentPageNumber)
+            this.paginationButtonsControlledArray = Array.from(
+                {length: ( (this.RANGE_AROUND * 2) + 1) }, // e.g. 5
+                (myValue, myKey) => {
+                    return ( (myKey + 1) + (currentPageNumber - (this.RANGE_AROUND + 1)) );
+                }
+            ); // [1,2,3,4,5] ADD (currentPageNumber - (RANGE_AROUND + 1)) => [7,8,9,10,11]
+
+            /* Hmm. Good idea? Not good idea?
+            MyJavaScriptMath = Math;
+            https://stackoverflow.com/questions/48450349/math-function-not-working-in-angular-4-html
+            YES (above) WORKS KINDA KOOKY KRAZY
+
+            Or, pipes:
+            https://stackoverflow.com/questions/41027749/angular-2-how-round-calculated-number
+             */
+            // So, right now, not using this "lastPaginationNumber" but can't hurt to create it. cheers.
+            this.lastPaginationNumber = (articlesCount % pageSize > 0) ? (Math.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize);
+        // } // /if ( currentPageNumber === 9 )
+
+    } // /generateArticlesControlledPaginator()
+
+
+    generateArticlesPaginator(currentPageNumber, pageSize, articlesCount) {
+      this.paginationButtonsArray = Array.from(
+          {length: ( (articlesCount % pageSize > 0) ? (articlesCount/pageSize + 1) : (articlesCount/pageSize) )},
+/* MODULO BIZ above
+Somehow, with this Array.from() thing,
+we get magic of automatic/built-in "rounding (down)" (h'rrah)
+That is, I do NOT need to do Math.floor(). Okay. But compare in HTML template where I do.
+cheers.
+
+E.g. 99 articles, say, and pageSize of 5:
+99/5 = 19.8, but that makes me just 19 buttons, 19 array elements. That's okay.
+
+But to get that last needed 20th button, to display those final 4 articles
+on that last screen, we do this modulo biz to correctly get that additional, 20th button.
+cheers.
+And yeah, when I deleted some 4 articles to get articlesCount down to 95 articles,
+I then correctly get 19 buttons, no more - just right.
+bueno.
+      e.g. 99%5 > 0 ? (99/5 + 1) : 99/5
+*/
+          (myValue, myKey) => { return (myKey + 1); }
+          );
+      /* Output
+      All this does is make you an Array of numbers. It is "1-based" (vs. 0).
+      [1,2,3,4...15] // << Just consumed by our Paginator for rendering clickable buttons.
+      That's it!
+       */
+      /* Magic:
+      https://stackoverflow.com/questions/40528557/how-does-array-fromlength-5-v-i-i-work
+      1. "Duck Typing" - Object with .length as a property (e.g. 15) is enough for JavaScript to
+      believe it is an Array ("arrayLike"), and it makes you an empty Array, of that length (15)!
+      Apparently, the Array has 15 indices (indexes): 0..14
+      2. Arrow function. Hmm, takes 2 parameters, and the return is whamma-jamma-ed onto
+      the "myValue". Hmm.
+      Parameter 1 is the VALUE (** undefined **) found at/in each Array index (position).
+      Parameter 2 is the KEY (gonna be 0..14) used/representing/pointer-to each Array index (position).
+
+      // ***  ASIDE  ***
+      Q. So - what (the hell) is the difference between an Array INDEX and an Array KEY ?
+      A. Glad you asked. I am not sure I can explain. But, I have learned, here:
+               https://www.dyn-web.com/javascript/arrays/associative.php
+          about how JavaScript CAN have a KEY that is NOT a number, instead a string
+          ("associative array"). I am not going to be using that, much.
+          ----------------
+          // numerically indexed array
+var ar = ["apple", "orange", "pear", "banana"];
+//  add element with string key
+ar['fav'] = 'fig'; // <<<<<<<<<<<<<<<<<<< How you get the Weirdo!
+alert( ar.length ); // 4
+console.log (ar);
+
+Array[4]
+0: "apple"
+1: "orange"
+2: "pear"
+3: "banana"
+fav: "fig"  // <<<<<<<<<<<< Weirdo!
+length: 4
+          ----------------
+       */
+    } // /generateArticlesPaginator()
+
+
+    loadAnotherLittleSlew() { // << Better name: "Load Another Little Slew"
       this.currentPageNumber++;
       this.getArticlesPaginated(this.currentPageNumber, this.pageSize);
     } // /loadMore()
+
 
     letUsFilterByCategory(categoryStoredValuePassedIn: string) {
         this.noArticlesInCategory = false; // << Make sure to reset!

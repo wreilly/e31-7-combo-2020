@@ -2,3 +2,44 @@
   margin: 0 0 5px 0;
   padding: 4px 16px 4px 16px;
 }
+
+
+.my-smaller-button {
+  line-height: 20px;
+  min-height: 22px;
+  min-width: 60px;
+  vertical-align: top;
+  font-size: 10px;
+  padding: 0 0;
+  margin: 0;
+}
+/* Nice. Seems to have no need for that "! important" biz. Okay.
+https://stackoverflow.com/questions/33148095/is-it-possible-to-make-an-md-button-smaller
+
+width: 10px;
+hmm. MD min-width is 64px. I am finding I too ought to reserve at least 60, not less.
+
+height: 20px;
+MD min-height is 36px. Seems more than 20, less than 30 is good. We'll run w. 24.
+(mebbe 22)
+
+font-size: 10px; Not bad. Mebbe 11? 12 too much.
+ */
+
+
+
+/* ============================
+Worked, but, whitespace between buttons
+
+.shrink-2x {
+  transform: scale(.75);
+  margin: auto;
+}
+*/
+/* Above leaving (seemingly uncontrollable, by me) whitespace between buttons. sigh.
+https://stackoverflow.com/questions/33148095/is-it-possible-to-make-an-md-button-smaller
+https://codepen.io/tbone849/pen/JQLRpr
+
+  min-width: auto; min-width: 1%; // << Both - width of content e.g. '10' wider button than for '1'
+  (without that, all buttons of equal width << kinda preferred)
+ */
