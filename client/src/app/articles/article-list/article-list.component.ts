@@ -47,9 +47,10 @@ export class ArticleListComponent implements OnInit {
     paginationButtonsArray: number[]; // e.g. [1,2,3,4...15] simply
     paginationButtonsControlledArray: number[]; // e.g. [1,2,3,4...15] simply
     lastPaginationNumber: number;
-    // RANGE_AROUND = 0; // (on each side of currentPageNumber)
+    // RANGE_AROUND = 0; // << DISALLOWED! (on each side of currentPageNumber)
     // RANGE_AROUND = 1; // (on each side of currentPageNumber)
     RANGE_AROUND = 2; // (on each side of currentPageNumber)
+
     /* Hmm. Good idea? Not good idea?
         https://stackoverflow.com/questions/48450349/math-function-not-working-in-angular-4-html
         YES WORKS KINDA KOOKY KRAZY
@@ -338,12 +339,12 @@ private myDocument: Document,
 
 
     generateArticlesControlledPaginator(currentPageNumber, pageSize, articlesCount) {
-/*
-        this.paginationButtonsControlledArray = Array.from(
-            {length: ( (articlesCount % pageSize > 0) ? (articlesCount/pageSize + 1) : (articlesCount/pageSize) )},
-            (myValue, myKey) => { return (myKey + 1); }
-        );
-*/
+        /*
+                this.paginationButtonsControlledArray = Array.from(
+                    {length: ( (articlesCount % pageSize > 0) ? (articlesCount/pageSize + 1) : (articlesCount/pageSize) )},
+                    (myValue, myKey) => { return (myKey + 1); }
+                );
+        */
         // const RANGE_AROUND = 2; // (on each side of currentPageNumber) // make more global
         /* Output
         This makes you an Array of numbers. It is "1-based" (vs. 0).
@@ -388,12 +389,128 @@ private myDocument: Document,
 
          */
 
+        const firstPaginationNumber = 1; // of course
+        this.lastPaginationNumber = (articlesCount % pageSize > 0) ? (Math.floor(articlesCount / pageSize + 1)) : (articlesCount / pageSize);
+
         // if ( currentPageNumber === 9 ) { // << Initial testing hard-coded; now removed :o)
-        if ( currentPageNumber)
+        /* Sorry guys. switch / case no good for my
+            special overall crazy needs here.
+            Maybe you could figure out how to make use of it. Not me. cheers.
+
+                switch () {
+                    case:
+                }
+        */
+        if (currentPageNumber === firstPaginationNumber) {
+            //  ***  FIRST  ***
+
+            let specialRangeAroundForFirst: number;
+            // HARD-WON Trial & Error Information!
+            // For "first" - RANGE 2: - 1   RANGE 1: - 0
+
+            switch (this.RANGE_AROUND) { // << Here, simpler, yes can use switch
+                case 2: {
+                    specialRangeAroundForFirst = 1;
+                    break;
+                }
+                case 1: {
+                    specialRangeAroundForFirst = 0;
+                    break;
+                }
+                default: {
+                    console.log('WRONG! this.RANGE_AROUND must be 2 or 1. Instead looks like it is: ', this.RANGE_AROUND);
+                }
+            } // /switch()
+
             this.paginationButtonsControlledArray = Array.from(
-                {length: ( (this.RANGE_AROUND * 2) + 1) }, // e.g. 5
+                {length: ((this.RANGE_AROUND) + 1)}, // e.g. 3, or 2
                 (myValue, myKey) => {
-                    return ( (myKey + 1) + (currentPageNumber - (this.RANGE_AROUND + 1)) );
+                    return ((myKey + 1) + (currentPageNumber - (this.RANGE_AROUND - specialRangeAroundForFirst))); // funny math here RANGE 2 - 1   RANGE 1 0
+
+                    // return ((myKey + 1) + (currentPageNumber - (this.RANGE_AROUND - 0 ))); // funny math here RANGE 2 - 1   RANGE 1 0
+
+                }
+            );
+        } else if (currentPageNumber === firstPaginationNumber + 1) {                  //  ***  SECOND  ***
+
+            let specialRangeAroundForSecond: number;
+            // HARD-WON Trial & Error Information!
+            // For "second" - RANGE 2: + 0   RANGE 1: + 1
+
+            switch (this.RANGE_AROUND) {
+                case 2: {
+                    specialRangeAroundForSecond = 0;
+                    break;
+                }
+                case 1: {
+                    specialRangeAroundForSecond = 1;
+                    break;
+                }
+                default: {
+                    console.log('WRONG! this.RANGE_AROUND must be 2 or 1. Instead looks like it is: ', this.RANGE_AROUND);
+                }
+            } // /switch()
+
+            this.paginationButtonsControlledArray = Array.from(
+                {length: ((this.RANGE_AROUND) + 1 + 1)}, // e.g. 4, or 3
+                (myValue, myKey) => {
+                    return ((myKey + 1) + (currentPageNumber - (this.RANGE_AROUND + specialRangeAroundForSecond))); // funny math here too RANGE 2 0   RANGE 1 + 1
+
+                    // return ((myKey + 1) + (currentPageNumber - (this.RANGE_AROUND + 1))); // funny math here too RANGE 2 0   RANGE 1 + 1
+
+                    }
+            );
+
+        /*  ***  *NOT* NEEDED  for  THIRD  *** (NOR TERZULTIMATE, fwiw)
+            else if ( currentPageNumber === firstPaginationNumber + 1 + 1) {
+            this.paginationButtonsControlledArray = Array.from(
+                {length: ((this.RANGE_AROUND) + 1 + 1 + 1)}, // e.g. 5
+                (myValue, myKey) => {
+                    return ((myKey + 1) + (currentPageNumber - (this.RANGE_AROUND + 1))); // funny math here too
+                }
+            );
+        }*/
+
+        } else if ( currentPageNumber === this.lastPaginationNumber - 1) {
+            // *** PENULTIMATE ***
+            this.paginationButtonsControlledArray = Array.from(
+                {length: ((this.RANGE_AROUND) + 1 + 1)}, // e.g. 4, or 3
+                (myValue, myKey) => {
+                    return ((myKey + 1) + (currentPageNumber - (this.RANGE_AROUND + 1))); // funny math here  RANGE 2 +1   RANGE 1 +1
+                }
+            );
+        } else if ( currentPageNumber === this.lastPaginationNumber) {
+            //  ***  ULTIMATE. LAST  ***
+            this.paginationButtonsControlledArray = Array.from(
+                {length: ((this.RANGE_AROUND) + 1)}, // e.g. 3, or 2
+                (myValue, myKey) => {
+                    return ((myKey + 1) + (currentPageNumber - (this.RANGE_AROUND + 1))); // funny math here  RANGE 2 +1   RANGE 1 +1
+                    /*
+                    Q. Hmm, how come here at end (ULTIMATE, PENULTIMATE),
+                    the number to add to RANGE_AROUND works
+                    when consistently +1 ?
+
+                    Whereas at the beginning (FIRST, SECOND) I had to
+                    fuss with -1, 0, and +1 ?
+
+                    And, the above is true for the two possible supported
+                    RANGE_AROUND values, of both 2 (default), and 1.
+                    Hmm.
+
+                   A. I dunno. (sheepish grin)
+                   Must be something about Beginning is hovering dangerously
+                   near 0 and -1 (tsk, tsk) - needs special care.
+                   While Ending is just out there at some big number
+                    (94, whatever) - needs less "special" care. (I guess?)
+                     cheers.
+                     */
+                }
+            );
+        }  else { //  ***  ALL OTHERS, "IN MIDDLE"  ***
+            this.paginationButtonsControlledArray = Array.from(
+                {length: ((this.RANGE_AROUND * 2) + 1)}, // e.g. 5, or 3
+                (myValue, myKey) => {
+                    return ((myKey + 1) + (currentPageNumber - (this.RANGE_AROUND + 1)));
                 }
             ); // [1,2,3,4,5] ADD (currentPageNumber - (RANGE_AROUND + 1)) => [7,8,9,10,11]
 
@@ -406,8 +523,13 @@ private myDocument: Document,
             https://stackoverflow.com/questions/41027749/angular-2-how-round-calculated-number
              */
             // So, right now, not using this "lastPaginationNumber" but can't hurt to create it. cheers.
-            this.lastPaginationNumber = (articlesCount % pageSize > 0) ? (Math.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize);
-        // } // /if ( currentPageNumber === 9 )
+            // ACTUALLY, I *am* making (different) use of it. so keep on. cheers.
+            // (moved it up above just a bit)
+            /* YES (see above)
+                        this.lastPaginationNumber = (articlesCount % pageSize > 0) ? (Math.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize);
+            */
+            // } // /if ( currentPageNumber === 9 )
+        }
 
     } // /generateArticlesControlledPaginator()
 
@@ -475,10 +597,12 @@ length: 4
     } // /generateArticlesPaginator()
 
 
+/* Finito with the slew
     loadAnotherLittleSlew() { // << Better name: "Load Another Little Slew"
       this.currentPageNumber++;
       this.getArticlesPaginated(this.currentPageNumber, this.pageSize);
     } // /loadMore()
+*/
 
 
     letUsFilterByCategory(categoryStoredValuePassedIn: string) {
