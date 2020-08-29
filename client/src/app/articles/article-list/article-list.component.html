@@ -277,12 +277,11 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
         </mat-card-content>
 
     </mat-card>
+
+    <!-- ***  "CONTROLLED" PAGINATOR - TOP *** -->
     <div
             style="margin-left: 15px;"
     >
-
-
-        <!-- ***  "CONTROLLED" PAGINATOR - TOP *** -->
         <button
                 mat-raised-button
                 color="primary"
@@ -298,6 +297,7 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
                 class="my-smaller-button"
                 type="button"
                 on-click="getArticlesPaginated( (currentPageNumber - 1), pageSize)"
+                bind-disabled="currentPageNumber === 1"
         >
             << Prev
         </button> |
@@ -318,6 +318,7 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
                 class="my-smaller-button"
                 type="button"
                 on-click="getArticlesPaginated( (currentPageNumber + 1), pageSize)"
+                bind-disabled="currentPageNumber === lastPaginationNumber"
         >
             Next >>
         </button> |
@@ -331,70 +332,57 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
         >
             Last ({{lastPaginationNumber}})
         </button>
-<!-- YES WORKS        on-click="getArticlesPaginated( lastPaginationNumber, pageSize)"-->
-        <!-- Not working. Sending 19.8, not 20. Hmm -->
-        <!-- Nope. Can't get MATH here in the template, kids!
-        Had to do it back in the TypeScript, using MATH there to create "lastPaginationNumber"
-           Nope:    on-click="getArticlesPaginated( (articlesCount % pageSize > 0) ? (Math.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize), pageSize)"
-
-YES WORKS KINDA KOOKY KRAZY:   on-click="getArticlesPaginated( (articlesCount % pageSize > 0) ? (MyJavaScriptMath.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize), pageSize)"
-        -->
-
-<!--        currentPageNumber: {{currentPageNumber}}-->
     </div>
+    <!-- ***  PAGINATOR UTILITY FIELDS - TOP  *** -->
+<!--
+    <div
+                style="margin-left: 15px;"
+    >
+        <mat-form-field>
+            <mat-label>Range Around</mat-label>
+            <mat-hint>Buttons to side of current page</mat-hint>
+            <mat-select
+                    [(value)]="rangeAroundSelected"
+                    on-valueChange="setRangeAround()"
+            >
+                <mat-option
+                        *ngFor="let rangeAround of rangeAroundArray"
+                        bind-value="rangeAround"
+                >
+                    {{rangeAround}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <span>&nbsp;&nbsp;&nbsp;</span>
+
+        <mat-form-field>
+            <mat-label>Page Size</mat-label>
+            <mat-hint># of Articles/Page</mat-hint>
+            <mat-select
+                    [(value)]="pageSizeSelected"
+                    on-valueChange="setPageSize()"
+            >
+                <mat-option
+                        *ngFor="let thisPageSize of pageSizeArray"
+                        bind-value="thisPageSize"
+                >
+                    {{thisPageSize}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+ -->
     <!-- ***  /"CONTROLLED" PAGINATOR - TOP  *** -->
 
 
-
-
-    <!-- ***  INITIAL PAGINATOR  *** -->
-<!-- No Longer. Now using the "Controlled" Paginator. cheers.
-    <div>
-        <button
-                mat-raised-button
-                color="{{currentPageNumber === paginationButton.valueOf() ? 'accent' : 'primary'}}"
-                type="button"
-                class="my-smaller-button"
-                *ngFor="let paginationButton of paginationButtonsArray"
-                on-click="getArticlesPaginated(paginationButton.valueOf(), pageSize)"
-        >
-            {{paginationButton.valueOf()}}
-        </button>
-         currentPageNumber: {{currentPageNumber}}
-    </div>
--->
-    <!-- ***  /INITIAL PAGINATOR  *** -->
-<!-- Done with the slew
-    <button
-            mat-raised-button
-            color="primary"
-            type="button"
-            on-click="loadAnotherLittleSlew()"
-    >
-        (Top) Load Another Little Slew
-    </button>
--->
-    <!-- ***  /PAGINATOR TIME!  *** -->
-
-
-    <!-- style="background-color: lavenderblush" << No good for "dark-theme"!
-
-    Oi! Thank God I found this solution:
+    <!--
         "You can add mat-list-item as the directive to your app-car-item component..."
         https://stackoverflow.com/questions/58477720/how-to-use-in-angular-material-list-an-item-component
 
         As for WebStorm not recognizing mat-list-item as directive on my app-article, I simply "added as custom "HTML" attribute" (right-click). Warning goes away. Seems all totally benign, & Etc. Oi!
 >>  WebStorm Preferences | Editor | Inspections | HTML | Unknown HTML tag attribute
         -->
-<!--  NO  LONGER  NEEDED  *** Experimental
-    <ul>
-        <li
-                *ngFor="let nonArticle of articlesToDisplay"
-        >
-            {{ nonArticle.articleCategory_name}} | {{ nonArticle.articleTitle_name }}
-        </li>
-    </ul>
--->
     <div
             *ngIf="noArticlesInCategory"
     >
@@ -407,16 +395,6 @@ YES WORKS KINDA KOOKY KRAZY:   on-click="getArticlesPaginated( (articlesCount % 
             *ngFor="let article of articlesToDisplay"
             [articleToSendDownName]="article"
     ></app-article>
-<!-- No more slew
-    <button
-            mat-raised-button
-            color="primary"
-            type="button"
-            on-click="loadAnotherLittleSlew()"
-    >
-        (Bottom) Load Another Little Slew
-    </button>
--->
 
 
     <!-- ***  "CONTROLLED" PAGINATOR - BOTTOM *** -->
@@ -438,6 +416,7 @@ YES WORKS KINDA KOOKY KRAZY:   on-click="getArticlesPaginated( (articlesCount % 
                 class="my-smaller-button"
                 type="button"
                 on-click="getArticlesPaginated( (currentPageNumber - 1), pageSize)"
+                bind-disabled="currentPageNumber === 1"
         >
             << Prev
         </button> |
@@ -458,6 +437,7 @@ YES WORKS KINDA KOOKY KRAZY:   on-click="getArticlesPaginated( (articlesCount % 
                 class="my-smaller-button"
                 type="button"
                 on-click="getArticlesPaginated( (currentPageNumber + 1), pageSize)"
+                bind-disabled="currentPageNumber === lastPaginationNumber"
         >
             Next >>
         </button> |
@@ -471,6 +451,67 @@ YES WORKS KINDA KOOKY KRAZY:   on-click="getArticlesPaginated( (articlesCount % 
         >
             Last ({{lastPaginationNumber}})
         </button>
+        <!--   on-click="getArticlesPaginated( lastPaginationNumber, pageSize)"-->
+        <!--   above Was not working. Sending 19.8, not 20. Hmm -->
+        <!--   below - Nope. Can't access JavaScript's *Math* here in the template, kids!
+               Instead, did this logic back in the TypeScript, using MATH there to create "lastPaginationNumber"
+           Nope:    on-click="getArticlesPaginated( (articlesCount % pageSize > 0) ? (Math.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize), pageSize)"
+           See curious work-around in running code above: "MyJavaScriptMath"
+        -->
+    </div>
+    <!-- ***  PAGINATOR UTILITY FIELDS - BOTTOM  *** -->
+    <div
+            style="margin-left: 15px; margin-top: 5px;"
+
+    >
+        <!--   Well that shrink class kinda ok result, though
+             the default Angular Material sizing on the dropdown values
+             still remains large. o well. -->
+        <!-- Hmm, my "syntactic sugar" biz here not working for me.
+                <mat-select
+                NO:     bind-value="rangeAroundSelected"
+                NO:     on-input="rangeAroundSelected = $event.target.value"
+                NO:     on-change="rangeAroundSelected = $event.target.value"
+                >
+                YES: [(value)]="rangeAroundSelected"
+                YES: [(ngModel)]="rangeAroundSelected"
+        -->
+        <mat-form-field>
+            <mat-label>Range Around</mat-label>
+            <mat-hint># Buttons to side of current page</mat-hint>
+            <mat-select
+                    [(value)]="rangeAroundSelected"
+                    on-valueChange="setRangeAround()"
+                    class="my-smaller-mat-select"
+            >
+                <mat-option
+                        *ngFor="let rangeAround of rangeAroundArray"
+                        bind-value="rangeAround"
+                >
+                    {{rangeAround}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <span>&nbsp;&nbsp;&nbsp;</span>
+
+        <mat-form-field>
+            <mat-label>Page Size</mat-label>
+            <mat-hint># Articles per Page</mat-hint>
+            <mat-select
+                    [(value)]="pageSizeSelected"
+                    on-valueChange="setPageSize()"
+                    class="my-smaller-mat-select"
+            >
+                <mat-option
+                        *ngFor="let thisPageSize of pageSizeArray"
+                        bind-value="thisPageSize"
+                >
+                    {{thisPageSize}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
     </div>
     <!-- ***  /"CONTROLLED" PAGINATOR - BOTTOM  *** -->
 

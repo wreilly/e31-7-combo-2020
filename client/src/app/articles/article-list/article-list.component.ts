@@ -40,7 +40,14 @@ export class ArticleListComponent implements OnInit {
 
     // PAGINATION biz
     currentPageNumber: number; // 1-based...
-    pageSize = 5;  // hard-coded for now
+    pageSizeArray = [5,10,20]; // 50 also would be good
+    /* ... but w only 93 articles, creates a little bug.
+    Should show only buttons 1, 2. But we see a 3 created. tsk, tsk.
+    Not going to go fix that logic. Instead, let's just leave 50 off
+    till we have some 200+ articles, no? Grazie.
+     */
+    pageSizeSelected = 5; // default
+    pageSize = this.pageSizeSelected;  // hard-coded for now
     // pageSize = 20; // hard-coded for now
     // pageSize = 50; // hard-coded for now
     HARD_CODED_SMALLER_NUMBER_OF_ALL_ARTICLES_IN_COLLECTION = 15; // vs. actual ca. 99
@@ -49,7 +56,9 @@ export class ArticleListComponent implements OnInit {
     lastPaginationNumber: number;
     // RANGE_AROUND = 0; // << DISALLOWED! (on each side of currentPageNumber)
     // RANGE_AROUND = 1; // (on each side of currentPageNumber)
-    RANGE_AROUND = 2; // (on each side of currentPageNumber)
+    rangeAroundArray = [1,2];
+    rangeAroundSelected = 2; // our default
+    RANGE_AROUND = this.rangeAroundSelected; // 2; // (on each side of currentPageNumber)
 
     /* Hmm. Good idea? Not good idea?
         https://stackoverflow.com/questions/48450349/math-function-not-working-in-angular-4-html
@@ -231,6 +240,7 @@ private myDocument: Document,
 
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        // TODO: SPINNER HERE!
         this.myArticleService.listArticlesPaginated(page, pagesize)
             .subscribe(
                 (allArticlesWeGot: {
@@ -337,6 +347,34 @@ private myDocument: Document,
     } // /getArticlesPaginated()
 
 
+    setPageSize() {
+        this.pageSize = this.pageSizeSelected;
+        // re-run getting Articles for this same page, to re-set the Paginator
+
+/* Bug
+Interesting - some changes (e.g. pageSize from 5 to 20), if user is on high-numbered currentPageNumber (e.g. 15, with pageSize of 5),
+will cause BUG when you suddenly shift pageSize to 20, but keep
+currentPageNumber at 15. There are not 15 * 20 Articles. BUG, etc.
+
+Simplest solution: If user changes pageSize, we throw user back to
+currentPageNumber = 1.  Should avoid that BUG. j'espere.
+
+        // BUG: Too hard to support *any* currentPageNumber
+        this.getArticlesPaginated(this.currentPageNumber, this.pageSize)
+*/
+        // As noted above, changing pageSize throws you back to page 1. cheers.
+        this.getArticlesPaginated(1, this.pageSize)
+    }
+
+    setRangeAround() {
+        this.RANGE_AROUND = this.rangeAroundSelected;
+        // re-run getting Articles for this same page, to re-set the Paginator
+
+        /* N.B. No "BUG" re: Range
+        No need to throw user back to page 1, for RangeAround change.
+         */
+        this.getArticlesPaginated(this.currentPageNumber, this.pageSize)
+    }
 
     generateArticlesControlledPaginator(currentPageNumber, pageSize, articlesCount) {
         /*
