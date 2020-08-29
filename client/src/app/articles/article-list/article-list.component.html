@@ -331,6 +331,17 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
                 on-click="getArticlesPaginated( (articlesCount % pageSize > 0) ? (MyJavaScriptMath.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize), pageSize)"
         >
             Last ({{lastPaginationNumber}})
+        </button> |
+        <button
+                mat-raised-button
+                color="primary"
+                on-click="myPaginatorScrollIntoViewToBottom()"
+                class="my-smaller-button"
+                type="button"
+        >
+            <mat-icon
+                    class="shrink-2x"
+            >arrow_circle_down</mat-icon>
         </button>
     </div>
     <!-- ***  PAGINATOR UTILITY FIELDS - TOP  *** -->
@@ -390,6 +401,17 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
             No articles in the "{{ noArticlesInCategoryWhichCategory }}" category. Consider adding one!
         </div>
     </div>
+
+<!-- Ah-hah. I had the wrong concept here.
+This ScrollTopComponent has a FIXED POSITION (see its SCSS)
+So, putting it "right here" in this template does NOT
+determine where it appears on the page.
+cheers.
+
+    <p>ArticleList ScrollTop 02</p>
+    <app-scroll-top></app-scroll-top>
+-->
+
     <app-article
             mat-list-item
             *ngFor="let article of articlesToDisplay"
@@ -450,7 +472,7 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
                 on-click="getArticlesPaginated( (articlesCount % pageSize > 0) ? (MyJavaScriptMath.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize), pageSize)"
         >
             Last ({{lastPaginationNumber}})
-        </button>
+        </button> |
         <!--   on-click="getArticlesPaginated( lastPaginationNumber, pageSize)"-->
         <!--   above Was not working. Sending 19.8, not 20. Hmm -->
         <!--   below - Nope. Can't access JavaScript's *Math* here in the template, kids!
@@ -458,6 +480,45 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
            Nope:    on-click="getArticlesPaginated( (articlesCount % pageSize > 0) ? (Math.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize), pageSize)"
            See curious work-around in running code above: "MyJavaScriptMath"
         -->
+
+
+        <button
+                mat-raised-button
+                color="primary"
+                on-click="myPaginatorScrollToTop()"
+                class="my-smaller-button"
+                type="button"
+        >
+            <mat-icon
+                    class="shrink-2x"
+            >arrow_circle_up</mat-icon>
+        </button>
+
+        <!--
+        TODO: Code needed from ScrollTop.Component, to run my new
+        button with "myScrollToTop()" function.
+
+        So, PHASE 1 - I'll be DUPLICATING code herein. :o(
+        PHASE 2 - I'll (re)-explore the ScrollService (which it looks like I abandoned)
+        -->
+        <!-- Ah-hah. I had the wrong concept here.
+        This ScrollTopComponent has a FIXED POSITION (see its SCSS)
+        So, putting it "right here" in this template does NOT
+        determine where it appears on the page.
+        cheers.
+        -->
+<!--        <p>ArticleList ScrollTop 01</p>-->
+<!--  Testing. We will (soon) cause this ScrollTopComponent to *NOT* appear
+      inside this ArticleListComponent (which in turn is child to
+      WelcomeComponent and to ArticlesComponent).
+       <app-scroll-top></app-scroll-top>
+
+       Q. Why?
+       A. Because ArticleListComponent now has its own "scroll top/bottom"
+       as part of the Paginator it uses.
+       cheers.
+-->
+
     </div>
     <!-- ***  PAGINATOR UTILITY FIELDS - BOTTOM  *** -->
     <div
@@ -521,7 +582,7 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
 
 
     <div
-            id="fake-bottom-id"
+            id="fake-bottom-id-article-list"
     >
         <!--
         URL: http://0.0.0.0:4200/#fake-bottom-id

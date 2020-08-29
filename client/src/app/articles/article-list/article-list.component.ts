@@ -1,9 +1,13 @@
-import { Component, OnInit, Input, Output, Inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Input, Output, Inject, NgZone } from '@angular/core';
 // import { DOCUMENT } from '@angular/common'; // << No longer needed
 // import {Observable} from "rxjs"; // << not needed here after all
 /* CRAP
 import { PageScrollService } from 'ngx-page-scroll-core';
 */
+/*
+NEW Scroll biz... (hopefully NOT Crap) (See Also ScrollTopComponent)
+ */
+import {CdkScrollable, ScrollDispatcher} from '@angular/cdk/overlay';
 
 import { Category, CategoriesFromEnumLikeClassInModel } from '../article.model';
 import { ArticleAddComponent, MyCategoriesEnumLikeClass } from '../article-add/article-add.component'; // re: categories fixer. hmm.
@@ -20,7 +24,7 @@ import {calcPossibleSecurityContexts} from "@angular/compiler/src/template_parse
   templateUrl: './article-list.component.html',
   styleUrls: ['./article-list.component.scss']
 })
-export class ArticleListComponent implements OnInit {
+export class ArticleListComponent implements OnInit, AfterViewInit {
 
   articles: Article[]; // empty to begin
     articlesToDisplay: Article[]; // be that ALL, or FILTERED
@@ -66,6 +70,11 @@ export class ArticleListComponent implements OnInit {
     */
     MyJavaScriptMath = Math; // << ??
 
+// *** SCROLL BIZ  ***
+    myWindowScrolled: boolean;
+    scrollOffsetWeJustGotToDisplay: number;
+    scrollPositionRounded: number;
+
 
 categories: Category[];
 
@@ -106,6 +115,8 @@ private myFilterSortService: FilterSortService,
 @Inject(DOCUMENT)
 private myDocument: Document,
 */
+private myScrollDispatcher: ScrollDispatcher,
+private myNgZone: NgZone,
   ) { }
 
   ngOnInit(): void {
@@ -138,6 +149,11 @@ private myDocument: Document,
        */
 
   } // /ngOnInit()
+
+
+    ngAfterViewInit() {
+        this.myPaginatorScrollToTop();
+    }
 
     getArticles() {
         // << OLDER. ALL. pre-PAGINATION.
@@ -375,6 +391,100 @@ currentPageNumber = 1.  Should avoid that BUG. j'espere.
          */
         this.getArticlesPaginated(this.currentPageNumber, this.pageSize)
     }
+
+    myPaginatorScrollIntoViewToBottom() { // << ALSO IN SCROLL-TOP.COMPONENT cheers.
+        /* This helped.
+        https://stackblitz.com/github/kwhjvdkamp/scroll-to-top-and-scroll-to-bttom?file=src%2Fapp%2Fscroll-bottom%2Fscroll-bottom.component.ts
+
+        I was trying (myScrollToBottom(), myNonSmoothScrollToBottom()) to pretty much
+        monkey-wrench the (working!) myScrollToTop() into something that would do
+        "the same" (hah!) to Bottom.
+        Nope.
+        To Bottom, you don't do that recursive IIFE() thing with window frame & Etc.
+        You just use HTML's Element.scrollIntoView(). How elegant! And elegant-sounding.
+        Now, here's hoping I can actually get it to work.
+        WUL.
+         */
+
+        let myElement = document.getElementById("fake-bottom-id-app");
+        /*
+        fake-bottom-id-app // << yes seems to be what we want
+        fake-bottom-id-article-list // << not quite to bottom
+        fake-bottom-id-footer // << haven't tried yet
+         */
+
+        myElement.scrollIntoView(
+            {
+                behavior: "smooth",
+                block: "end",
+                inline: "nearest",
+            }
+        )
+
+    } // /myPaginatorScrollIntoViewToBottom()
+
+    myPaginatorScrollToTopInit() { // << Called from ngAfterViewInit()
+        // ***   DUPLICATED CODE  ***
+        // ***   SCROLLTOP.COMPONENT  ***
+
+        this.myScrollDispatcher.scrolled(100) // auditTimeInMs
+            .subscribe(
+                (cdkScrollDataWeGot: CdkScrollable) => {
+                    this.myNgZone.run(
+                        () => {
+                            const scrollPosition = cdkScrollDataWeGot.getElementRef().nativeElement.scrollTop;
+                            this.scrollOffsetWeJustGotToDisplay = scrollPosition;
+                            this.scrollPositionRounded = Math.round(scrollPosition);
+                            this.showToTopIfScrolled(this.scrollPositionRounded);
+                        }
+                    )
+                }
+            )
+
+        // ***   /SCROLLTOP.COMPONENT  ***
+        // ***   /DUPLICATED CODE  ***
+    } // myPaginatorScrollToTopInit()
+
+    myPaginatorScrollToTop() {
+        (function smoothScroll() {
+            let currentScroll =
+                document.querySelector('mat-sidenav-content').scrollTop;
+           // console.log('02 TOP currentScroll ', currentScroll);
+
+            // console.log(`03 TOP scroll-top.component----|-window.pageYOffset (this.windowScrolled): ${(Math.round(window.pageYOffset*10^2)/10^2)}-xxxxxxx---![CLICKED-UP]!`);
+
+            if (currentScroll > 0) {
+
+                window.requestAnimationFrame(smoothScroll);
+                document.querySelector('mat-sidenav-content').scrollTo(
+                    0,
+                    currentScroll -
+                    (currentScroll / 8)
+                );
+            }
+        })();
+    } // /myPaginatorScrollToTop()
+
+
+    showToTopIfScrolled(offsetPassedIn) {
+
+        // console.log('ZZ99 showToTopIfScrolled(offsetPassedIn) ', offsetPassedIn);
+
+        if ( offsetPassedIn > 100 ) {
+            // console.log('AA99 .offsetPassedIn > 100 - windowScrolled TRUE! ');
+            this.myWindowScrolled = true;
+            // console.log('AA99 this.myWindowScrolled should be TRUE: ', this.myWindowScrolled);
+        } else if (
+            this.myWindowScrolled
+            &&
+            offsetPassedIn < 10 ) {
+            // console.log('BB99 .offsetPassedIn < 10 - windowScrolled FALSE! ');
+            this.myWindowScrolled = false;
+            // console.log('BB99 this.myWindowScrolled should be FALSE: ', this.myWindowScrolled);
+        }
+
+    } // /showToTopIfScrolled()
+
 
     generateArticlesControlledPaginator(currentPageNumber, pageSize, articlesCount) {
         /*

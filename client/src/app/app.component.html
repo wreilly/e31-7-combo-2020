@@ -119,10 +119,29 @@ Without 'fullscreen'
     <div>T/F? isSidenavOpenInApp$ ? |{{isSidenavOpenInApp$ | async}}|</div>-->
     <router-outlet></router-outlet>
     <app-scroll-top></app-scroll-top>
+      <!--
+      Placement of ScrollTopComponent here in AppComponent causes it to
+      appear *everywhere*.
+      Ok.
+      But I may not want it to appear where ArticleListComponent does, since
+      it will now have its own Scroll down/up, with the new Paginator.
+      Hmm.
+      Q. To achieve that new result, where do I continue to place this ScrollComponent?
+      A. Hmm, I guess maybe on AddArticleComponent, maybe ArticlesComponent?
+      Looks like I'll have to control for it appearing, or not,
+      under ArticlesComponent <router-outlet>, the way I do for that
+      "Recent Article" - seen in some, not all of the routes. O la.
+      cheers.
+      -->
+
     <app-footer
             fxFlexOffset="auto"
     ></app-footer>
-<!--    <app-scroll-top></app-scroll-top>-->
+      <div
+              id="fake-bottom-id-app"
+      >
+      </div>
+      <!--    <app-scroll-top></app-scroll-top>-->
     <!-- below </div> was </mat-sidenav-content> - Experiment.
 
     Update ????

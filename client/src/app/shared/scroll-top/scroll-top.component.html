@@ -4,6 +4,12 @@
 <!--<div class="position-scrollTop">-->
 <!--<div class="position-scrollTop show-scrollTop">-->
 
+<!--
+<div
+        class="position-scrollTop"
+        [ngClass]="{'show-scrollTop': true}"  // << Testing, set to true
+>
+-->
 
     <div class="position-scrollTop"
          [ngClass]="{'show-scrollTop': myWindowScrolled}">
@@ -15,6 +21,11 @@
 <!-- d'oh!      {{scrollOffsetWeJustGotToDisplay}}-->
                 {{scrollPositionRounded}}
             </button>
+        <button mat-raised-button color="accent" on-click="myScrollIntoViewToBottom()">
+            <mat-icon>arrow_circle_down</mat-icon>
+            <!-- d'oh!      {{scrollOffsetWeJustGotToDisplay}}-->
+            {{scrollPositionRounded}}
+        </button>
 <!-- Yeah, "mat-list" was not needed here:
         <mat-list>
             <mat-list-item>

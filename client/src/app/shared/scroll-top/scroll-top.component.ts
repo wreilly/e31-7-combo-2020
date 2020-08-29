@@ -23,7 +23,7 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
         private myDocument: Document,
         private myScrollService: ScrollService,
         private myScrollDispatcher: ScrollDispatcher,
-        private myZone: NgZone,
+        private myNgZone: NgZone,
     ) { }
 
     ngOnInit(): void {
@@ -63,7 +63,7 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
         this.myScrollDispatcher.scrolled(100) // auditTimeInMs
             .subscribe(
                 (cdkScrollDataWeGot: CdkScrollable) => {
-                    this.myZone.run(
+                    this.myNgZone.run(
                         () => {
                             // console.log('? zone anything? ', anything); // undefined. Okay.
                             const scrollPosition = cdkScrollDataWeGot.getElementRef().nativeElement.scrollTop; // undefined for 'cdkScrollDataWeGot' :o(
@@ -86,7 +86,7 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
                     )
                 }
             )
-    }
+    } // /ngAfterViewInit()
 
     ngAfterViewInitOLD() {
         /* OLD
@@ -127,7 +127,7 @@ export class ScrollTopComponent implements OnInit, AfterViewInit {
 
         // console.log('YYY myWindowScrollObservable$ ', myWindowScrollObservable$); // << Nope
         // console.log('ZZZ myRealScrollObservable$ ', myRealScrollObservable$);
-    }
+    } // /ngAfterViewInitOLD()
 
 /*
 ******* !!!! *******
@@ -208,6 +208,73 @@ Hmm turned OFF the HostListener for window scroll events. Seems that the CDK Scr
 
     }
 
+    myNonSmoothScrollToBottom() {
+        // (function smoothScrollBottom() {
+            console.log('01 (NONsmoothScrollBOTTOM(){}');
+            // let currentScrollBottom: number = document.querySelector('div#fake-bottom-id').scrollTop;
+            let currentScrollBottom: number = document.querySelector('mat-sidenav-content').scrollTop;
+            console.log('02 (smoothScrollBOTTOM currentScrollBottom ', currentScrollBottom); // 0 << fake-bottom, but 300 etc. for sidenav-content. hmm.
+            if (currentScrollBottom > 0) {
+                console.log('03  currentScrollBottom > 0 apparently', currentScrollBottom);
+                // window.requestAnimationFrame(smoothScrollBottom);
+                document.querySelector('mat-sidenav-content').scrollTo(0, 10000);
+            }
+        // })();
+    }
+
+    myScrollIntoViewToBottom() { // << ALSO IN ARTICLELIST.COMPONENT  (for PAGINATOR) cheers
+        /* This helped.
+        https://stackblitz.com/github/kwhjvdkamp/scroll-to-top-and-scroll-to-bttom?file=src%2Fapp%2Fscroll-bottom%2Fscroll-bottom.component.ts
+
+        I was trying (myScrollToBottom(), myNonSmoothScrollToBottom()) to pretty much
+        monkey-wrench the (working!) myScrollToTop() into something that would do
+        "the same" (hah!) to Bottom.
+        Nope.
+        To Bottom, you don't do that recursive IIFE() thing with window frame & Etc.
+        You just use HTML's Element.scrollIntoView(). How elegant! And elegant-sounding.
+        Now, here's hoping I can actually get it to work.
+        WUL.
+         */
+
+        let myElement = document.getElementById("fake-bottom-id-app");
+        /*
+        fake-bottom-id-app // << yes seems to be what we want
+        fake-bottom-id-article-list // << not quite to bottom
+        fake-bottom-id-footer // << haven't tried yet
+         */
+
+        myElement.scrollIntoView(
+            {
+                behavior: "smooth",
+                block: "end",
+                inline: "nearest",
+            }
+        )
+
+    }
+
+
+    myScrollToBottom() {
+        (function smoothScrollBottom() {
+            console.log('01 (smoothScrollBOTTOM(){})()');
+            // let currentScrollBottom: number = document.querySelector('div#fake-bottom-id').scrollTop;
+            let currentScrollBottom: number = document.querySelector('mat-sidenav-content').scrollTop;
+            console.log('02 (smoothScrollBOTTOM currentScrollBottom ', currentScrollBottom); // 0 << fake-bottom, but 300 etc. for sidenav-content. hmm.
+            console.log('02A window.innerHeight ', window.innerHeight); // NOT what we want e.g. 385
+            console.log('02B document.documentElement.clientHeight ', document.documentElement.clientHeight); // Same as window.innerHeight. NO. boo.  e.g. 385
+            console.log('02C document.body.clientHeight ', document.body.clientHeight); // 0  boo.
+            console.log('02D document.documentElement.offsetHeight ', document.documentElement.offsetHeight); // 8 ( ?! )
+            console.log('02E document.documentElement.scrollHeight ', document.documentElement.scrollHeight); // Also 385. wtf.
+
+            if (currentScrollBottom < window.innerHeight) {
+                console.log('03  currentScrollBottom > 0 apparently', currentScrollBottom);
+                window.requestAnimationFrame(smoothScrollBottom);
+                document.querySelector('mat-sidenav-content').scrollTo(0, currentScrollBottom + currentScrollBottom / 8);
+            }
+        })();
+        // https://ryanve.com/_php/airve/chromosome/request.php?request=lab/dimensions/
+    }
+
     myScrollToTop() {
         // console.log('00 myScrollToTop()');
         (function smoothScroll() {
@@ -219,9 +286,9 @@ Hmm turned OFF the HostListener for window scroll events. Seems that the CDK Scr
 */
             let currentScroll =
                                  document.querySelector('mat-sidenav-content').scrollTop;
-            // console.log('02 currentScroll ', currentScroll);
+           // console.log('02 TOP currentScroll ', currentScroll);
 
-           // console.log(`scroll-top.component----|-window.pageYOffset (this.windowScrolled): ${(Math.round(window.pageYOffset*10^2)/10^2)}-xxxxxxx---![CLICKED-UP]!`);
+           // console.log(`03 TOP scroll-top.component----|-window.pageYOffset (this.windowScrolled): ${(Math.round(window.pageYOffset*10^2)/10^2)}-xxxxxxx---![CLICKED-UP]!`);
 
             if (currentScroll > 0) {
 
@@ -232,10 +299,10 @@ Hmm turned OFF the HostListener for window scroll events. Seems that the CDK Scr
                     0,
                 );
                 */
-                                document.querySelector('mat-sidenav-content').scrollTo(0,
-                                    currentScroll -
-                                    (currentScroll / 8)
-                                );
+                document.querySelector('mat-sidenav-content').scrollTo(0,
+                    currentScroll -
+                    (currentScroll / 8)
+                );
             }
         })();
 
