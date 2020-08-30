@@ -1,31 +1,77 @@
+<!-- NEED TO TURN OFF this <div>-as-label. Not really needed anyway.
 <div class="component-label">SCROLL-TOP.COMPONENT</div>
-<!--Scroll to top-->
-<!--<div class="show-scrollTop">-->
-<!--<div class="position-scrollTop">-->
-<!--<div class="position-scrollTop show-scrollTop">-->
-
+-->
 <!--
-<div
-        class="position-scrollTop"
-        [ngClass]="{'show-scrollTop': true}"  // << Testing, set to true
->
+Interesting.
+To plop this Component into a row of buttons, you cannot have
+any "<div>" ancestors - You must make use of "<span>". Very nice.
 -->
 
-    <div class="position-scrollTop"
-         [ngClass]="{'show-scrollTop': myWindowScrolled}">
+<span> <!-- << Overall wrapper needs to be span. ok. -->
+
+    <!-- 1. Button row (Top) for component, needs to be span. ok. -->
+    <span
+            *ngIf="scrollComponentPaginatorButtonTop"
+    >
+        <button
+                mat-raised-button
+                color="primary"
+                on-click="myScrollIntoViewToBottom()"
+                class="my-smaller-button"
+                type="button"
+        >
+            <mat-icon
+                    class="shrink-2x"
+            >arrow_circle_down</mat-icon>
+        </button>
+    </span>
 
 
-<!--    <div>SCROLL TO TOP COMPONENT IS IN THE HOUSE</div>-->
+    <!-- 2.  Button row (Bottom) for component, needs to be span. ok. -->
+    <span
+            *ngIf="scrollComponentPaginatorButtonBottom"
+    >
+                <button
+                        mat-raised-button
+                        color="primary"
+                        on-click="myScrollToTop()"
+                        class="my-smaller-button"
+                        type="button"
+                >
+            <mat-icon
+                    class="shrink-2x"
+            >arrow_circle_up</mat-icon>
+        </button>
+    </span>
+
+
+    <!-- 3. Fixed Position ScrollComponent can be "<span>" or "<div>" - doesn't matter... -->
+    <div
+            *ngIf="scrollComponentLowerRight"
+    >
+        <!-- Below is *ORIGINAL* (positioned lower/right;  show/hide) ScrollTopComponent parent div -->
+        <div class="position-scrollTop"
+             [ngClass]="{'show-scrollTop': myWindowScrolled}">
+
             <button mat-raised-button color="accent" on-click="myScrollToTop()">
                 <mat-icon>arrow_circle_up</mat-icon>
-<!-- d'oh!      {{scrollOffsetWeJustGotToDisplay}}-->
                 {{scrollPositionRounded}}
             </button>
-        <button mat-raised-button color="accent" on-click="myScrollIntoViewToBottom()">
-            <mat-icon>arrow_circle_down</mat-icon>
-            <!-- d'oh!      {{scrollOffsetWeJustGotToDisplay}}-->
-            {{scrollPositionRounded}}
-        </button>
+            <button mat-raised-button color="accent" on-click="myScrollIntoViewToBottom()">
+                <mat-icon>arrow_circle_down</mat-icon>
+                {{scrollPositionRounded}}
+            </button>
+        </div>
+    </div>
+
+</span>
+
+<!-- OLDER NOTES:
+Scroll to top
+<div class="show-scrollTop">
+<div class="position-scrollTop">
+<div class="position-scrollTop show-scrollTop">
+-->
 <!-- Yeah, "mat-list" was not needed here:
         <mat-list>
             <mat-list-item>
@@ -35,4 +81,3 @@
             </mat-list-item>
         </mat-list>
 -->
-</div>

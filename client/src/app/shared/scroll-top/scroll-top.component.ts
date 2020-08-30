@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, Inject, HostListener, NgZone } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Inject, HostListener, NgZone, Input } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import {fromEvent} from "rxjs";
 import { tap, share } from 'rxjs/operators';
@@ -12,6 +12,26 @@ import {CdkScrollable, ScrollDispatcher} from "@angular/cdk/overlay";
     styleUrls: ['scroll-top.component.scss'],
 })
 export class ScrollTopComponent implements OnInit, AfterViewInit {
+
+/* DUMB! No.
+You cannot, do not, put a single "@Input()" on top
+of however many variables you want. No. Wrong!!
+    @Input()
+    scrollComponentPaginatorButtonBottom: boolean;
+    scrollComponentPaginatorButtonTop: boolean;
+    scrollComponentLowerRight: boolean;
+
+You put one "@Input()" atop each:   (lordie)
+*/
+
+    @Input()
+    scrollComponentPaginatorButtonBottom: boolean;
+
+    @Input()
+    scrollComponentPaginatorButtonTop: boolean;
+
+    @Input()
+    scrollComponentLowerRight: boolean;
 
 
     myWindowScrolled: boolean;

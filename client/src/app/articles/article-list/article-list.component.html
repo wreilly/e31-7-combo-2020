@@ -332,6 +332,7 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
         >
             Last ({{lastPaginationNumber}})
         </button> |
+<!-- SUPERSEDED by configurable ScrollTopComponent! cheers.
         <button
                 mat-raised-button
                 color="primary"
@@ -343,6 +344,10 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
                     class="shrink-2x"
             >arrow_circle_down</mat-icon>
         </button>
+-->
+        <app-scroll-top
+                scrollComponentPaginatorButtonTop="true"
+        ></app-scroll-top>
     </div>
     <!-- ***  PAGINATOR UTILITY FIELDS - TOP  *** -->
 <!--
@@ -481,26 +486,29 @@ cheers.
            See curious work-around in running code above: "MyJavaScriptMath"
         -->
 
+        <!-- SUPERSEDED by configurable ScrollTopComponent! cheers.
+                <button
+                        mat-raised-button
+                        color="primary"
+                        on-click="myPaginatorScrollToTop()"
+                        class="my-smaller-button"
+                        type="button"
+                >
+                    <mat-icon
+                            class="shrink-2x"
+                    >arrow_circle_up</mat-icon>
+                </button>
+-->
+        <app-scroll-top
+                scrollComponentPaginatorButtonBottom="true"
+        ></app-scroll-top>
+                <!--
+                TODO: Code needed from ScrollTop.Component, to run my new
+                button with "myScrollToTop()" function.
 
-        <button
-                mat-raised-button
-                color="primary"
-                on-click="myPaginatorScrollToTop()"
-                class="my-smaller-button"
-                type="button"
-        >
-            <mat-icon
-                    class="shrink-2x"
-            >arrow_circle_up</mat-icon>
-        </button>
-
-        <!--
-        TODO: Code needed from ScrollTop.Component, to run my new
-        button with "myScrollToTop()" function.
-
-        So, PHASE 1 - I'll be DUPLICATING code herein. :o(
-        PHASE 2 - I'll (re)-explore the ScrollService (which it looks like I abandoned)
-        -->
+                So, PHASE 1 - I'll be DUPLICATING code herein. :o(
+                PHASE 2 - I'll (re)-explore the ScrollService (which it looks like I abandoned)
+                -->
         <!-- Ah-hah. I had the wrong concept here.
         This ScrollTopComponent has a FIXED POSITION (see its SCSS)
         So, putting it "right here" in this template does NOT

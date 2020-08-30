@@ -118,7 +118,9 @@ Without 'fullscreen'
 <!-- Yes worked:
     <div>T/F? isSidenavOpenInApp$ ? |{{isSidenavOpenInApp$ | async}}|</div>-->
     <router-outlet></router-outlet>
-    <app-scroll-top></app-scroll-top>
+    <app-scroll-top
+            scrollComponentLowerRight="true"
+    ></app-scroll-top>
       <!--
       Placement of ScrollTopComponent here in AppComponent causes it to
       appear *everywhere*.
