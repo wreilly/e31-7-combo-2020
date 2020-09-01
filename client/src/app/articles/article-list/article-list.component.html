@@ -279,118 +279,23 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
     </mat-card>
 
     <!-- ***  "CONTROLLED" PAGINATOR - TOP *** -->
-    <div
-            style="margin-left: 15px;"
-    >
-        <button
-                mat-raised-button
-                color="primary"
-                type="button"
-                class="my-smaller-button"
-                on-click="getArticlesPaginated( 1, pageSize)"
-        >
-            First (1)
-        </button> |
-        <button
-                mat-raised-button
-                color="primary"
-                class="my-smaller-button"
-                type="button"
-                on-click="getArticlesPaginated( (currentPageNumber - 1), pageSize)"
-                bind-disabled="currentPageNumber === 1"
-        >
-            << Prev
-        </button> |
 
-        <button
-                mat-raised-button
-                color="{{currentPageNumber === paginationButton.valueOf() ? 'accent' : 'primary'}}"
-                class="my-smaller-button"
-                type="button"
-                *ngFor="let paginationButton of paginationButtonsControlledArray"
-                on-click="getArticlesPaginated(paginationButton.valueOf(), pageSize)"
-        >
-            {{ (paginationButton.valueOf() === currentPageNumber - RANGE_AROUND) ? '... ' : '' }} {{paginationButton.valueOf()}} {{ (paginationButton.valueOf() === currentPageNumber + RANGE_AROUND) ? ' ...' : '' }}
-        </button> |
-        <button
-                mat-raised-button
-                color="primary"
-                class="my-smaller-button"
-                type="button"
-                on-click="getArticlesPaginated( (currentPageNumber + 1), pageSize)"
-                bind-disabled="currentPageNumber === lastPaginationNumber"
-        >
-            Next >>
-        </button> |
-        <button
-                mat-raised-button
-                color="primary"
-                class="my-smaller-button"
-                type="button"
-
-                on-click="getArticlesPaginated( (articlesCount % pageSize > 0) ? (MyJavaScriptMath.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize), pageSize)"
-        >
-            Last ({{lastPaginationNumber}})
-        </button> |
-<!-- SUPERSEDED by configurable ScrollTopComponent! cheers.
-        <button
-                mat-raised-button
-                color="primary"
-                on-click="myPaginatorScrollIntoViewToBottom()"
-                class="my-smaller-button"
-                type="button"
-        >
-            <mat-icon
-                    class="shrink-2x"
-            >arrow_circle_down</mat-icon>
-        </button>
--->
-        <app-scroll-top
-                scrollComponentPaginatorButtonTop="true"
-        ></app-scroll-top>
-    </div>
-    <!-- ***  PAGINATOR UTILITY FIELDS - TOP  *** -->
-<!--
-    <div
-                style="margin-left: 15px;"
-    >
-        <mat-form-field>
-            <mat-label>Range Around</mat-label>
-            <mat-hint>Buttons to side of current page</mat-hint>
-            <mat-select
-                    [(value)]="rangeAroundSelected"
-                    on-valueChange="setRangeAround()"
-            >
-                <mat-option
-                        *ngFor="let rangeAround of rangeAroundArray"
-                        bind-value="rangeAround"
-                >
-                    {{rangeAround}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-
-        <span>&nbsp;&nbsp;&nbsp;</span>
-
-        <mat-form-field>
-            <mat-label>Page Size</mat-label>
-            <mat-hint># of Articles/Page</mat-hint>
-            <mat-select
-                    [(value)]="pageSizeSelected"
-                    on-valueChange="setPageSize()"
-            >
-                <mat-option
-                        *ngFor="let thisPageSize of pageSizeArray"
-                        bind-value="thisPageSize"
-                >
-                    {{thisPageSize}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    </div>
- -->
     <!-- ***  /"CONTROLLED" PAGINATOR - TOP  *** -->
 
+    <app-paginator
+            bind-topOrBottom="'top'"
+
+            bind-currentPageNumberInputName="updateRedrawCurrentPageNumber"
+            bind-pageSizeInputName="updateRedrawPageSize"
+            bind-articlesCountInputName="updateRedrawArticlesCount"
+
+            bind-rangeAroundInputName="RANGE_AROUND"
+
+            on-paginationGetNextPageArticlesEvent="getArticlesPaginated(
+            $event.pageNumberOutput,
+            $event.pageSizeOutput
+            )"
+    ></app-paginator>
 
     <!--
         "You can add mat-list-item as the directive to your app-car-item component..."
@@ -407,16 +312,6 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
         </div>
     </div>
 
-<!-- Ah-hah. I had the wrong concept here.
-This ScrollTopComponent has a FIXED POSITION (see its SCSS)
-So, putting it "right here" in this template does NOT
-determine where it appears on the page.
-cheers.
-
-    <p>ArticleList ScrollTop 02</p>
-    <app-scroll-top></app-scroll-top>
--->
-
     <app-article
             mat-list-item
             *ngFor="let article of articlesToDisplay"
@@ -424,169 +319,29 @@ cheers.
     ></app-article>
 
 
+    <app-paginator
+            bind-topOrBottom="'bottom'"
+
+            bind-currentPageNumberInputName="updateRedrawCurrentPageNumber"
+            bind-pageSizeInputName="updateRedrawPageSize"
+            bind-articlesCountInputName="updateRedrawArticlesCount"
+
+            bind-rangeAroundInputName="RANGE_AROUND"
+
+            on-paginationGetNextPageArticlesEvent="getArticlesPaginated(
+            $event.pageNumberOutput,
+            $event.pageSizeOutput
+            )"
+
+            on-rangeAroundChangedPaginatorBottomEvent="updateRangeAroundToTopPaginator(
+            $event.rangeAroundOutput
+            )"
+    ></app-paginator>
+
+
     <!-- ***  "CONTROLLED" PAGINATOR - BOTTOM *** -->
-    <div
-            style="margin-left: 15px;"
-    >
-        <button
-                mat-raised-button
-                color="primary"
-                type="button"
-                class="my-smaller-button"
-                on-click="getArticlesPaginated( 1, pageSize)"
-        >
-            First (1)
-        </button> |
-        <button
-                mat-raised-button
-                color="primary"
-                class="my-smaller-button"
-                type="button"
-                on-click="getArticlesPaginated( (currentPageNumber - 1), pageSize)"
-                bind-disabled="currentPageNumber === 1"
-        >
-            << Prev
-        </button> |
 
-        <button
-                mat-raised-button
-                color="{{currentPageNumber === paginationButton.valueOf() ? 'accent' : 'primary'}}"
-                class="my-smaller-button"
-                type="button"
-                *ngFor="let paginationButton of paginationButtonsControlledArray"
-                on-click="getArticlesPaginated(paginationButton.valueOf(), pageSize)"
-        >
-            {{ (paginationButton.valueOf() === currentPageNumber - RANGE_AROUND) ? '... ' : '' }} {{paginationButton.valueOf()}} {{ (paginationButton.valueOf() === currentPageNumber + RANGE_AROUND) ? ' ...' : '' }}
-        </button> |
-        <button
-                mat-raised-button
-                color="primary"
-                class="my-smaller-button"
-                type="button"
-                on-click="getArticlesPaginated( (currentPageNumber + 1), pageSize)"
-                bind-disabled="currentPageNumber === lastPaginationNumber"
-        >
-            Next >>
-        </button> |
-        <button
-                mat-raised-button
-                color="primary"
-                class="my-smaller-button"
-                type="button"
-
-                on-click="getArticlesPaginated( (articlesCount % pageSize > 0) ? (MyJavaScriptMath.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize), pageSize)"
-        >
-            Last ({{lastPaginationNumber}})
-        </button> |
-        <!--   on-click="getArticlesPaginated( lastPaginationNumber, pageSize)"-->
-        <!--   above Was not working. Sending 19.8, not 20. Hmm -->
-        <!--   below - Nope. Can't access JavaScript's *Math* here in the template, kids!
-               Instead, did this logic back in the TypeScript, using MATH there to create "lastPaginationNumber"
-           Nope:    on-click="getArticlesPaginated( (articlesCount % pageSize > 0) ? (Math.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize), pageSize)"
-           See curious work-around in running code above: "MyJavaScriptMath"
-        -->
-
-        <!-- SUPERSEDED by configurable ScrollTopComponent! cheers.
-                <button
-                        mat-raised-button
-                        color="primary"
-                        on-click="myPaginatorScrollToTop()"
-                        class="my-smaller-button"
-                        type="button"
-                >
-                    <mat-icon
-                            class="shrink-2x"
-                    >arrow_circle_up</mat-icon>
-                </button>
--->
-        <app-scroll-top
-                scrollComponentPaginatorButtonBottom="true"
-        ></app-scroll-top>
-                <!--
-                TODO: Code needed from ScrollTop.Component, to run my new
-                button with "myScrollToTop()" function.
-
-                So, PHASE 1 - I'll be DUPLICATING code herein. :o(
-                PHASE 2 - I'll (re)-explore the ScrollService (which it looks like I abandoned)
-                -->
-        <!-- Ah-hah. I had the wrong concept here.
-        This ScrollTopComponent has a FIXED POSITION (see its SCSS)
-        So, putting it "right here" in this template does NOT
-        determine where it appears on the page.
-        cheers.
-        -->
-<!--        <p>ArticleList ScrollTop 01</p>-->
-<!--  Testing. We will (soon) cause this ScrollTopComponent to *NOT* appear
-      inside this ArticleListComponent (which in turn is child to
-      WelcomeComponent and to ArticlesComponent).
-       <app-scroll-top></app-scroll-top>
-
-       Q. Why?
-       A. Because ArticleListComponent now has its own "scroll top/bottom"
-       as part of the Paginator it uses.
-       cheers.
--->
-
-    </div>
-    <!-- ***  PAGINATOR UTILITY FIELDS - BOTTOM  *** -->
-    <div
-            style="margin-left: 15px; margin-top: 5px;"
-
-    >
-        <!--   Well that shrink class kinda ok result, though
-             the default Angular Material sizing on the dropdown values
-             still remains large. o well. -->
-        <!-- Hmm, my "syntactic sugar" biz here not working for me.
-                <mat-select
-                NO:     bind-value="rangeAroundSelected"
-                NO:     on-input="rangeAroundSelected = $event.target.value"
-                NO:     on-change="rangeAroundSelected = $event.target.value"
-                >
-                YES: [(value)]="rangeAroundSelected"
-                YES: [(ngModel)]="rangeAroundSelected"
-        -->
-        <mat-form-field>
-            <mat-label>Range Around</mat-label>
-            <mat-hint># Buttons to side of current page</mat-hint>
-            <mat-select
-                    [(value)]="rangeAroundSelected"
-                    on-valueChange="setRangeAround()"
-                    class="my-smaller-mat-select"
-            >
-                <mat-option
-                        *ngFor="let rangeAround of rangeAroundArray"
-                        bind-value="rangeAround"
-                >
-                    {{rangeAround}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-
-        <span>&nbsp;&nbsp;&nbsp;</span>
-
-        <mat-form-field>
-            <mat-label>Page Size</mat-label>
-            <mat-hint># Articles per Page</mat-hint>
-            <mat-select
-                    [(value)]="pageSizeSelected"
-                    on-valueChange="setPageSize()"
-                    class="my-smaller-mat-select"
-            >
-                <mat-option
-                        *ngFor="let thisPageSize of pageSizeArray"
-                        bind-value="thisPageSize"
-                >
-                    {{thisPageSize}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-
-    </div>
-    <!-- ***  /"CONTROLLED" PAGINATOR - BOTTOM  *** -->
-
-
-
-
+     <!-- ***  /"CONTROLLED" PAGINATOR - BOTTOM  *** -->
 
 
     <div

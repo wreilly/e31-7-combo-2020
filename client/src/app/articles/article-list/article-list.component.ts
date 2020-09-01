@@ -26,7 +26,7 @@ import {calcPossibleSecurityContexts} from "@angular/compiler/src/template_parse
 })
 export class ArticleListComponent implements OnInit, AfterViewInit {
 
-  articles: Article[]; // empty to begin
+    articles: Article[]; // empty to begin
     articlesToDisplay: Article[]; // be that ALL, or FILTERED
   // articles: [Article]; // empty to begin
   /*
@@ -43,6 +43,10 @@ export class ArticleListComponent implements OnInit, AfterViewInit {
     articlesInCategoryWhichCategory = 'All Articles'; // init  // string; // e.g. 'Politics' when there ARE articles
 
     // PAGINATION biz
+    updateRedrawCurrentPageNumber: number;
+    updateRedrawPageSize: number;
+    updateRedrawArticlesCount: number;
+
     currentPageNumber: number; // 1-based...
     pageSizeArray = [5,10,20]; // 50 also would be good
     /* ... but w only 93 articles, creates a little bug.
@@ -50,7 +54,7 @@ export class ArticleListComponent implements OnInit, AfterViewInit {
     Not going to go fix that logic. Instead, let's just leave 50 off
     till we have some 200+ articles, no? Grazie.
      */
-    pageSizeSelected = 5; // default
+    pageSizeSelected = 20; // default
     pageSize = this.pageSizeSelected;  // hard-coded for now
     // pageSize = 20; // hard-coded for now
     // pageSize = 50; // hard-coded for now
@@ -151,8 +155,22 @@ private myNgZone: NgZone,
   } // /ngOnInit()
 
 
-    ngAfterViewInit() {
+    ngAfterViewInit() { // NO LONGER USED
+
+    /* This line was live, in here, but, I think (see below) it was wrong. o well.
         this.myPaginatorScrollToTop();
+*/
+        /*
+        Hmm. No longer using all this scroll stuff from here in
+        ArticleListComponent anyway, (we now (re-)use ScrollTopComponent)
+         but, wasn't this line above supposed
+        to be calling this instead ??
+        >>>      this.myPaginatorScrollToTopInit(); <<< ?
+
+        Would appear I didn't really have this running right; I think?
+        Hmm, bit embarrassing maybe. o well. no longer using.
+        good night.
+        */
     }
 
     getArticles() {
@@ -247,7 +265,7 @@ private myNgZone: NgZone,
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-    } // /getArticles()
+    } // /getArticles() << OLD. PRE-PAGINATION
 
 
     getArticlesPaginated(page, pagesize) {
@@ -299,6 +317,24 @@ private myNgZone: NgZone,
 
                     this.currentPageNumber = page;
 
+                    /* What a nicens little bug!
+                    I was failing to UPDATE this.pageSize here in the Parent Component (ARTICLELIST),
+                    when I'd changed it down in the Child Component (PAGINATOR).
+                    O la.
+                    For "rangeAround" value change, Not Needed to update the Parent!
+                    So that was working FINE. << Hmm, found another nicens little bug regarding RangeAround. In midst of fixing, j'espere.
+                    Okay - the updating of RangeAround does not
+                    take place here. Here we update pageSize etc.,
+                    in the middle of fetching Articles - appropriate.
+                    Each fetch depends on page # and pageSize. Ok.
+                    But RangeAround is not changed w. every fetch.
+                    RangeAround only needs updating on explicit click
+                    of "change the range around"
+                    See other method:
+                    updateRangeAroundToTopPaginator()
+                     */
+                    this.pageSize = pagesize; // "pagesize passed-in", from Child to Parent
+
                     this.articles = allArticlesWeGot.articlesPaginatedFromServer.map(
                         (eachPseudoArticleFromApi: {
                             _id: string,
@@ -344,30 +380,42 @@ private myNgZone: NgZone,
                                       this.articlesCount = this.articlesToDisplay.length;
                     */
 
+/* NOT USING. See "...Controlled..."
                     this.generateArticlesPaginator(this.currentPageNumber, this.pageSize, this.articlesCount);
                     console.log('this.paginationButtonsArray ', this.paginationButtonsArray);
+*/
                     /*
 
                      */
+
+                    console.log('PARENT. 01 - getArticlesPaginate(). About to call this.generateArticlesControlledPaginator() this.currentPageNumber ', this.currentPageNumber);
                     this.generateArticlesControlledPaginator(this.currentPageNumber, this.pageSize, this.articlesCount);
+
+                    console.log('999444 PARENT. 01 - getArticlesPaginate(). About to call this.updateRedrawArticlesControlledPaginator() this.pageSize ', this.pageSize);
+                    /*
+                    This is called on every click from Paginator.
+                     */
+                    this.updateRedrawArticlesControlledPaginator(this.currentPageNumber, this.pageSize, this.articlesCount);
+
 
                 } // /next(allArticlesWeGot)
 
                 /* WAS:
-                          ); // /listArticles.subscribe()
+                          ); // /SERVICE.listArticles.subscribe()
                 */
-            ); // /listArticlesPaginated.subscribe()
+            ); // /SERVICE.listArticlesPaginated.subscribe()
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     } // /getArticlesPaginated()
 
 
+/*
     setPageSize() {
         this.pageSize = this.pageSizeSelected;
         // re-run getting Articles for this same page, to re-set the Paginator
 
-/* Bug
+/!* Bug
 Interesting - some changes (e.g. pageSize from 5 to 20), if user is on high-numbered currentPageNumber (e.g. 15, with pageSize of 5),
 will cause BUG when you suddenly shift pageSize to 20, but keep
 currentPageNumber at 15. There are not 15 * 20 Articles. BUG, etc.
@@ -376,11 +424,12 @@ Simplest solution: If user changes pageSize, we throw user back to
 currentPageNumber = 1.  Should avoid that BUG. j'espere.
 
         // BUG: Too hard to support *any* currentPageNumber
-        this.getArticlesPaginated(this.currentPageNumber, this.pageSize)
-*/
+        this.emitCallGetArticlesPaginated(this.currentPageNumber, this.pageSize)
+*!/
         // As noted above, changing pageSize throws you back to page 1. cheers.
         this.getArticlesPaginated(1, this.pageSize)
     }
+*/
 
     setRangeAround() {
         this.RANGE_AROUND = this.rangeAroundSelected;
@@ -392,8 +441,11 @@ currentPageNumber = 1.  Should avoid that BUG. j'espere.
         this.getArticlesPaginated(this.currentPageNumber, this.pageSize)
     }
 
+
+
+/* NO LONGER USED. SEE ScrollTopComponent instead
     myPaginatorScrollIntoViewToBottom() { // << ALSO IN SCROLL-TOP.COMPONENT cheers.
-        /* This helped.
+        /!* This helped.
         https://stackblitz.com/github/kwhjvdkamp/scroll-to-top-and-scroll-to-bttom?file=src%2Fapp%2Fscroll-bottom%2Fscroll-bottom.component.ts
 
         I was trying (myScrollToBottom(), myNonSmoothScrollToBottom()) to pretty much
@@ -404,14 +456,14 @@ currentPageNumber = 1.  Should avoid that BUG. j'espere.
         You just use HTML's Element.scrollIntoView(). How elegant! And elegant-sounding.
         Now, here's hoping I can actually get it to work.
         WUL.
-         */
+         *!/
 
         let myElement = document.getElementById("fake-bottom-id-app");
-        /*
+        /!*
         fake-bottom-id-app // << yes seems to be what we want
         fake-bottom-id-article-list // << not quite to bottom
         fake-bottom-id-footer // << haven't tried yet
-         */
+         *!/
 
         myElement.scrollIntoView(
             {
@@ -422,8 +474,11 @@ currentPageNumber = 1.  Should avoid that BUG. j'espere.
         )
 
     } // /myPaginatorScrollIntoViewToBottom()
+*/
 
-    myPaginatorScrollToTopInit() { // << Called from ngAfterViewInit()
+
+/* NO LONGER USED. SEE ScrollTopComponent instead
+    myPaginatorScrollToTopInit() { // << Called from ngAfterViewInit() << Wa-a-a-l. Not really. Not rully.
         // ***   DUPLICATED CODE  ***
         // ***   SCROLLTOP.COMPONENT  ***
 
@@ -444,6 +499,10 @@ currentPageNumber = 1.  Should avoid that BUG. j'espere.
         // ***   /SCROLLTOP.COMPONENT  ***
         // ***   /DUPLICATED CODE  ***
     } // myPaginatorScrollToTopInit()
+*/
+
+
+/* NO LONGER USED. SEE ScrollTopComponent instead
 
     myPaginatorScrollToTop() {
         (function smoothScroll() {
@@ -464,8 +523,10 @@ currentPageNumber = 1.  Should avoid that BUG. j'espere.
             }
         })();
     } // /myPaginatorScrollToTop()
+*/
 
 
+/* NO LONGER USED. SEE ScrollTopComponent instead
     showToTopIfScrolled(offsetPassedIn) {
 
         // console.log('ZZ99 showToTopIfScrolled(offsetPassedIn) ', offsetPassedIn);
@@ -484,9 +545,39 @@ currentPageNumber = 1.  Should avoid that BUG. j'espere.
         }
 
     } // /showToTopIfScrolled()
+*/
 
+    updateRedrawArticlesControlledPaginator(currentPageNumber, pageSize, articlesCount) {
+        console.log('999333 PARENT. 01 - updateRedrawArticlesControlledPaginator() pageSize passed-in ', pageSize);
+        /*
+INITIAL TIME:
+currentPageNumber: 1 default
+pageSize: 5 default
+articlesCount: dynamic (collection size)
+
+SUBSEQUENT TIMES:
+currentPageNumber: 'page' passed-in (DIFFERENT by definition!)
+pageSize: 'pageSize' passed-in (usually unchanged, but...)
+articlesCount: dynamic (collection size) (changes infrequently)
+ */
+
+        this.updateRedrawCurrentPageNumber = currentPageNumber;
+        this.updateRedrawPageSize = pageSize;
+        this.updateRedrawArticlesCount = articlesCount;
+
+    } // /updateRedrawArticlesControlledPaginator
+
+
+    updateRangeAroundToTopPaginator(rangeAroundFromOutput) {
+        this.RANGE_AROUND = rangeAroundFromOutput;
+        console.log('222 updateRangeAroundToTopPaginator this.RANGE_AROUND ', this.RANGE_AROUND);
+    }
 
     generateArticlesControlledPaginator(currentPageNumber, pageSize, articlesCount) {
+
+
+        console.log('PARENT. 02 - this.generateArticlesControlledPaginator() (local) currentPageNumber pageSize ', currentPageNumber + ' ' + pageSize);
+
         /*
                 this.paginationButtonsControlledArray = Array.from(
                     {length: ( (articlesCount % pageSize > 0) ? (articlesCount/pageSize + 1) : (articlesCount/pageSize) )},
@@ -538,7 +629,10 @@ currentPageNumber = 1.  Should avoid that BUG. j'espere.
          */
 
         const firstPaginationNumber = 1; // of course
+
+        console.log('999 ARTICLELIST this.lastPaginationNumber   pageSize ', this.lastPaginationNumber + ' pageSize: ' + pageSize);
         this.lastPaginationNumber = (articlesCount % pageSize > 0) ? (Math.floor(articlesCount / pageSize + 1)) : (articlesCount / pageSize);
+        console.log('999888 ARTICLELIST this.lastPaginationNumber & articlesCount ', this.lastPaginationNumber + ' count: ' + articlesCount);
 
         // if ( currentPageNumber === 9 ) { // << Initial testing hard-coded; now removed :o)
         /* Sorry guys. switch / case no good for my
@@ -629,6 +723,7 @@ currentPageNumber = 1.  Should avoid that BUG. j'espere.
             );
         } else if ( currentPageNumber === this.lastPaginationNumber) {
             //  ***  ULTIMATE. LAST  ***
+            console.log('999888777ARTICLE LAST this.lastPaginationNumber ', this.lastPaginationNumber); // Yes.
             this.paginationButtonsControlledArray = Array.from(
                 {length: ((this.RANGE_AROUND) + 1)}, // e.g. 3, or 2
                 (myValue, myKey) => {
@@ -748,7 +843,7 @@ length: 4
 /* Finito with the slew
     loadAnotherLittleSlew() { // << Better name: "Load Another Little Slew"
       this.currentPageNumber++;
-      this.getArticlesPaginated(this.currentPageNumber, this.pageSize);
+      this.emitCallGetArticlesPaginated(this.currentPageNumber, this.pageSize);
     } // /loadMore()
 */
 

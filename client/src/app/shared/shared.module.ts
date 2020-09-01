@@ -13,11 +13,13 @@ import { NgxPageScrollModule } from 'ngx-page-scroll';
 import { MyMaterialModule } from '../my-material.module';
 import { InputFocusDirective } from './input-focus/input-focus.directive';
 import { ScrollTopComponent } from './scroll-top/scroll-top.component';
+import { PaginatorComponent } from './paginator/paginator.component';
 
 @NgModule({
     declarations: [
         InputFocusDirective,
         ScrollTopComponent,
+        PaginatorComponent,
     ],
     imports: [
         CommonModule,
@@ -38,6 +40,7 @@ import { ScrollTopComponent } from './scroll-top/scroll-top.component';
         MyMaterialModule,
         InputFocusDirective,
         ScrollTopComponent,
+        PaginatorComponent,
     ],
     providers: [
 

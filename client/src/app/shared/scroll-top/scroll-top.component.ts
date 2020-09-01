@@ -25,10 +25,10 @@ You put one "@Input()" atop each:   (lordie)
 */
 
     @Input()
-    scrollComponentPaginatorButtonBottom: boolean;
+    scrollComponentPaginatorButtonTop: boolean;
 
     @Input()
-    scrollComponentPaginatorButtonTop: boolean;
+    scrollComponentPaginatorButtonBottom: boolean;
 
     @Input()
     scrollComponentLowerRight: boolean;

@@ -1,0 +1,158 @@
+<!--<span>PaginatorComponent is in the house.</span>-->
+<!-- ***  "CONTROLLED" PAGINATOR - TOP *** -->
+<div
+        style="margin-left: 15px;"
+>
+    <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            class="my-smaller-button"
+            on-click="emitCallGetArticlesPaginated( 1, pageSize)"
+    >
+        First (1)
+    </button> |
+    <button
+            mat-raised-button
+            color="primary"
+            class="my-smaller-button"
+            type="button"
+            on-click="emitCallGetArticlesPaginated( (currentPageNumber - 1), pageSize)"
+            bind-disabled="currentPageNumber === 1"
+    >
+        << Prev
+    </button> |
+
+    <button
+            mat-raised-button
+            color="{{currentPageNumber === paginationButton.valueOf() ? 'accent' : 'primary'}}"
+            class="my-smaller-button"
+            type="button"
+            *ngFor="let paginationButton of paginationButtonsControlledArray"
+            on-click="emitCallGetArticlesPaginated(paginationButton.valueOf(), pageSize)"
+    >
+        {{ (paginationButton.valueOf() === currentPageNumber - RANGE_AROUND) ? '... ' : '' }} {{paginationButton.valueOf()}} {{ (paginationButton.valueOf() === currentPageNumber + RANGE_AROUND) ? ' ...' : '' }}
+    </button> |
+    <button
+            mat-raised-button
+            color="primary"
+            class="my-smaller-button"
+            type="button"
+            on-click="emitCallGetArticlesPaginated( (currentPageNumber + 1), pageSize)"
+            bind-disabled="currentPageNumber === lastPaginationNumber"
+    >
+        Next >>
+    </button> |
+    <button
+            mat-raised-button
+            color="primary"
+            class="my-smaller-button"
+            type="button"
+
+            on-click="emitCallGetArticlesPaginated(lastPaginationNumber, pageSize)"
+    >
+<!--
+on-click="emitCallGetArticlesPaginated(lastPaginationNumber, pageSize)"
+CHILD 01 - About to EMIT. page #:  1
+paginator.component.ts:144 CHILD 02 - About to EMIT. pagesize #:  20 << 20 ?
+
+
+This was hitting NaN  :o(
+(Fortunately "lastPaginationNumber" above did work.
+
+Having the formula to calculate 'lastPaginationNumber', rounded, out here
+in the template had worked okay when this was in the Parent Component ArticleListComponent.
+But it was failing to work here in Child Component PaginatorComponent.
+So I have resorted to using the calculation run in the TypeScript instead.
+ah well.
+
+            on-click="emitCallGetArticlesPaginated( (articlesCount % pageSize > 0) ? (MyJavaScriptMath.floor(articlesCount/pageSize + 1)) : (articlesCount/pageSize), pageSize)"
+-->
+        Last ({{lastPaginationNumber}})
+    </button> |
+    <!-- SUPERSEDED by configurable ScrollTopComponent! cheers.
+            <button
+                    mat-raised-button
+                    color="primary"
+                    on-click="myPaginatorScrollIntoViewToBottom()"
+                    class="my-smaller-button"
+                    type="button"
+            >
+                <mat-icon
+                        class="shrink-2x"
+                >arrow_circle_down</mat-icon>
+            </button>
+    -->
+    <span
+            *ngIf="topOrBottom === 'top'"
+    >
+        <app-scroll-top
+                scrollComponentPaginatorButtonTop="true"
+        ></app-scroll-top>
+    </span>
+    <span
+            *ngIf="topOrBottom === 'bottom'"
+    >
+        <app-scroll-top
+                scrollComponentPaginatorButtonBottom="true"
+        ></app-scroll-top>
+
+        <div
+                style="margin-top: 5px;"
+        > <!-- style="margin-left: 15px; margin-top: 5px;" -->
+
+        <!--   Well that shrink class kinda ok result, though
+             the default Angular Material sizing on the dropdown values
+             still remains large. o well. -->
+                <!-- Hmm, my "syntactic sugar" biz here not working for me.
+                        <mat-select
+                        NO:     bind-value="rangeAroundSelected"
+                        NO:     on-input="rangeAroundSelected = $event.target.value"
+                        NO:     on-change="rangeAroundSelected = $event.target.value"
+                        >
+                        YES: [(value)]="rangeAroundSelected"
+                        YES: [(ngModel)]="rangeAroundSelected"
+                -->
+        <mat-form-field>
+            <mat-label>Range Around</mat-label>
+            <mat-hint># Buttons to side of current page</mat-hint>
+            <mat-select
+                    [(value)]="rangeAroundSelected"
+                    on-valueChange="setRangeAround()"
+                    class="my-smaller-mat-select"
+            >
+                <mat-option
+                        *ngFor="let rangeAround of rangeAroundArray"
+                        bind-value="rangeAround"
+                >
+                    {{rangeAround}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <span>&nbsp;&nbsp;&nbsp;</span>
+
+        <mat-form-field>
+            <mat-label>Page Size</mat-label>
+            <mat-hint># Articles per Page</mat-hint>
+            <mat-select
+                    [(value)]="pageSizeSelected"
+                    on-valueChange="setPageSize()"
+                    class="my-smaller-mat-select"
+            >
+                <mat-option
+                        *ngFor="let thisPageSize of pageSizeArray"
+                        bind-value="thisPageSize"
+                >
+                    {{thisPageSize}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        </div>
+
+    </span> <!-- *ngIf="topOrBottom === 'bottom'" -->
+
+</div>
+
+
