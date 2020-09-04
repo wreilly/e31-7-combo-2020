@@ -118,7 +118,7 @@ These @Output EventEmitters emit from child component, listened to in parent com
     ) {  }
 
     ngOnInit() {
-        console.log('111! PAGINATOR ngOnInit()! topOrBottom? ', this.topOrBottom);
+        // console.log('111! PAGINATOR ngOnInit()! topOrBottom? ', this.topOrBottom);
         /* Yes
         top    or    bottom     << ok
         And, init run only once, upon visiting /articles/list    << good
@@ -196,9 +196,9 @@ These @Output EventEmitters emit from child component, listened to in parent com
 
 
     emitCallGetArticlesPaginated(page, pagesize) { // << TODONE rename to callGetArticlesPaginated() or emit or something - T.B.D.
-        console.log('CHILD 00 - About to EMIT. this.topOrBottom: ', this.topOrBottom);
-        console.log('CHILD 01 - About to EMIT. page #: ', page);
-        console.log('CHILD 02 - About to EMIT. pagesize #: ', pagesize);
+        // console.log('CHILD 00 - About to EMIT. this.topOrBottom: ', this.topOrBottom);
+        // console.log('CHILD 01 - About to EMIT. page #: ', page);
+        // console.log('CHILD 02 - About to EMIT. pagesize #: ', pagesize);
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         this.paginationGetNextPageArticlesEvent.emit({
             pageNumberOutput: page,
@@ -295,7 +295,7 @@ These @Output EventEmitters emit from child component, listened to in parent com
         whole round-trip, from Paginator(bottom), to Parent, back to
         Paginator(top).
         Ye gods.
-        TODO: RangeAround still not getting to "top". Hang on.
+        TODONE: RangeAround still not getting to "top". Hang on.
         (Odd. I thought it was, yesterday. Hmm.)
          */
         this.currentPageNumber = currentPageNumber; // passed-in
@@ -353,9 +353,9 @@ These @Output EventEmitters emit from child component, listened to in parent com
          */
 
         const firstPaginationNumber = 1; // of course
-        console.log('999 PAGINATOR this.lastPaginationNumber  pageSize ', this.lastPaginationNumber + ' pageSize: ' + pageSize);
+        // console.log('999 PAGINATOR this.lastPaginationNumber  pageSize ', this.lastPaginationNumber + ' pageSize: ' + pageSize);
         this.lastPaginationNumber = (articlesCount % pageSize > 0) ? (Math.floor(articlesCount / pageSize + 1)) : (articlesCount / pageSize);
-        console.log('999888 PAGINATOR this.lastPaginationNumber & articlesCount ', this.lastPaginationNumber + ' count: ' + articlesCount);
+        // console.log('999888 PAGINATOR this.lastPaginationNumber & articlesCount ', this.lastPaginationNumber + ' count: ' + articlesCount);
 
         // if ( currentPageNumber === 9 ) { // << Initial testing hard-coded; now removed :o)
         /* Sorry guys. switch / case no good for my
@@ -446,7 +446,7 @@ These @Output EventEmitters emit from child component, listened to in parent com
             );
         } else if ( currentPageNumber === this.lastPaginationNumber) {
             //  ***  ULTIMATE. LAST  ***
-            console.log('999888777PAGINATOR LAST this.lastPaginationNumber ', this.lastPaginationNumber); // Yes.
+            // console.log('999888777PAGINATOR LAST this.lastPaginationNumber ', this.lastPaginationNumber); // Yes.
             this.paginationButtonsControlledArray = Array.from(
                 {length: ((this.RANGE_AROUND) + 1)}, // e.g. 3, or 2
                 (myValue, myKey) => {
@@ -502,7 +502,7 @@ These @Output EventEmitters emit from child component, listened to in parent com
 
     setPageSize() {
         this.pageSize = this.pageSizeSelected;
-        console.log('999666 PAGINATOR this.pageSizeSelected ', this.pageSizeSelected); // Yes. e.g. 20
+        // console.log('999666 PAGINATOR this.pageSizeSelected ', this.pageSizeSelected); // Yes. e.g. 20
         // re-run getting Articles for this same page, to re-set the Paginator
 
         /* Bug

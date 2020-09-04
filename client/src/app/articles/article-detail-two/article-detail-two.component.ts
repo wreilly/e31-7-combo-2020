@@ -273,7 +273,17 @@ articleTitle: "Trump Must Turn Over Tax Returns to D.A., Judge Rules"
 articleUrl: "https://www.nytimes.com/2020/08/20/nyregion/donald-trump-taxes-cyrus-vanc
                              */
                             console.log('this.articleHereInDetailPage ', this.articleHereInDetailPage);
-                            /*
+                            /* Example with **NO CATEGORY** on BE/DB
+articlePhotos: Array(1)
+0: "["sometimes__1526384477707_15Mideast-Visual1-superJumbo-v3.jpg","sometimes__1526384477712_merlin_138129645_16f9c7c7-6c4d-44a0-83a2-d9cb8171d1ee-superJumbo.jpg","sometimes__1526384477721_merlin_138131967_f9da1d08-93e5-4061-9392-d9cb23c68454-superJumbo.jpg"]"
+length: 1
+__proto__: Array(0)
+articleTitle: "Contrasting NUGATORY 01234 Many Crazy Images: Violence in Gaza, Embassy Celebration in Jerusalem"
+articleUrl: "https://www.nytimes.com/2018/05/14/world/middleeast/gaza-jerusalem-embassy.html"
+__v: 0
+_id: "5afac7603fa7e949fa00a64e"
+                             */
+                            /* Example that Yeah Does Have Category.... (but no Photos, mind!) - another day
 {_id: "5f3bc1b45f54a09d485800ca",
 articleUrl: "https://www.nytimes.com/2020/08/17/opinion/trump-contested-election-protests.html",
 articleTitle: "Trump Might Cheat. Activists Are Getting Ready.",
@@ -282,15 +292,38 @@ __v: 0}
                              */
 
                             let categoryViewValueSuchAsItIsReturned: string;
-                            categoryViewValueSuchAsItIsReturned = this.myArticleService.getCategoryViewValue(articleIGot.articleCategory); // e.g. 'U.S.' or 'World'
+                            categoryViewValueSuchAsItIsReturned = this.myArticleService.getCategoryViewValue(articleIGot.articleCategory); // e.g. 'U.S.' or 'World'. Also handles **NO** Category
+                            console.log('WWW3 categoryViewValueSuchAsItIsReturned ', categoryViewValueSuchAsItIsReturned);
+                            /* Yes. When **NO CATEGORY** on BE:
+                            No Category (thx Service!)
+                             */
 
-
-/* TEST. Let's SKIP doing the "value-to-viewValue" biz here.
+/* I.  TEST. Let's SKIP doing the "value-to-viewValue" biz here.
 Leave it lowercased 'world', vs. 'World'. Okay? OKay.
 
                             this.articleHereInDetailPage.articleCategory = categoryViewValueSuchAsItIsReturned; // yes. okay. whamma-jamma one field  'Politics' viewValue OK
 */
+/* II.  MUCH LATER. Hey! No more "SKIPPING"!
+Time to do that minor transformation: Make the BE Category e.g. 'politics' become the FE Category e.g. 'Politics'
+ */
+                            let articleIGotWithFECategory: Article;
+                            articleIGotWithFECategory = this.myArticleService.myMapBEArticlesToFEArticles(articleIGot);
+                            console.log('WWW4 articleIGotWithFECategory ', articleIGotWithFECategory);
+                            /* Yes.
+                            articleCategory_name: "No Category (thx Service!)" // <<<<<<<<<<<<<<<<<
+articleId_name: "5af83649f2fffa14c4a22cd7"
+articleTitle_name: "What’s Less Edit URL We Be EdTNG MORE REACTIVELY Good for Pharma Isn’t Good for America (Wonkish)"
+articleUrl_name: "https://www.nytimes.com/2020/08/15/us/covid-college-tuition.
+                             */
 
+                            /* Oi!
+                            Finally fix this damned bug.
+                            When **NO** Category, get that default value
+                            to say so (lines above), and then,
+                            here (below), STICK IT ONTO
+                            our "articleHereInDetailPage" fer chrissake
+                             */
+                            this.articleHereInDetailPage.articleCategory = articleIGotWithFECategory.articleCategory_name;
 
 
                             this.myStore.dispatch(new UIActions.TellingYouMyId(
@@ -343,17 +376,29 @@ Leave it lowercased 'world', vs. 'World'. Okay? OKay.
 
                             // console.log('XXXYYYCategory-111-AFTER this.editArticleFormGroup.controls[\'articleCategory_formControlName\'] ', this.editArticleFormGroup.controls['articleCategory_formControlName']);
 
-// WORKS TOO. EQUALLY LOVELY.
+                            /* LATEST. GREATEST. 2020-09-02
+
+                             */
                             this.editArticleFormGroup.patchValue({
                                 articleTitle_formControlName: this.articleHereInDetailPage.articleTitle,
                                 articleUrl_formControlName: this.articleHereInDetailPage.articleUrl,
 
+                                articleCategory_formControlName: articleIGotWithFECategory.articleCategory_name, // 'Politics'
+                            });
+
+// WORKS TOO. EQUALLY LOVELY.
+/*                            this.editArticleFormGroup.patchValue({
+                                articleTitle_formControlName: this.articleHereInDetailPage.articleTitle,
+                                articleUrl_formControlName: this.articleHereInDetailPage.articleUrl,
+
                                 articleCategory_formControlName: this.articleHereInDetailPage.articleCategory, // 'politics'
+                            });*/
 /* WORKS TOO. LOVELY.
                                 articleTitle_formControlName: articleIGot.articleTitle,
                                 articleUrl_formControlName: articleIGot.articleUrl,
 
                                 articleCategory_formControlName: articleIGot.articleCategory, // 'politics'
+                                 });
 */
 
 /* SEEMINGLY N-O-T. Harrumph. ??
@@ -364,8 +409,9 @@ Just leave as simple string value, for the BE stored version: 'world' or 'politi
                                     value: articleIGot.articleCategory, // 'politics'
                                     viewValue: this.articleHereInDetailPage.articleCategory // 'Politics'
                                 }
+                                 });
 */
-                            });
+
 /* **  LITTLE EXPERIMENT ZONE.  **
 We do not use the line below that YES does WORK,
 because we already took care of this data value (for Category, on the Form)
@@ -400,9 +446,11 @@ cheers.
 
 
                             /* *** These 3 Lines Don't Do Anything. Cheers. *** */
+/*
                             let localCategoryToBeSelected: Category;
                             localCategoryToBeSelected = this.localGiveMeFullCategoryObject(categoryViewValueSuchAsItIsReturned);
                             console.log('localCategoryToBeSelected ', localCategoryToBeSelected);
+*/
                             /* *** /These 3 Lines Don't Do Anything. Cheers. *** */
 
                             /* ***********************************
@@ -1091,9 +1139,11 @@ We *DO* still need to convert the Category DB-stored 'value'
                             /* Oh boy.
                             https://stackoverflow.com/questions/39105905/angular-2-bind-object-to-dropdown-and-select-value-based-on-an-event
                              */
+/* THESE 3 LINES DON'T DO ANYTHING.
                             let localCategoryToBeSelected: Category;
                             localCategoryToBeSelected = this.localGiveMeFullCategoryObject(categorySuchAsItIsReturned);
                             console.log('localCategoryToBeSelected ', localCategoryToBeSelected);
+*/
                             /* YES.
                                {value: "living", viewValue: "Living"}
                              */

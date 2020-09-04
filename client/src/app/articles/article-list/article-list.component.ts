@@ -281,8 +281,8 @@ private myNgZone: NgZone,
                      articlesPaginatedFromServer: [],
                      maxArticlesFromServer: number,
                  }
-                 // allArticlesWeGot: any // << Yes.
-/* Yes.
+                 // allArticlesWeGot: any // << Yes. this typing
+/* Yes.  this typing
                      allArticlesWeGot: {
                          articlesPaginatedFromServer: [],
                          maxArticlesFromServer: number,
@@ -301,7 +301,7 @@ private myNgZone: NgZone,
                         maxArticlesFromServer: dataWeGotFromServer.maxArticles,
                     }
                      */
-                    console.log('Paginated. allArticlesWeGot {} ', allArticlesWeGot);
+                    // console.log('Paginated. allArticlesWeGot {} ', allArticlesWeGot);
                     /* Yes.
                       {
                           articlesPaginatedFromServer: Array(5),
@@ -324,17 +324,29 @@ private myNgZone: NgZone,
                     For "rangeAround" value change, Not Needed to update the Parent!
                     So that was working FINE. << Hmm, found another nicens little bug regarding RangeAround. In midst of fixing, j'espere.
                     Okay - the updating of RangeAround does not
-                    take place here. Here we update pageSize etc.,
+                    take place here. Here we update pageSize,
                     in the middle of fetching Articles - appropriate.
-                    Each fetch depends on page # and pageSize. Ok.
+                    Each fetch depends on pageSize (and page #). Ok.
                     But RangeAround is not changed w. every fetch.
-                    RangeAround only needs updating on explicit click
-                    of "change the range around"
+                    RangeAround only needs updating on explicit user click
+                    to "change the range around"
                     See other method:
                     updateRangeAroundToTopPaginator()
                      */
                     this.pageSize = pagesize; // "pagesize passed-in", from Child to Parent
 
+                    this.articles = allArticlesWeGot.articlesPaginatedFromServer.map(
+                        this.myArticleService.myMapBEArticlesToFEArticles
+                    );
+                    /* Refactored to Service.
+                    Two Components now can use: this ArticleList, and also ArticleDetailTwo.
+
+                    Simple tip on "Naming callback functions" helped me get syntax for refactoring here:
+                    https://levelup.gitconnected.com/javascript-refactoring-tips-making-functions-clearer-and-cleaner-c568c299cbb2
+                     */
+
+/* Now this is over in Service, as named (callback) function: myMapBEArticlesToFEArticles()
+cheers.
                     this.articles = allArticlesWeGot.articlesPaginatedFromServer.map(
                         (eachPseudoArticleFromApi: {
                             _id: string,
@@ -345,17 +357,17 @@ private myNgZone: NgZone,
 
                             let eachRealArticleToReturn: Article;
 
-                            /* CATEGORY FIXER
+                            /!* CATEGORY FIXER
       Go get 'viewValue' for the (stored) 'value'
       returned from the DB.
       e.g. 'u.s.' as value will return 'U.S.' as viewValue
-       */
+       *!/
                             let categoryViewValueSuchAsItIsReturned: string;
 
                             categoryViewValueSuchAsItIsReturned = this.myArticleService.getCategoryViewValue(eachPseudoArticleFromApi.articleCategory);
-                            /*
+                            /!*
                             Returns 'viewValue' e.g. 'No Category "viewValue" (thx Service!)' --OR-- category viewValue
-                             */
+                             *!/
 
                             eachRealArticleToReturn = {
                                 articleId_name: eachPseudoArticleFromApi._id,
@@ -367,6 +379,7 @@ private myNgZone: NgZone,
                             return eachRealArticleToReturn;
                         }
                     ) // /allArticlesWeGot.map()
+*/
 
                     this.articlesToDisplay = this.articles; // whamma-jamma the "pagesize" # of them on, to begin
 
@@ -388,10 +401,10 @@ private myNgZone: NgZone,
 
                      */
 
-                    console.log('PARENT. 01 - getArticlesPaginate(). About to call this.generateArticlesControlledPaginator() this.currentPageNumber ', this.currentPageNumber);
+                    // console.log('PARENT. 01 - getArticlesPaginate(). About to call this.generateArticlesControlledPaginator() this.currentPageNumber ', this.currentPageNumber);
                     this.generateArticlesControlledPaginator(this.currentPageNumber, this.pageSize, this.articlesCount);
 
-                    console.log('999444 PARENT. 01 - getArticlesPaginate(). About to call this.updateRedrawArticlesControlledPaginator() this.pageSize ', this.pageSize);
+                    // console.log('999444 PARENT. 01 - getArticlesPaginate(). About to call this.updateRedrawArticlesControlledPaginator() this.pageSize ', this.pageSize);
                     /*
                     This is called on every click from Paginator.
                      */
@@ -548,7 +561,7 @@ currentPageNumber = 1.  Should avoid that BUG. j'espere.
 */
 
     updateRedrawArticlesControlledPaginator(currentPageNumber, pageSize, articlesCount) {
-        console.log('999333 PARENT. 01 - updateRedrawArticlesControlledPaginator() pageSize passed-in ', pageSize);
+        // console.log('999333 PARENT. 01 - updateRedrawArticlesControlledPaginator() pageSize passed-in ', pageSize);
         /*
 INITIAL TIME:
 currentPageNumber: 1 default
@@ -576,7 +589,7 @@ articlesCount: dynamic (collection size) (changes infrequently)
     generateArticlesControlledPaginator(currentPageNumber, pageSize, articlesCount) {
 
 
-        console.log('PARENT. 02 - this.generateArticlesControlledPaginator() (local) currentPageNumber pageSize ', currentPageNumber + ' ' + pageSize);
+        // console.log('PARENT. 02 - this.generateArticlesControlledPaginator() (local) currentPageNumber pageSize ', currentPageNumber + ' ' + pageSize);
 
         /*
                 this.paginationButtonsControlledArray = Array.from(
@@ -630,9 +643,9 @@ articlesCount: dynamic (collection size) (changes infrequently)
 
         const firstPaginationNumber = 1; // of course
 
-        console.log('999 ARTICLELIST this.lastPaginationNumber   pageSize ', this.lastPaginationNumber + ' pageSize: ' + pageSize);
+        // console.log('999 ARTICLELIST this.lastPaginationNumber   pageSize ', this.lastPaginationNumber + ' pageSize: ' + pageSize);
         this.lastPaginationNumber = (articlesCount % pageSize > 0) ? (Math.floor(articlesCount / pageSize + 1)) : (articlesCount / pageSize);
-        console.log('999888 ARTICLELIST this.lastPaginationNumber & articlesCount ', this.lastPaginationNumber + ' count: ' + articlesCount);
+        // console.log('999888 ARTICLELIST this.lastPaginationNumber & articlesCount ', this.lastPaginationNumber + ' count: ' + articlesCount);
 
         // if ( currentPageNumber === 9 ) { // << Initial testing hard-coded; now removed :o)
         /* Sorry guys. switch / case no good for my
@@ -723,7 +736,7 @@ articlesCount: dynamic (collection size) (changes infrequently)
             );
         } else if ( currentPageNumber === this.lastPaginationNumber) {
             //  ***  ULTIMATE. LAST  ***
-            console.log('999888777ARTICLE LAST this.lastPaginationNumber ', this.lastPaginationNumber); // Yes.
+            // console.log('999888777ARTICLE LAST this.lastPaginationNumber ', this.lastPaginationNumber); // Yes.
             this.paginationButtonsControlledArray = Array.from(
                 {length: ((this.RANGE_AROUND) + 1)}, // e.g. 3, or 2
                 (myValue, myKey) => {

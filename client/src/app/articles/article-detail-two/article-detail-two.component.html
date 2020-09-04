@@ -55,7 +55,15 @@ Yes:            5b01e393b810e02daf607239/edit
             <div>
                 <a href="{{ articleHereInDetailPage.articleUrl }}" target="_blank">{{ articleHereInDetailPage.articleUrl }}</a>
             </div>
-            <div>News Category: {{ selectedCategoryToEdit.viewValue }}</div>
+            <div>News Category: {{ articleHereInDetailPage.articleCategory }}
+<!--                <div>News Category: w-i-p {{ selectedCategoryToEdit.viewValue }}-->
+                <!-- Would appear this was a poor choice of data source for interpolating the
+                Category and its ".viewValue" ("selectedCategoryToEdit").
+                Let's improve on that. Let's go with the "articleHereInDetailPage", once we do
+                update it with the proper Category ".value" (?) and ".viewValue" for the
+                scenario when the BE Article has **NO** Category property.
+                WUL.
+                TODO get viewValue to appear here in DISPLAY part. {{ selectedCategoryToEdit.viewValue }} --> </div>
 
             <p class="tiny">
                 Article added: {{ myFormattedStringDateFromObjectId(articleHereInDetailPage._id) }}

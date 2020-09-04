@@ -4,9 +4,11 @@ export interface Article {
     articleUrl_name: string;
     articleCategory_name: string;
 }
-/*
-- Sending to BE and DB: 'value'
-- Here on FE for display: 'viewValue'
+/* re: CATEGORY
+1. A Category type is an Object {} with *two* properties (see below): 'value', and 'viewValue'. e.g. 'politics' and 'Politics'
+2. But the "articleCategory_name" on an Article type is a string: just *one* property.
+- Sending to BE and DB: Category 'value' is stored on BE. ('politics')
+- Here on FE for display: Category 'viewValue' is the string that goes into the Article type's articleCategory_name.
 That is, here on FE we really want the 'viewValue', not the 'value'.
 'U.S.' not 'u.s.'
  */

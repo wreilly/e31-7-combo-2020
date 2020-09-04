@@ -157,7 +157,7 @@ _id: "5f1364e304e544a462218215"
 /*
     listArticlesPaginated(page, pagesize): Observable<Object> {
 */
-        // GET "pagesize" # of Articles. TODO: HARD-CODED so far: 1, 5
+        // GET "pagesize" # of Articles. TODONE: HARD-CODED so far: 1, 5
 
         // YES. DON'T FORGET THAT BLOODY 'return' !!! !!! !!!
         return this.myHttp.get<{message: string, articlesPaginated: any, maxArticles: number}>(
@@ -173,6 +173,10 @@ _id: "5f1364e304e544a462218215"
    paginatedArticles: Array(5),
    maxArticles: 99
 }
+So:
+- Here in the Client Service, we get 3 properties returned to us from Server to Client (just above).
+- But then we return only 2 of those properties back to the calling Client Component (just below).
+cheers.
  */
                     return {
                         articlesPaginatedFromServer: dataWeGotFromServer.articlesPaginated,
@@ -188,7 +192,7 @@ _id: "5f1364e304e544a462218215"
     return this.myHttp.get(
         `http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`
     );
-  }
+  } // /getArticle()
 
   getArticleMostRecent() {
     return this.myHttp.get(
@@ -213,10 +217,70 @@ July 14th P.M. from noon to midnight
 
 
     getCategoriesInService() {
+        // console.log('WWW1 this.getCategoriesInService() this:,  ',  this );
+        /* Yes.
+        ArticleService {myHttp: HttpClient, myStore: Store, categoriesInService: Array(8)}
+
+        Hmm, not clear to me why "this" works okay in this method,  -- getCategoriesInService
+        but not in method below (requires .bind(), or => function). -- myMapBEArticlesToFEArticles
+        Hmm. o well.
+         */
+
         return this.categoriesInService;
     }
 
-    categoryThatMatches: Category; // declare here?
+    /*     {}.bind(this) (encore une fois) to the rescue ( ! ) :o)
+    * N.B. Needs --- myFuncName = function () {}.bind(this)
+    * (Alternative of course was good old fat arrow instead...) -- chose not to use. cheers. */
+    myMapBEArticlesToFEArticles = function (
+        eachPseudoArticleFromApi: {
+            _id: string,
+            articleTitle: string,
+            articleUrl: string,
+            articleCategory: string,
+        }
+    ) {
+        // this.articles = allArticlesWeGot.articlesPaginatedFromServer.map(
+        //     () => {
+        // console.log('WWW2 this.myMapBEArticlesToFEArticles() this:,  ',  this );
+        /* No. (until I did .bind() fix)
+        undefined
+
+        Now YES
+        ArticleService {myHttp: HttpClient, myStore: Store, categoriesInService: Array(8)}
+         */
+
+        let eachRealArticleToReturn: Article;
+
+                /* CATEGORY FIXER
+Go get 'viewValue' for the (stored) 'value'
+returned from the DB.
+e.g. 'u.s.' as value will return 'U.S.' as viewValue
+*/
+        let categoryViewValueSuchAsItIsReturned: string;
+
+        categoryViewValueSuchAsItIsReturned = this.getCategoryViewValue(eachPseudoArticleFromApi.articleCategory);
+        // categoryViewValueSuchAsItIsReturned = this.myArticleService.getCategoryViewValue(eachPseudoArticleFromApi.articleCategory);
+                /* N.B. This used to be over in a Component that had to reach back to this Service to invoke.
+                Now it is simply within the same Service. fwiw.
+
+                Returns 'viewValue' e.g. 'No Category (thx Service!)' --OR-- category viewValue
+                 */
+
+                eachRealArticleToReturn = {
+                    articleId_name: eachPseudoArticleFromApi._id,
+                    articleTitle_name: eachPseudoArticleFromApi.articleTitle,
+                    articleUrl_name: eachPseudoArticleFromApi.articleUrl,
+                    articleCategory_name: categoryViewValueSuchAsItIsReturned,
+                }
+
+                return eachRealArticleToReturn;
+            // }
+        // ) // /allArticlesWeGot.map()
+
+    }.bind(this) // /myMapBEArticlesToFEArticles()
+
+    categoryThatMatches: Category; // Q. declare here ok?  A. works, but, << really should be up at top of class
 
     getCategoryViewValue(storedCategoryValue: string): string {
         // console.log('PASSED IN storedCategoryValue ', storedCategoryValue); // e.g. living (lowercase, BE value)
@@ -225,28 +289,30 @@ July 14th P.M. from noon to midnight
          */
 
         let categoryViewValueNoCategory: boolean;
+        let categoryViewValueNoMatchUnexpectedValue: boolean;
         // let categoryThatMatches: Category; // see above...
         const NO_CATEGORY = 'No Category (thx Service!)';
         let categorySuchAsItIsToReturn: string;
+
+        let categoryThatMatchesArrayElementIndex: number;
+        /*
+        We do .findIndex() instead of .find()
+        Returns the Array Element Index.
+        If
+         */
 
         this.categoryThatMatches = {
             value: 'no value',
             viewValue: 'no viewValue'
         };
 
-        this.categoryThatMatches = this.categoriesInService.find(
+        // this.categoryThatMatches
+        categoryThatMatchesArrayElementIndex = this.categoriesInService.findIndex(
             (eachCategoryPair: Category) => {
                 if (typeof storedCategoryValue === "undefined") {
                     categoryViewValueNoCategory = true;
                 } else {
-                    // we DO have a Category on the Article
-
-/* DONE with the temporary hard-coded madness. I think.
-                    if (storedCategoryValue === 'politics') {
-                        // my temporary hard-coded madness
-                        storedCategoryValue = 'Politics';
-                    }
-*/
+                    // we DO have *SOMETHING* (a Category?) on this "BE Article"....
 
                     // now let's see if it matches the current entry from the array of possible Categories:
                     if (storedCategoryValue === eachCategoryPair.value) {
@@ -258,16 +324,39 @@ July 14th P.M. from noon to midnight
                         cheers.
                          */
                     } else {
-                        // my temporary value: 'Politics' for what should be 'politics'
-                        // console.log('eachCategoryPair.value Politics ? ', eachCategoryPair.value);
-                        // return true; // ?
-                    }
-                }
+                        // Not "the answer" (yet)
+                       // console.log('getCategoryViewValue. ERROR! Value from BE for "Category" is: 1) NOT undefined, and 2) NOT a match on anything in our list of Categories. What the Sam Hay is it? W-a-a-l, it is: storedCategoryValue: ', storedCategoryValue );
+                        /* e.g. TODONE we ain't done yet. gotta go shave. done the shave, too.
+                         No Category (thx Service!)
+                         */
+                    } // /} else {
+                } // /else {
             }
         ); // /.find()
 
+        /* BUG Fixing.
+It IS possible that dirty data get in. (Solly!)
+Need to defend against.
+If *NO* entry from "categoriesInService" matched (just above),
+And if the data value here-in was *NOT* "undefined" (further above),
+Then here in this "else {}" we need to
+report the issue, throw Error, whatever.
+cheers.
+ */
+        /* How BUG Occurred/Discovered
+        "I was able to create (by editing) (uh-oh) one Article in the database that got a
+NON-PERMISSIBLE value for articleCategory: "No Category (thx Service!)"
+That is supposed to be just a FE Display string, but
+it got saved back to the database. sigh."
+         */
+
+        console.log('categoryThatMatchesArrayElementIndex ', categoryThatMatchesArrayElementIndex);
+
         if (categoryViewValueNoCategory) {
             categorySuchAsItIsToReturn = NO_CATEGORY;
+        } else if (categoryThatMatchesArrayElementIndex === -1) {
+            // Not Found is -1, yes ? << Yes, that's right.
+            categorySuchAsItIsToReturn = 'NO_CORRECT_CATEGORY';
         } else {
             categorySuchAsItIsToReturn = this.categoryThatMatches.viewValue;
         }
