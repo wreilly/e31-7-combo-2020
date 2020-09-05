@@ -3,9 +3,19 @@ import {Component, EventEmitter, OnInit, Output, OnDestroy, forwardRef} from '@a
 // ****   FORM for EDIT MODE  **********
 import { FormGroup, FormControl, Validators, FormGroupDirective, NgForm, SelectControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-import { ErrorStateMatcher } from '@angular/material/core';
+import { ErrorStateMatcher } from '@angular/material/core'; // << turns out we'll make use of. see note below
 // Interesting. Above not needed; we get it from ArticleAddComponent instead as "My"...
 import { MyErrorStateMatcher } from '../article-add/article-add.component';
+/* FURTHER NOTE on ErrorStateMatcher
+For EDITING (not during "Create") the CATEGORY <mat-select>, here in ArticleDetailTwoComponent,
+we have SPECIAL NEED for a custom ErrorStateMatcher.
+It has function to ensure the value is indeed one of the <mat-option>s.
+Why?
+Because we have/can-have older, existing, dirty data: NO category; WRONG VALUE in Category
+
+So for that reason we WILL make use of the import from Angular Core, to
+make a custom ErrorStateMatcher class right within this TypeScript file. See below
+ */
 // ****   /FORM for EDIT MODE  **********
 
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,6 +34,214 @@ import * as fromRoot from '../../store/app.reducer'; // But we do not need/do .s
 // cheers
 
 import { DateService } from '../../core/services/date.service';
+
+
+class myCustomCategorySelectErrorStateMatcher implements ErrorStateMatcher {
+
+    /* WORKING ASSUMPTION
+    Any one form field can have one, & only one, ErrorStateMatcher.
+
+    Therefore, this custom matcher must do two checks:
+    1. special custom check re: categories...
+    2. usual checks re: dirty, valid etc.
+
+    That is, no, I don't believe I can lay on two ErrorStateMatchers,
+    one to do the usual, and the custom one then made "skinnier"
+    because that custom one would only be handling the custom biz.
+    No.
+
+    So, my custom matcher here does repeat (Non-D.R.Y.) bit of code.
+    No biggie.
+     */
+
+
+    constructor(
+       private myArticleService: ArticleService,
+    ) { }
+
+
+    categoriesHereInMatcher = this.myArticleService.getCategoriesInService();
+
+    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+
+        // console.log('Custom Error Matcher! this.categoriesHereInMatcher ', this.categoriesHereInMatcher);
+        // Yes, all 8 Categories. bueno
+        /*
+        0: {value: "news", viewValue: "News"}
+1: {value: "world", viewValue: "World"} ...
+         */
+
+        let categoryFoundAmongOptions: Category;
+        // let categoryIsAmongOptionsOK = true; // init
+        let categoryIsAmongOptionsOK = false; // init ORIG
+
+        categoryFoundAmongOptions = this.categoriesHereInMatcher.find(
+            (eachCategory) => {
+
+                console.log('777A eachCategory ', eachCategory);
+                /* Yeah:
+                     {value: "world", viewValue: "World"}
+
+Okay, so the the "predicate" handed in to the Array.find()
+method (which I've named "eachCategory")
+is the entire Category object (above) ... Good.
+ */
+
+                console.log('777 control.value ', control.value); // 'U.S.' <<< HMM! SHOULDN'T THIS BE 'u.s.'??? << I have corrected this.
+                /*
+                Corrected above over in ArticleService in the
+                "myMapBEArticlesToFEArticles()"
+                where I now *preserve* the BE _value_ for Category
+                e.g. 'politics'
+
+                Note however:
+                1. - Normal. BE Category is one of the options. OK. 'u.s.'
+                2. - Empty. BE Category is simply NOT a Property at all on BE. OK.
+                3. - Dis-Allowed Value. BE Category is some string like "No Category etc.", or "foobar". Hmmph.
+                 */
+                /*
+                ...whereas the "control.value" turns out
+                to be:
+                 - NOT that entire Category object
+                 - Instead, just the "view value" in the
+                control.  That is, the part the user sees in the
+                U/I for this select form field, e.g. 'World'
+                (even though behind the scenes the select options
+                are populated from an array of Category objects
+                including {value: 'world', viewValue: 'World') )
+                 */
+                // console.log('777B control.status ? ', control.status); // VALID
+
+
+/* I had it wrong:
+                return control.value === eachCategory;
+*/
+/* I had it wrong again:
+                return control.value === eachCategory.viewValue;
+*/
+                return control.value === eachCategory.value;
+            }
+        ) // /.find()
+
+        console.log('categoryFoundAmongOptions straight-up ', categoryFoundAmongOptions);
+        // undefined  when not found because Empty/Not Present = correct
+        // undefined  when not found because Dis-Allowed Value = correct
+        /* When found: yes:
+        {value: "politics", viewValue: "Politics"}
+         */
+
+        if (categoryFoundAmongOptions) {  // << truthy. Not 'undefined'
+            console.log('categoryFoundAmongOptions truthy seems! ', categoryFoundAmongOptions); // {value: "politics", viewValue: "Politics"}
+            // categoryIsAmongOptionsOK = false;
+            categoryIsAmongOptionsOK = true; // ORIG
+        } else if (typeof categoryFoundAmongOptions === 'undefined') {
+
+            /*
+            Hmm. This "update validity" thing does, er, ah, what it says.
+            It (re-)runs validity biz, and if you're valid, you're valid.
+            But I am here to say I wish to MARK THIS INVALID. o well.
+            That is, I wanted to "set/change validity".
+            Guess that's an anti-pattern, hey?
+             */
+/* Not doing anything for me. Don't need to run. cheers.
+            control.updateValueAndValidity({
+
+            });
+*/
+            /*
+            updateValueAndValidity(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+
+            https://angular.io/api/forms/AbstractControl#updatevalueandvalidity
+            https://stackoverflow.com/questions/42197806/what-is-updatevalueandvalidity
+             */
+
+
+            console.log('000a ******************');
+            // console.log('control.touched ', control.touched); // false
+            // control.markAsTouched({ onlySelf: true });
+            // control.markAsDirty({ onlySelf: true });
+
+            /* Heavy Hammer Time
+            Above "marking" biz did NOTHING to get this Control
+            to INVALID. Sheesh.
+            Time to WHACK the data, if it is Dis-Allowed, people!
+             */
+            /* btw...
+            The bit of MongoDB shell to run, to insert the BAD DATA:
+            MongoDB Enterprise > db.newarticles.updateOne({_id: ObjectId('5af83649f2fffa14c4a22cd7')},{ $set: {articleCategory: 'Dis-Allowed AGAIN Category Text inserted at database'}})
+             */
+            control.setValue(null, { onlySelf: false });
+            /*
+            Why is onlySelf: false, not true?
+            Because with true, the control (Self) got to invalid (good), but the ancestor (form) did not (bad).
+            With false, you get Self and ancestor to invalid (what we want).
+            MBU.
+             */
+            // Q. Empty string '' enough? A. Yeah, we get to control.valid is false. and form.valid false too. who knew.
+            // Q. Or null needed. Sheesh. A. Well, think I'll stick w. null y not.
+
+            console.log('control.touched ', control.touched); // false
+            console.log('control.dirty ', control.dirty); // false
+            console.log('000b ******************');
+
+            /* Category Control
+            If I get here, the category value is either:
+            - undefined because it was empty
+            - undefined because it is spurious/wrong data, not allowed value
+
+            Either way, looking to Invalidate the Control, hence the Form!
+            Here's hoping "touch" does the trick. << NOPE
+            Had to WHACK the data. See above.
+            WUL.
+             */
+        }
+
+        // **************
+        console.log('******************');
+        console.log('categoryFoundAmongOptions ', categoryFoundAmongOptions); // {value: "politics", viewValue: "Politics"}
+        console.log('form.valid ', form.valid); // true
+        console.log('control.valid ', control.valid); // true
+        console.log('control.value ', control.value); // Politics
+        /* <<<<< Shouldn't this be politics ???
+        I corrected that. Now does read politics.
+       See ArticleService myMapBEArticlesToFEArticles()
+         */
+
+        console.log('categoryIsAmongOptionsOK ', categoryIsAmongOptionsOK); // true
+        console.log('control ', control);
+        /*
+        FormControl {asyncValidator: null, pristine: true, ...
+         */
+        console.log('control.invalid ', control.invalid); // false
+        console.log('control.dirty ', control.dirty); // false
+        console.log('control.touched ', control.touched); // false
+        console.log('******************');
+        // **************
+
+
+        // return !!(categoryIsAmongOptionsOK);
+        /* OLDER NOTE: Below - not working
+        I am finding that setting my Boolean to false ain't cutting it.
+        >> categoryIsAmongOptionsOK <<
+        This is not causing the formControl and the form to be invalid,
+        like I want it to.
+        Fix: Explicitly mark the formControl as ".invalid" in code above.
+        Hah! easier said than done, seems. oi.
+         */
+        /* NEWER NOTE: Below is working.
+        I am now finding that both work (hmm).
+        With or without 'categoryIsAmongOptionsOK' it works.
+        Would appear that my heavy-handed "Hammer Time"
+        to WHACK the data, had well invalidated
+        the control and form and that is all that's needed.
+        Don't really need mu custom boolean flag ("...AmongOptionsOK"). But, okay to leave it in what the hell.
+        o la.
+         */
+        return !!(categoryIsAmongOptionsOK && control && control.invalid && (control.dirty || control.touched));
+        // return !!(control && control.invalid && (control.dirty || control.touched)); // << don't "test" for "amongOptionsOK" ... wasn't working.
+
+    } // /isErrorState()
+} // /myCustomCategorySelectErrorStateMatcher {}
 
 @Component({
     selector: 'app-article-detail-two',
@@ -110,6 +328,7 @@ export class ArticleDetailTwoComponent implements OnInit, OnDestroy, ControlValu
     articleCategory_formControl: FormControl;
 
     myOwnErrorStateMatcher: MyErrorStateMatcher; // << imported ! very nice.
+    myOwnCustomCategorySelectErrorStateMatcher: myCustomCategorySelectErrorStateMatcher;
 
     public categories: Category[]; // << from ArticleService now. :o)
 
@@ -228,6 +447,7 @@ articleUrl_formControlName: "https://www.nytimes.com/2020/08/20/nyregion/donald-
          */
 
         this.myOwnErrorStateMatcher = new MyErrorStateMatcher(); // << imported.
+        this.myOwnCustomCategorySelectErrorStateMatcher = new myCustomCategorySelectErrorStateMatcher(this.myArticleService);
 
         // TODO this.myUIIsLoadingStore$ = this.myStore.select(fromRoot.getIsLoading);
 
@@ -376,30 +596,44 @@ articleUrl_name: "https://www.nytimes.com/2020/08/15/us/covid-college-tuition.
 
                             // console.log('XXXYYYCategory-111-AFTER this.editArticleFormGroup.controls[\'articleCategory_formControlName\'] ', this.editArticleFormGroup.controls['articleCategory_formControlName']);
 
-                            /* LATEST. GREATEST. 2020-09-02
+                            /* NO. FAILS. 2020-09-04 >>  LATEST. GREATEST. 2020-09-02
+Interesting.
+This introduced a BUG.
+To assign the ***FE*** version of the Category (e.g. 'Politics') to the
+form control's value, is Not Right.
+- It does not show as "display" upon shifting to Edit mode
+- It does not match any <mat-option> value for the CompareWith function
+Boo-hoo.
 
-                             */
+Fix: Go back to other .patchValue() below that assigns the ***BE*** version of Category
+(e.g. 'politics")
+
                             this.editArticleFormGroup.patchValue({
                                 articleTitle_formControlName: this.articleHereInDetailPage.articleTitle,
                                 articleUrl_formControlName: this.articleHereInDetailPage.articleUrl,
 
-                                articleCategory_formControlName: articleIGotWithFECategory.articleCategory_name, // 'Politics'
+                                articleCategory_formControlName: articleIGotWithFECategory.articleCategory_name, // 'Politics' <<<<<<<<<<<< NOPE
                             });
 
+***** NAH ^^^^^^^^ didn't work!
+*/
+
 // WORKS TOO. EQUALLY LOVELY.
-/*                            this.editArticleFormGroup.patchValue({
+/*
+                            this.editArticleFormGroup.patchValue({
                                 articleTitle_formControlName: this.articleHereInDetailPage.articleTitle,
                                 articleUrl_formControlName: this.articleHereInDetailPage.articleUrl,
 
-                                articleCategory_formControlName: this.articleHereInDetailPage.articleCategory, // 'politics'
+                                articleCategory_formControlName: this.articleHereInDetailPage.articleCategory, // 'politics' << NO. Now it is 'Politics' sigh
                             });*/
-/* WORKS TOO. LOVELY.
-                                articleTitle_formControlName: articleIGot.articleTitle,
+/* WORKS TOO. LOVELY.*/
+                            this.editArticleFormGroup.patchValue({
+                                articleTitle_formControlName: articleIGot.articleTitle, // 'DEFAULT TITLE HEY?',
                                 articleUrl_formControlName: articleIGot.articleUrl,
 
-                                articleCategory_formControlName: articleIGot.articleCategory, // 'politics'
+                                articleCategory_formControlName: articleIGot.articleCategory, // 'politics' << NO. Now it is 'Politics' sigh ?
                                  });
-*/
+
 
 /* SEEMINGLY N-O-T. Harrumph. ??
 Nah. Below - Don't create a Category object here, to store on that FormControl.
@@ -505,9 +739,18 @@ cheers.
     myCompareOptionCategoryValues(optionCategory1: any, optionCategory2: any): boolean {
         // myCompareOptionCategoryValuesTERNARYTHISWORKS
         // myCompareOptionCategoryValuesORIGINALTERNARY
-        // console.log('COMPARE 1 ', optionCategory1); // news
-        // console.log('COMPARE 1.value ', optionCategory1.value); // undefined
-        // console.log('COMPARE 2 ', optionCategory1);
+        console.log('COMPARE 1 optionCategory1 ', optionCategory1); // u.s., or news etc.   BE value
+        console.log('COMPARE 1.value optionCategory1.value ', optionCategory1.value); // undefined
+        console.log('COMPARE 2 optionCategory2 ', optionCategory2);
+        /*
+        U.S. <<<<< HMM! SHOULDN'T THIS BE 'u.s.' ???
+
+        Hmm. Why (the hell) is it 'U.S.'
+        the viewValue, and not 'u.s.'
+        the value
+        ???
+         */
+
         return optionCategory1 && optionCategory2 ? optionCategory1 === optionCategory2 : optionCategory1 === optionCategory2;
 /*
         return optionCategory1 && optionCategory2 ? optionCategory1.viewValue === optionCategory2.viewValue : optionCategory1 === optionCategory2;

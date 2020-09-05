@@ -63,7 +63,7 @@ Yes:            5b01e393b810e02daf607239/edit
                 update it with the proper Category ".value" (?) and ".viewValue" for the
                 scenario when the BE Article has **NO** Category property.
                 WUL.
-                TODO get viewValue to appear here in DISPLAY part. {{ selectedCategoryToEdit.viewValue }} --> </div>
+                TODONE get viewValue to appear here in DISPLAY part. {{ selectedCategoryToEdit.viewValue }} --> </div>
 
             <p class="tiny">
                 Article added: {{ myFormattedStringDateFromObjectId(articleHereInDetailPage._id) }}
@@ -189,8 +189,9 @@ Thu Aug 20 2020 18:14:22 GMT-0400 (Eastern Daylight Time) // << FULL
                     <mat-select
                             formControlName="articleCategory_formControlName"
                             bind-compareWith="myCompareOptionCategoryValues"
-                            [errorStateMatcher]="myOwnErrorStateMatcher"
+                            [errorStateMatcher]="myOwnCustomCategorySelectErrorStateMatcher"
                     >
+<!--                        -->
                         <mat-option
                                 *ngFor="let category of categories"
                                 bind-value="category.value"
@@ -235,6 +236,7 @@ Thu Aug 20 2020 18:14:22 GMT-0400 (Eastern Daylight Time) // << FULL
                     <button
                             mat-icon-button
                             type="submit"
+                            bind-disabled="!editArticleFormGroup.valid"
                     >
                         <!-- TODO Hide that button while spinner appears
                             bind-disabled="!editArticleFormGroup.valid"

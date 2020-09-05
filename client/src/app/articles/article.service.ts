@@ -229,15 +229,16 @@ July 14th P.M. from noon to midnight
         return this.categoriesInService;
     }
 
-    /*     {}.bind(this) (encore une fois) to the rescue ( ! ) :o)
-    * N.B. Needs --- myFuncName = function () {}.bind(this)
-    * (Alternative of course was good old fat arrow instead...) -- chose not to use. cheers. */
     myMapBEArticlesToFEArticles = function (
-        eachPseudoArticleFromApi: {
+        /*     {}.bind(this) (encore une fois) to the rescue ( ! ) :o)
+        * N.B. Needs --- myFuncName = function () {}.bind(this)
+        * (Alternative of course was good old fat arrow instead...) -- chose not to use. cheers. */
+
+        eachPseudoArticleFromApi: { // << In other words, a "BE" Article
             _id: string,
             articleTitle: string,
             articleUrl: string,
-            articleCategory: string,
+            articleCategory: string, // << stored value e.g. 'u.s.' or 'politics'
         }
     ) {
         // this.articles = allArticlesWeGot.articlesPaginatedFromServer.map(
@@ -260,7 +261,7 @@ e.g. 'u.s.' as value will return 'U.S.' as viewValue
         let categoryViewValueSuchAsItIsReturned: string;
 
         categoryViewValueSuchAsItIsReturned = this.getCategoryViewValue(eachPseudoArticleFromApi.articleCategory);
-        // categoryViewValueSuchAsItIsReturned = this.myArticleService.getCategoryViewValue(eachPseudoArticleFromApi.articleCategory);
+     // categoryViewValueSuchAsItIsReturned = this.myArticleService.getCategoryViewValue(eachPseudoArticleFromApi.articleCategory);
                 /* N.B. This used to be over in a Component that had to reach back to this Service to invoke.
                 Now it is simply within the same Service. fwiw.
 
@@ -271,7 +272,10 @@ e.g. 'u.s.' as value will return 'U.S.' as viewValue
                     articleId_name: eachPseudoArticleFromApi._id,
                     articleTitle_name: eachPseudoArticleFromApi.articleTitle,
                     articleUrl_name: eachPseudoArticleFromApi.articleUrl,
+                    articleCategory_name: eachPseudoArticleFromApi.articleCategory,
+/* No!
                     articleCategory_name: categoryViewValueSuchAsItIsReturned,
+*/
                 }
 
                 return eachRealArticleToReturn;
@@ -350,7 +354,10 @@ That is supposed to be just a FE Display string, but
 it got saved back to the database. sigh."
          */
 
-        console.log('categoryThatMatchesArrayElementIndex ', categoryThatMatchesArrayElementIndex);
+        // console.log('categoryThatMatchesArrayElementIndex ', categoryThatMatchesArrayElementIndex);
+        // Yes.  e.g. 3 or 5 or -1 when not found.  all good.
+
+        this.categoryThatMatches = this.categoriesInService[categoryThatMatchesArrayElementIndex];
 
         if (categoryViewValueNoCategory) {
             categorySuchAsItIsToReturn = NO_CATEGORY;

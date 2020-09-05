@@ -16,8 +16,8 @@ https://www.concretepage.com/angular-material/angular-material-inputs#ErrorState
 // 2020 NOTE! "Just so you know", now comes from '@angular/material/core' - So There! (Was (2019...) '@angular/material' o well
 
 Here in ArticleAddComponent, this ErrorStateMatcher,
-is an example of "special" Angular
-Material import needed BEYOND what our "my-material.module.ts" covers for us.
+is an example of "special" Angular Material import needed
+BEYOND what our "my-material.module.ts" covers for us.
 */
 /* (btw)
 This "matcher" is used because w. Angular Material and form reset(), the default is to call it an error if the form was ever submitted.
@@ -36,6 +36,13 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
         // TL;DR "The !! (double bang) logical operators return a value’s truthy value."
 
         https://itnext.io/materror-cross-field-validators-in-angular-material-7-97053b2ed0cf
+ */
+/* FURTHER NOTE on ErrorStateMatcher
+For EDITING (not during "Create") the CATEGORY <mat-select>, over in ArticleDetailTwoComponent,
+we have SPECIAL NEED for a custom ErrorStateMatcher.
+It has function to ensure the value is indeed one of the <mat-option>s.
+Why?
+Because we have/can-have older, existing, dirty data: NO category; WRONG VALUE in Category
  */
 
 export class MyCategoriesEnumLikeClass {
