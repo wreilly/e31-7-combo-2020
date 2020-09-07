@@ -18,7 +18,9 @@ export class ArticleService {
       private myStore: Store,
   ) { }
 
-  createArticleB(myFormFieldsAndFiles: any): any { // << FormData, j'espere
+    categoryThatMatches: Category; // Declare here, at top of class. good.
+
+    createArticleB(myFormFieldsAndFiles: any): any { // << FormData, j'espere
 
       this.myStore.dispatch(new UIActions.StartLoading());
       /*
@@ -353,29 +355,42 @@ e.g. 'u.s.' as value will return 'U.S.' as viewValue
 
     }.bind(this) // /myMapBEArticlesToFEArticles()
 
-    categoryThatMatches: Category; // Q. declare here ok?  A. works, but, << really should be up at top of class
 
     getCategoryViewValue(storedCategoryValue: string): string {
-        // console.log('PASSED IN storedCategoryValue ', storedCategoryValue); // e.g. living (lowercase, BE value)
-        /* WAS IN ArticleListComponent (and ArticleAdd)
+        /* e.g. SEND IN 'u.s.' or 'world' (BE)
+and GET BACK 'U.S.' or 'World'.  (FE)
+Also handles **NO** Category and ***BAD*** Category ("foobar")
+
+N.B. This "get" lookup function here in the Service is used by these Components:
+- DISPLAY: ArticleComponent, ArticleDetailTwoComponent (and parent ArticlesComponent and ArticleListComponent)
+- EDIT:    ArticleDetailTwoComponent edit form
+- ADD:     ArticleAddComponent create form
+ */
+        /* WAS IN ArticleListComponent (and ArticleAdd). Better here in Service. cheers.   */
+
+        console.log('555 PASSED IN storedCategoryValue ', storedCategoryValue); // e.g. living (lowercase, BE value)
+        /* Presumably:
+        - 'u.s.'
+        - 'foobar' or 'No Category etc.'
+        - undefined
 
          */
 
         let categoryViewValueNoCategory: boolean;
         let categoryViewValueNoMatchUnexpectedValue: boolean;
-        // let categoryThatMatches: Category; // see above...
         const NO_CATEGORY = 'No Category (thx Service!)';
+        const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
         let categorySuchAsItIsToReturn: string;
 
         let categoryThatMatchesArrayElementIndex: number;
         /*
-        We do .findIndex() instead of .find()
+        I wound up favoring use of .findIndex() instead of .find()
         Returns the Array Element Index.
-        If
+        (Maybe another time I'd have gotten plain old .find() to work, just fine. ah well.)
          */
 
         this.categoryThatMatches = {
-            value: 'no value',
+            value: 'no value', // << We never see this init data values biz
             viewValue: 'no viewValue'
         };
 
@@ -384,28 +399,43 @@ e.g. 'u.s.' as value will return 'U.S.' as viewValue
             (eachCategoryPair: Category) => {
                 if (typeof storedCategoryValue === "undefined") {
                     categoryViewValueNoCategory = true;
+                    /*
+                    I guess this bit of filtering could be done higher up in this method. Hmm.
+                     */
                 } else {
-                    // we DO have *SOMETHING* (a Category?) on this "BE Article"....
+                    // we DO have *SOMETHING*, some string, (a Category?) on this "BE Article"....
 
                     // now let's see if it matches the current entry from the array of possible Categories:
                     if (storedCategoryValue === eachCategoryPair.value) {
                         return true;
-                        /* Signalling/returning "true" to
+                        /*
+                        .findIndex() :
+                        Signalling/returning "true" to
+                        Array.findIndex() means it will
+                        return the current array element INDEX,
+                        which is what we want. << Yes.
+
+                        .find() :
+                        Signalling/returning "true" to
                         Array.find() means it will
                         return the current array element,
-                        which is what we want.
+                        which is what we want. << No. changed our mind(s). ;)
                         cheers.
                          */
                     } else {
                         // Not "the answer" (yet)
-                       // console.log('getCategoryViewValue. ERROR! Value from BE for "Category" is: 1) NOT undefined, and 2) NOT a match on anything in our list of Categories. What the Sam Hay is it? W-a-a-l, it is: storedCategoryValue: ', storedCategoryValue );
+                       console.log('getCategoryViewValue. ERROR! Value from BE for "Category" is: 1) NOT undefined, and 2) NOT a match on anything in our list of Categories. What the Sam Hay is it? W-a-a-l, it is: storedCategoryValue: ', storedCategoryValue );
+                       /* Yes.
+                       - "" << for 5afac7603fa7e949fa00a64e
+                       - "Dis-Allowed AGAIN Category Text inserted at database" << for 5af83649f2fffa14c4a22cd7
+                        */
                         /* e.g. TODONE we ain't done yet. gotta go shave. done the shave, too.
                          No Category (thx Service!)
                          */
                     } // /} else {
                 } // /else {
             }
-        ); // /.find()
+        ); // /.findIndex()
 
         /* BUG Fixing.
 It IS possible that dirty data get in. (Solly!)
@@ -429,11 +459,14 @@ it got saved back to the database. sigh."
         this.categoryThatMatches = this.categoriesInService[categoryThatMatchesArrayElementIndex];
 
         if (categoryViewValueNoCategory) {
+            // We determined nothing was passed in - undefined - no articleCategory property on the BE record. ok.
             categorySuchAsItIsToReturn = NO_CATEGORY;
         } else if (categoryThatMatchesArrayElementIndex === -1) {
             // Not Found is -1, yes ? << Yes, that's right.
-            categorySuchAsItIsToReturn = 'NO_CORRECT_CATEGORY';
+            // We got a string, but, that string does NOT MATCH anything in our Array of possible Categories. all righty.
+            categorySuchAsItIsToReturn = NO_CORRECT_CATEGORY //'NO_CORRECT_CATEGORY';
         } else {
+            // We got a string and it DID MATCH one of the possible Categories. Va benone.
             categorySuchAsItIsToReturn = this.categoryThatMatches.viewValue;
         }
 

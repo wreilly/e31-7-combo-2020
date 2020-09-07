@@ -403,7 +403,10 @@ export class ArticleDetailTwoComponent implements OnInit, OnDestroy, ControlValu
     articleCategory_formControl: FormControl;
 
     myOwnErrorStateMatcher: MyErrorStateMatcher; // << imported ! very nice.
+    // Title and URL formControls
+
     myOwnCustomCategorySelectErrorStateMatcher: myCustomCategorySelectErrorStateMatcher;
+    // Category formControl
 
     public categories: Category[]; // << from ArticleService now. :o)
 
@@ -481,16 +484,22 @@ export class ArticleDetailTwoComponent implements OnInit, OnDestroy, ControlValu
 https://github.com/angular/angular.js/commit/ffb6b2fb56d9ffcb051284965dd538629ea9687a
  */
 
+/* (Like Comment over in ArticleAdd)
+ This "didn't break" EDITING an Article, but, seems not super intuitive. Let's not use.
+(The ArticleDetailTwo editing form "Category" formControl was (appropriately, of course)
+ populated by the correct Category "viewValue" (e.g. 'U.S.'). It did NOT show a "default" of "News". Good.)
+
         this.articleCategory_formControl = new FormControl({ value: 'news', viewValue: 'News' },
             [
                 Validators.required,
             ]);
-/* WORKING FINE...
+*/
+/* WORKING FINE...  We'll stick with. */
         this.articleCategory_formControl = new FormControl(null,
             [
                 Validators.required,
             ]);
-*/
+
         /* As noted on ArticleAddComponent:
 Here on a SELECT form element, this "default formState" does *NOT* work (boo).
 'News'   nor  'News-SERVICE'
@@ -598,6 +607,8 @@ _id: "5afac7603fa7e949fa00a64e"
                             /* e.g. SEND IN 'u.s.' or 'world' (BE)
                             and GET BACK 'U.S.' or 'World'.  (FE)
                             Also handles **NO** Category and ***BAD*** Category ("foobar")
+        const NO_CATEGORY         = 'No Category (thx Service!)';
+        const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
                              */
                             console.log('WWW3 this.categoryViewValueSuchAsItIsReturned ', this.categoryViewValueSuchAsItIsReturned);
                             /* Yes. When **NO CATEGORY** on BE:
@@ -733,19 +744,117 @@ Fix: Go back to other .patchValue() below that assigns the ***BE*** version of C
 
                                 articleCategory_formControlName: this.articleHereInDetailPage.articleCategory, // 'politics' << NO. Now it is 'Politics' sigh
                             });*/
-/* WORKS TOO. LOVELY.*/
+
+                            if (this.categoryViewValueSuchAsItIsReturned.match(/^No.*Category/)) {
+                                /* We have either of:
+                                    const NO_CATEGORY         = 'No Category (thx Service!)';
+                                    const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
+                                 */
+                                console.log('this.categoryViewValueSuchAsItIsReturned NO CATEGORY HEY?  REGEX ', this.categoryViewValueSuchAsItIsReturned);
+                                /* Yes. (Frank goodness.)
+No Category (thx Service!)
+No Correct Category (thx Service!)
+ */
+
+                                this.editArticleFormGroup.patchValue({
+                                    articleTitle_formControlName: articleIGot.articleTitle, // 'DEFAULT TITLE HEY?',
+                                    articleUrl_formControlName: articleIGot.articleUrl,
+
+                                    articleCategory_formControlName: {
+                                        value: 'news', // Finally, appears that HERE is where we use a "default". hmm.
+                                        viewValue: 'News',
+                                    },
+                                });
+
+                            } else if (this.categoryViewValueSuchAsItIsReturned) {
+                                // We've checked above that by time you get here, it MUST (!) be a valid Category. cheers.
+                                console.log('this.categoryViewValueSuchAsItIsReturned YES HAPPY CATEGORY HEY? ', this.categoryViewValueSuchAsItIsReturned);
+                                /* Yes.
+                                Politics
+                                World
+                                etc.
+                                 */
+
+                                this.editArticleFormGroup.patchValue({
+                                    articleTitle_formControlName: articleIGot.articleTitle, // 'DEFAULT TITLE HEY?',
+                                    articleUrl_formControlName: articleIGot.articleUrl,
+
+                                    articleCategory_formControlName: {
+                                        value: articleIGot.articleCategory,
+                                        viewValue: this.categoryViewValueSuchAsItIsReturned,
+                                    },
+                                });
+
+                            } else {
+                                console.log('SOMETHING WRONG. this.categoryViewValueSuchAsItIsReturned is neither a Category, nor one of our two Error Messages. Sheesh! ', this.categoryViewValueSuchAsItIsReturned);
+                                // Not Seen. (also Frank Goodness.)
+                            }
+
+/* ***  MONGODB  NOTES  ***
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+const NO_CATEGORY         = 'No Category (thx Service!)';
+const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+MONGODB
+
+- UPDATE One Record
+01 -- Write bad data to articleCategory    << NO_CORRECT_CATEGORY
+02 -- Make articleCategory empty string "" << NO_CORRECT_CATEGORY
+03 -- Make articleCategory null value      << NO_CORRECT_CATEGORY
+04 -- REMOVE articleCategory property altogether   << NO_CATEGORY
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+
+00 -- To begin, we have a record with empty string "" for articleCategory << NO_CORRECT_CATEGORY
+
+MongoDB Enterprise ClusterWR03-shard-0:PRIMARY> db.newarticles.find({_id:ObjectId('5afac7603fa7e949fa00a64e')})
+{ "_id" : ObjectId("5afac7603fa7e949fa00a64e"), "articlePhotos" : [ "[\"sometimes__1526384477707_15Mideast-Visual1-superJumbo-v3.jpg\",\"sometimes__1526384477712_merlin_138129645_16f9c7c7-6c4d-44a0-83a2-d9cb8171d1ee-superJumbo.jpg\",\"sometimes__1526384477721_merlin_138131967_f9da1d08-93e5-4061-9392-d9cb23c68454-superJumbo.jpg\"]" ], "articleUrl" : "https://www.nytimes.com/2018/05/14/world/middleeast/gaza-jerusalem-embassy.html", "articleTitle" : "Contrasting NUGATORY 012349988 Many Crazy Images: Violence in Gaza, Embassy Celebration in Jerusalem", "__v" : 0, "articleCategory" : "" }
+
+
+01 -- Write bad data to articleCategory    << NO_CORRECT_CATEGORY
+
+MongoDB Enterprise ClusterWR03-shard-0:PRIMARY> db.newarticles.updateOne({_id: ObjectId('5f5686234d2835ae66510f49')},{ $set: {articleCategory: 'MORE Dis-Allowed AGAIN Category Text inserted at database'}})
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+
+
+02 -- Make articleCategory empty string "" << NO_CORRECT_CATEGORY
+
+MongoDB Enterprise ClusterWR03-shard-0:PRIMARY> db.newarticles.updateOne({_id: ObjectId('5f554ebb4d2835ae66510f48')},{ $set: {articleCategory: ''}})
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+
+
+03 -- Make articleCategory null value      << NO_CORRECT_CATEGORY
+
+MongoDB Enterprise ClusterWR03-shard-0:PRIMARY> db.newarticles.updateOne({_id: ObjectId('5f55403b4d2835ae66510f47')},{ $set: {articleCategory: null}})
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+
+
+04 -- REMOVE articleCategory property altogether   << NO_CATEGORY
+
+MongoDB Enterprise ClusterWR03-shard-0:PRIMARY> db.newarticles.updateOne({_id: ObjectId('5f523b3f4d2835ae66510f45')},{ $unset: {articleCategory: ""}})
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+
+MongoDB Enterprise ClusterWR03-shard-0:PRIMARY> db.newarticles.find({_id:ObjectId('5f523b3f4d2835ae66510f45')})
+{ "_id" : ObjectId("5f523b3f4d2835ae66510f45"), "articleUrl" : "https://www.nytimes.com/2020/09/03/us/michael-reinoehl-arrest-portland-shooting.html", "articleTitle" : "Suspect EDIT 666777888 in Fatal Portland Shooting Is Killed by Officers During Arrest", "__v" : 0 }
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+   ***  /MONGODB  NOTES ***
+ */
+
+
+/* WORKS. LOVELY. 2020-09-07
                             this.editArticleFormGroup.patchValue({
                                 articleTitle_formControlName: articleIGot.articleTitle, // 'DEFAULT TITLE HEY?',
                                 articleUrl_formControlName: articleIGot.articleUrl,
 
-/*
-                                articleCategory_formControlName: articleIGot.articleCategory, // 'politics' << NO. Now it is 'Politics' sigh ?
-*/
                                 articleCategory_formControlName: {
                                     value: articleIGot.articleCategory,
                                     viewValue: this.categoryViewValueSuchAsItIsReturned,
                                 },
                             });
+*/
                             // console.log('POST-PATCHV 03 Category: string this.editArticleFormGroup.value ', this.editArticleFormGroup.value);
                             console.log('POST-PATCHV 04 Category: {}object this.editArticleFormGroup.value ', this.editArticleFormGroup.value);
                             /* LATEST 2020-09-06
