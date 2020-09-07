@@ -107,11 +107,75 @@ _id: "5f1364e304e544a462218215"
 
       - Returns ... hmm, results of HTTP PUT call.
         Just sort of benign "ACK" msg. (or error, of course)
-        But no data of substance
+        But no data of substance is returned to calling Component
        */
 
+        /* NEW. Category handling
+
+        NEW IDEA: Do this map/transform biz BACK in the CALLING COMPONENT, when and where you MAKE THE FORM DATA, n'est-ce pas? Speriamo!
+        BELOW = NOT SO GOOD.
+        - Received here in Service as: << HMM NOT SO SURE ABOUT THAT!
+        {
+articleCategory: "[object Object]" // <<<<<<<<<<<<<<<<<<<<<<<<<
+articleTitle: "How Has Donald Trump Survived? I mean Really."
+articleUrl: "https://www.nytimes.com/2020/08/31/books/review/donald-trump-v-the-united-states-michael-s-schmidt.html"
+__v: 0
+_id: "5f554ebb4d2835ae66510f48"
+}
+
+- Should be sent to BE Server as:
+{
+articleCategory: "politics" // <<<<<<<<<<<<<<<<<<<<<<<<<
+articleTitle: "How Has Donald Trump Survived? I mean Really."
+articleUrl: "https://www.nytimes.com/2020/08/31/books/review/donald-trump-v-the-united-states-michael-s-schmidt.html"
+__v: 0
+_id: "5f554ebb4d2835ae66510f48"
+}
+
+That line above:
+articleCategory: "[object Object]" // <<<<<<<<<<<<<<<<<<<<<<<<<
+is actually
+articleCategory: {value: 'politics', viewValue: 'Politics'}  // <<<<<<<<<<<<<<<<<<<<<<<<<
+
+So we need to make small change to our "editedArticle" object, before sending to BE Server.
+         */
+
+
+/* NAH:
+        let editedArticleWithBECategoryValue = Object.assign(editedArticle); // shallow copy. uh-oh. hmm.
+*/
+
+        // Put string 'politics' in, instead of whole Category object.
+/* This is NOT WORKING
+        editedArticleWithBECategoryValue.articleCategory = editedArticle.articleCategory.value;
+*/
+
         // DON'T FORGET!  PUT 'return' AT FRONT OF THIS LINE:
+
         return this.myHttp.put(`http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`, editedArticle);
+
+        // NAH: return this.myHttp.put(`http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`, editedArticleWithBECategoryValue);
+
+        /* PUT
+        Request URL: http://0.0.0.0:8089/api/v1/articles/5f4ea36f4d2835ae66510f44
+Request Method: PUT
+Status Code: 200 OK
+
+FORM DATA:
+        ------WebKitFormBoundarySOA9tTpW5R60QA5Y
+Content-Disposition: form-data; name="articleTitle_name"
+
+Trump EDIT 55 Needs His Own Sister Souljah Moment
+------WebKitFormBoundarySOA9tTpW5R60QA5Y
+Content-Disposition: form-data; name="articleUrl_name"
+
+https://www.nytimes.com/2020/09/01/opinion/trump-kenosha-portland-sister-souljah.html
+------WebKitFormBoundarySOA9tTpW5R60QA5Y
+Content-Disposition: form-data; name="articleCategory_name"
+
+[object Object] // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+------WebKitFormBoundarySOA9tTpW5R60QA5Y-
+         */
 
     }
 
@@ -272,10 +336,15 @@ e.g. 'u.s.' as value will return 'U.S.' as viewValue
                     articleId_name: eachPseudoArticleFromApi._id,
                     articleTitle_name: eachPseudoArticleFromApi.articleTitle,
                     articleUrl_name: eachPseudoArticleFromApi.articleUrl,
-                    articleCategory_name: eachPseudoArticleFromApi.articleCategory,
-/* No!
-                    articleCategory_name: categoryViewValueSuchAsItIsReturned,
+/* No. The BE value was being used to DISPLAY = Not what we want.
+
+                    articleCategory_name: eachPseudoArticleFromApi.articleCategory, // BE value  'u.s.'
 */
+/* Yes. Now we do want the FE viewValue
+* We can use the FE viewValue now to Display (good),
+* AND, we now fixed the compareWith fn() to use whole Category object {} correctly (good aussi). */
+
+                    articleCategory_name: categoryViewValueSuchAsItIsReturned, // FE viewValue  'U.S.'
                 }
 
                 return eachRealArticleToReturn;

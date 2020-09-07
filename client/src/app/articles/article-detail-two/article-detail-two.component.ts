@@ -61,10 +61,21 @@ class myCustomCategorySelectErrorStateMatcher implements ErrorStateMatcher {
 
 
     categoriesHereInMatcher = this.myArticleService.getCategoriesInService();
-
+/* BACK TO ORIG null */
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+  /* NOPE
+     "error TS2339: Property 'setValue' does not exist on type 'FormControl | { value: "news"; viewValue: "News"; }'."
 
-        // console.log('Custom Error Matcher! this.categoriesHereInMatcher ', this.categoriesHereInMatcher);
+    isErrorState(control: FormControl | {value: 'news', viewValue: 'News'}, form: FormGroupDirective | NgForm | null): boolean {
+  */
+
+
+        console.log('Custom Error Matcher! 11 control ', control); // control  null    :o(
+        // Huh. Must be vagaries of console.log etc why control.value shows null for above. sheesh.
+        console.log('Custom Error Matcher! 11 control.value ', control.value); // control.value  null    :o)
+        // {value: "u.s.", viewValue: "U.S."} // << looking (maybe ?) promising ?
+
+        console.log('Custom Error Matcher! this.categoriesHereInMatcher ', this.categoriesHereInMatcher);
         // Yes, all 8 Categories. bueno
         /*
         0: {value: "news", viewValue: "News"}
@@ -72,8 +83,11 @@ class myCustomCategorySelectErrorStateMatcher implements ErrorStateMatcher {
          */
 
         let categoryFoundAmongOptions: Category;
-        // let categoryIsAmongOptionsOK = true; // init
+        // let categoryIsAmongOptionsOK = true; // init (some testing; done.)
         let categoryIsAmongOptionsOK = false; // init ORIG
+
+        // console.log('Custom Error Matcher! 22 control.value ', control.value); // control.value  null    :o) ???????
+        // {value: "u.s.", viewValue: "U.S."}
 
         categoryFoundAmongOptions = this.categoriesHereInMatcher.find(
             (eachCategory) => {
@@ -87,7 +101,10 @@ method (which I've named "eachCategory")
 is the entire Category object (above) ... Good.
  */
 
-                console.log('777 control.value ', control.value); // 'U.S.' <<< HMM! SHOULDN'T THIS BE 'u.s.'??? << I have corrected this.
+                console.log('777 control.value 33 control.value ', control.value); // 'U.S.' <<< HMM! SHOULDN'T THIS BE 'u.s.'??? << I have corrected this.
+                /* New.
+                {value: "u.s.", viewValue: "U.S."}
+                 */
                 /*
                 Corrected above over in ArticleService in the
                 "myMapBEArticlesToFEArticles()"
@@ -119,9 +136,52 @@ is the entire Category object (above) ... Good.
 /* I had it wrong again:
                 return control.value === eachCategory.viewValue;
 */
+/* I had it wrong again again:
                 return control.value === eachCategory.value;
+*/
+                return control.value.value === eachCategory.value; // << We have a winner.
+                /* N.B. Above works right for Use Case # 1 = normal Category values
+                Still failing for Use Case # 2 and # 3. << TODO next to fix
+                -------------
+                -------
+PRETTY GOOD PROGRESS:
+-------
+- We have THREE Use Cases for CATEGORY:
+1. Normal Data.
+BE articleCategory is simple string, one of the values from the Categories array of possible values, as managed on the Client FE in the ArticleService.categoriesInService.  e.g. 'u.s.' or 'politics'
+
+2. Missing.
+BE record has NO property at all named articleCategory. Older data.
+
+3. Wrong Data.
+BE articleCategory is simple string, but contains some other DIS-ALLOWED text NOT found in ArticleService.categoriesInService.  e.g. "foobar" or "" (empty string) or "There is No Category" etc.
+----------
+
+As of this morning, we FINALLY got Use Case # 1 above to WORK RIGHT.
+You can EDIT the record, and the correct "viewValue" Category will appear. (e.g. 'U.S.')
+You can CHANGE the Category from the dropdown (e.g. 'Opinion')
+And when you SAVE the record the correct "value" will be saved to the BE (e.g. 'opinion')
+And when you REVISIT the record the new correct "viewValue" will appear (e.g. 'Opinion').
+WONDERFUL.
+More moving parts than you would ever expect:
+- FormData.append()
+- .patchValue()
+- errorStateMatcher()
+- compareWith()
+==========
+
+NEXT UP:
+- Use Case # 2 and # 3 need fixing.
+Should mostly have to do with getting the .patchValue() right.
+From there, we'll probably use a "default" choice like { value: 'news', viewValue: 'News' }
+and then the errorStateMatcher and compareWith probably won't need to be touched.
+We'll see.
+-=-=-=-=-=-=-=
+
+                -------------
+                 */
             }
-        ) // /.find()
+        ) // /.find()  << returns a Category object. From the array of available Categories. bueno.
 
         console.log('categoryFoundAmongOptions straight-up ', categoryFoundAmongOptions);
         // undefined  when not found because Empty/Not Present = correct
@@ -156,7 +216,10 @@ is the entire Category object (above) ... Good.
              */
 
 
-            console.log('000a ******************');
+            console.log('000a *** ABOUT TO WHACK *************** control.value ', control.value);
+            // yes undefined
+            // yes Dis-Allowed AGAIN Category Text inserted at database
+
             // console.log('control.touched ', control.touched); // false
             // control.markAsTouched({ onlySelf: true });
             // control.markAsDirty({ onlySelf: true });
@@ -182,7 +245,7 @@ is the entire Category object (above) ... Good.
 
             console.log('control.touched ', control.touched); // false
             console.log('control.dirty ', control.dirty); // false
-            console.log('000b ******************');
+            console.log('000b *** JUST WHACKED *************** control.value ', control.value); // yes null
 
             /* Category Control
             If I get here, the category value is either:
@@ -249,13 +312,24 @@ is the entire Category object (above) ... Good.
     styleUrls: ['article-detail-two.component.scss'],
     providers: [
         {
-            provide: NG_VALUE_ACCESSOR,
+            provide: NG_VALUE_ACCESSOR, // 99% sure we ain't using this stuff no mo'. GOOD.
             useExisting: forwardRef(() => ArticleDetailTwoComponent),
             // multi: true,
         }
     ],
 })
 export class ArticleDetailTwoComponent implements OnInit, OnDestroy, ControlValueAccessor {
+    /* WebStorm IDE was saying ArticleDetailTwoComponent was "not declared in any Angular module"
+    But it was all working okay.
+    Hmm.
+
+    In ArticlesModule this component certainly was in 'declarations:' (okay),
+    but was not in 'exports'.
+    I added it to 'exports', and the IDE no longer complains.
+    Odd. I wonder what it is about this needs to be in exports.
+    And why it worked nonetheless.
+"o well!"
+     */
 
     // ****   FORM for EDIT MODE  **********
 
@@ -319,6 +393,7 @@ export class ArticleDetailTwoComponent implements OnInit, OnDestroy, ControlValu
 //         ***  /TEMPLATE-DRIVEN BIZ  *********
 
     selectedCategoryToEdit: Category;
+    categoryViewValueSuchAsItIsReturned: string;
 
     myFormFieldsData: FormData = new FormData();
 
@@ -406,10 +481,16 @@ export class ArticleDetailTwoComponent implements OnInit, OnDestroy, ControlValu
 https://github.com/angular/angular.js/commit/ffb6b2fb56d9ffcb051284965dd538629ea9687a
  */
 
+        this.articleCategory_formControl = new FormControl({ value: 'news', viewValue: 'News' },
+            [
+                Validators.required,
+            ]);
+/* WORKING FINE...
         this.articleCategory_formControl = new FormControl(null,
             [
                 Validators.required,
             ]);
+*/
         /* As noted on ArticleAddComponent:
 Here on a SELECT form element, this "default formState" does *NOT* work (boo).
 'News'   nor  'News-SERVICE'
@@ -493,6 +574,14 @@ articleTitle: "Trump Must Turn Over Tax Returns to D.A., Judge Rules"
 articleUrl: "https://www.nytimes.com/2020/08/20/nyregion/donald-trump-taxes-cyrus-vanc
                              */
                             console.log('this.articleHereInDetailPage ', this.articleHereInDetailPage);
+                            /* Example that Yeah Does Have CATEGORY.... (but no Photos, mind!) - another day
+{_id: "5f3bc1b45f54a09d485800ca",
+articleUrl: "https://www.nytimes.com/2020/08/17/opinion/trump-contested-election-protests.html",
+articleTitle: "Trump Might Cheat. Activists Are Getting Ready.",
+articleCategory: "politics",  // << BE convention.  'value', not 'viewValue'. Good.
+__v: 0}
+ */
+
                             /* Example with **NO CATEGORY** on BE/DB
 articlePhotos: Array(1)
 0: "["sometimes__1526384477707_15Mideast-Visual1-superJumbo-v3.jpg","sometimes__1526384477712_merlin_138129645_16f9c7c7-6c4d-44a0-83a2-d9cb8171d1ee-superJumbo.jpg","sometimes__1526384477721_merlin_138131967_f9da1d08-93e5-4061-9392-d9cb23c68454-superJumbo.jpg"]"
@@ -503,17 +592,14 @@ articleUrl: "https://www.nytimes.com/2018/05/14/world/middleeast/gaza-jerusalem-
 __v: 0
 _id: "5afac7603fa7e949fa00a64e"
                              */
-                            /* Example that Yeah Does Have Category.... (but no Photos, mind!) - another day
-{_id: "5f3bc1b45f54a09d485800ca",
-articleUrl: "https://www.nytimes.com/2020/08/17/opinion/trump-contested-election-protests.html",
-articleTitle: "Trump Might Cheat. Activists Are Getting Ready.",
-articleCategory: "politics",  // << BE convention.  'value', not 'viewValue'. Good.
-__v: 0}
-                             */
 
-                            let categoryViewValueSuchAsItIsReturned: string;
-                            categoryViewValueSuchAsItIsReturned = this.myArticleService.getCategoryViewValue(articleIGot.articleCategory); // e.g. 'U.S.' or 'World'. Also handles **NO** Category
-                            console.log('WWW3 categoryViewValueSuchAsItIsReturned ', categoryViewValueSuchAsItIsReturned);
+
+                            this.categoryViewValueSuchAsItIsReturned = this.myArticleService.getCategoryViewValue(articleIGot.articleCategory);
+                            /* e.g. SEND IN 'u.s.' or 'world' (BE)
+                            and GET BACK 'U.S.' or 'World'.  (FE)
+                            Also handles **NO** Category and ***BAD*** Category ("foobar")
+                             */
+                            console.log('WWW3 this.categoryViewValueSuchAsItIsReturned ', this.categoryViewValueSuchAsItIsReturned);
                             /* Yes. When **NO CATEGORY** on BE:
                             No Category (thx Service!)
                              */
@@ -536,14 +622,15 @@ articleTitle_name: "What’s Less Edit URL We Be EdTNG MORE REACTIVELY Good for 
 articleUrl_name: "https://www.nytimes.com/2020/08/15/us/covid-college-tuition.
                              */
 
-                            /* Oi!
+                            /* Oi! TODO 2020-09-05 see you tomorrow morning the 6th. Fix this. :o)
                             Finally fix this damned bug.
                             When **NO** Category, get that default value
                             to say so (lines above), and then,
                             here (below), STICK IT ONTO
                             our "articleHereInDetailPage" fer chrissake
                              */
-                            this.articleHereInDetailPage.articleCategory = articleIGotWithFECategory.articleCategory_name;
+                            // this.articleHereInDetailPage.articleCategory = articleIGotWithFECategory.articleCategory_name; // FE viewValue. 'U.S.' hmm.
+                            this.articleHereInDetailPage.articleCategory = articleIGot.articleCategory; // BE value. 'u.s.' hmm.
 
 
                             this.myStore.dispatch(new UIActions.TellingYouMyId(
@@ -568,14 +655,34 @@ articleUrl_name: "https://www.nytimes.com/2020/08/15/us/covid-college-tuition.
                             // console.log('XXXYYYCategory-111-BEFORE this.editArticleFormGroup.controls[\'articleCategory_formControlName\'] ', this.editArticleFormGroup.controls['articleCategory_formControlName']);
 
 
-                            this.editArticleFormGroup.get('articleCategory_formControlName').setValue(categoryViewValueSuchAsItIsReturned, { onlySelf: true }); // << you're setting a type: string. (But, note! - this puts the ViewValue on! (not what we want) 'Politics' not 'politics'. Oi!
+/* NO. We are NOT patching or setting the FE value for Category (e.g. 'U.S.') onto the Form. No.
 
+                            this.editArticleFormGroup.get('articleCategory_formControlName').setValue(categoryViewValueSuchAsItIsReturned, { onlySelf: true }); // << you're setting a type: string. (But, note! - this puts the ViewValue on! (not what we want) 'Politics' not 'politics'. Oi!
+                            console.log('POST-PATCHV 01 this.editArticleFormGroup.value ', this.editArticleFormGroup.value);
+*/
+                            // DEBUG shows this is simply null right here. cheers. ok.
+                            /*
+                            articleCategory_formControlName: null // <<< ??
+articleTitle_formControlName: null
+articleUrl_formControlName: null
+                             */
  // Yes:
  /* .setValue() OK, but I prefer .patchValue() y not
                             this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.selectedCategoryToEdit, { onlySelf: true });
  */
-                            this.editArticleFormGroup.get('articleCategory_formControlName').patchValue(this.selectedCategoryToEdit, { onlySelf: true });
 
+/* NO. We are not patching the (as of yet undefined) "selectedCategoryToEdit" -- even though it **is** of type Category.
+
+                            console.log('PRE-PATCHV 02 this.selectedCategoryToEdit ', this.selectedCategoryToEdit); // undefined
+                            this.editArticleFormGroup.get('articleCategory_formControlName').patchValue(this.selectedCategoryToEdit, { onlySelf: true });
+                            console.log('POST-PATCHV 02 this.editArticleFormGroup ', this.editArticleFormGroup);
+*/
+                            // DEBUG shows this above is undefined.  Let's just comment it out.
+                            /*
+                            articleCategory_formControlName: "u.s." // <<< ??
+articleTitle_formControlName: "Mueller Happy 2020 Plans to Wrap Up Obstruction Inquiry Into Trump by Sept. 1, Giuliani Says"
+articleUrl_formControlName: "https://www.nytimes.com/"
+                             */
 
                             /* Nope! Too Early, for "this.selectedCategoryToEdit", kid.
                                                         this.editArticleFormGroup.get('articleCategory_formControlName').setValue(this.selectedCategoryToEdit, { onlySelf: true }); // << hmm, we were: 1) trying to set a value that's undefined, right now. and 2) (I think?) trying to set a whole Object (Category {}), not just a string. Hmm.
@@ -631,11 +738,32 @@ Fix: Go back to other .patchValue() below that assigns the ***BE*** version of C
                                 articleTitle_formControlName: articleIGot.articleTitle, // 'DEFAULT TITLE HEY?',
                                 articleUrl_formControlName: articleIGot.articleUrl,
 
+/*
                                 articleCategory_formControlName: articleIGot.articleCategory, // 'politics' << NO. Now it is 'Politics' sigh ?
-                                 });
+*/
+                                articleCategory_formControlName: {
+                                    value: articleIGot.articleCategory,
+                                    viewValue: this.categoryViewValueSuchAsItIsReturned,
+                                },
+                            });
+                            // console.log('POST-PATCHV 03 Category: string this.editArticleFormGroup.value ', this.editArticleFormGroup.value);
+                            console.log('POST-PATCHV 04 Category: {}object this.editArticleFormGroup.value ', this.editArticleFormGroup.value);
+                            /* LATEST 2020-09-06
+                            YES:
+                            {
+                            articleCategory_formControlName:
+value: "[object Object]"
+viewValue: "NO_CORRECT_CATEGORY"
+__proto__: Object
+articleTitle_formControlName: "Mueller VERY Happy 2020 Plans to Wrap Up Obstruction Inquiry Into Trump by Sept. 1, Giuliani Says"
+articleUrl_formControlName: "https://www.nytimes.com/"
+                               }
+                             */
+                            /* Yes
+                            DEBUG shows this is the BE value: 'u.s.'   Good.
+                             */
 
-
-/* SEEMINGLY N-O-T. Harrumph. ??
+/* SEEMINGLY N-O-T. Harrumph. ?? <<<< Yo! you did have it right, way back when. Now (2020-09-06) finally figgered that out.
 Nah. Below - Don't create a Category object here, to store on that FormControl.
 Just leave as simple string value, for the BE stored version: 'world' or 'politics'
 
@@ -736,12 +864,20 @@ cheers.
     } // /myCompareOptionCategoryValuesIFLOGIC() << attempt at full IF logic, vs. Ternary
 
 
-    myCompareOptionCategoryValues(optionCategory1: any, optionCategory2: any): boolean {
+    myCompareOptionCategoryValues(optionCategory1: any, selectionCategory2: any): boolean {
+        /*
+        "Function to compare the option values with the selected values. The first argument is a value from an option. The second is a value from the selection. A boolean should be returned."
+        https://v9.material.angular.io/components/select/api#MatSelect
+         */
         // myCompareOptionCategoryValuesTERNARYTHISWORKS
         // myCompareOptionCategoryValuesORIGINALTERNARY
         console.log('COMPARE 1 optionCategory1 ', optionCategory1); // u.s., or news etc.   BE value
         console.log('COMPARE 1.value optionCategory1.value ', optionCategory1.value); // undefined
-        console.log('COMPARE 2 optionCategory2 ', optionCategory2);
+        console.log('COMPARE 1.value optionCategory1.viewValue ', optionCategory1.viewValue); // undefined
+
+        console.log('COMPARE 2 selectionCategory2 ', selectionCategory2);
+        console.log('COMPARE 2 selectionCategory2.value ', selectionCategory2.value);
+        console.log('COMPARE 2 selectionCategory2.viewValue ', selectionCategory2.viewValue);
         /*
         U.S. <<<<< HMM! SHOULDN'T THIS BE 'u.s.' ???
 
@@ -751,7 +887,78 @@ cheers.
         ???
          */
 
-        return optionCategory1 && optionCategory2 ? optionCategory1 === optionCategory2 : optionCategory1 === optionCategory2;
+        /* YES. Worked. Try # 3 as t'were:
+         */
+        return optionCategory1 && selectionCategory2 ? optionCategory1.value === selectionCategory2.value : optionCategory1 === selectionCategory2;
+        /* YES.
+        Here is why Try # 3 **DID WORK** :)
+
+COMPARE 1 optionCategory1  {value: "politics", viewValue: "Politics"}
+article-detail-two.component.ts:813 COMPARE 1.value optionCategory1.value  politics // <<<<<<<<<<<<<<<<<<<<<<<
+article-detail-two.component.ts:814 COMPARE 1.value optionCategory1.viewValue  Politics
+article-detail-two.component.ts:816 COMPARE 2 selectionCategory2  {value: "politics", viewValue: "Politics"}
+article-detail-two.component.ts:817 COMPARE 2 selectionCategory2.value  politics  // <<<<<<<<<<<<<<<<<<<<<<<<<<<
+article-detail-two.component.ts:818 COMPARE 2 selectionCategory2.viewValue  Politics
+
+At the risk of (even) further confusion:
+- ".value"
+Note that we DO test for equality on the ".value" - the BE-stored value (e.g. 'u.s.') = Good. << That 'value' is kind of like an ID. A human-readable ID.
+- ".viewValue"
+Note that, with the objects above to compare (optionCategory1 and selectionCategory2) both
+being complete Category objects, it is technically plausible that we *COULD* test (it would appear)
+for equality on the ".viewValue" as well, or in stead. They too appear to match, just fine.
+BUT! We don't test on them. And we shouldn't.
+Why?
+Because the whole point of having the setup of "value" stored vs. "viewValue" displayed is:
+---- to retain FLEXIBILITY.
+How so? For example:
+If/when the viewValue needs to change (this does happen) (like, some senior editor comes along one fine day and says,
+"Why in the world does that say "U.S."? It should say "U.S.A." - or similar).
+If that occurs, then the *stored* value remains 'u.s.' (editor never sees it), while
+the *view* value will be changed to 'U.S.A.' Okay.
+But, what about all the records created before the senior editor came along?
+Ah-hah. SO - the real key part here is:
+- New:
+From the date Going Forward that the editor makes his dictates, THEN your
+data records will be: {value: 'u.s.', viewValue: 'U.S.A.'}  Fine.
+- Existing:
+But the FLEXIBILITY part comes from your **NOT HAVING TO CHANGE** all those
+EXISTING data records, which will STILL BE: {value: 'u.s.', viewValue: 'U.S.'} // <<<<< PAYOFF TIME, BABY. O YEAH. FLEXIBILITY.
+
+~~ The End. ~~
+
+*/
+
+
+
+        /* YES. (PARTIAL I guess) Try # 2 as t'were:
+YEAH. SORTA anyway
+         */
+        // return optionCategory1 && selectionCategory2 ? optionCategory1.value === selectionCategory2 : optionCategory1 === selectionCategory2;
+        /* YES.
+        Here is why Try # 2 **DID (PARTIALLY) WORK** :)
+        COMPARE 1 optionCategory1  {value: "u.s.", viewValue: "U.S."}
+article-detail-two.component.ts:755 COMPARE 1.value optionCategory1.value  u.s. // <<<<<<<<<<<<<<<<<<<<<<<
+article-detail-two.component.ts:756 COMPARE 1.value optionCategory1.viewValue  U.S.
+article-detail-two.component.ts:758 COMPARE 2 selectionCategory2  u.s. // <<<<<<<<<<<<<<<<<<<<<<<<<<<
+article-detail-two.component.ts:759 COMPARE 2 selectionCategory2.value  undefined
+article-detail-two.component.ts:760 COMPARE 2 selectionCategory2.viewValue  undefined
+         */
+
+
+/* NO. Try # 1 as t'were
+        return optionCategory1 && selectionCategory2 ? optionCategory1 === selectionCategory2.value : optionCategory1 === selectionCategory2;
+*/
+        /* NO. Try # 1 as t'were:
+        Here is why above did NOT work:
+
+        COMPARE 1 optionCategory1  {value: "u.s.", viewValue: "U.S."}
+article-detail-two.component.ts:755 COMPARE 1.value optionCategory1.value  u.s.
+article-detail-two.component.ts:756 COMPARE 1.value optionCategory1.viewValue  U.S.
+article-detail-two.component.ts:758 COMPARE 2 selectionCategory2  u.s.
+article-detail-two.component.ts:759 COMPARE 2 selectionCategory2.value  undefined
+article-detail-two.component.ts:760 COMPARE 2 selectionCategory2.viewValue  undefined
+         */
 /*
         return optionCategory1 && optionCategory2 ? optionCategory1.viewValue === optionCategory2.viewValue : optionCategory1 === optionCategory2;
 */
@@ -824,6 +1031,12 @@ cheers.
         Coronavirus 234 Live Updates: Birx Urges Bar Closures and Limits on Gatherings
          */
         console.log(`FORM ENTIRE = this.editArticleFormGroup.value`, this.editArticleFormGroup.value);
+        /* Yes. Category as object. good.
+        articleCategory_formControlName: {
+value: "politics"
+viewValue: "Politics" }
+
+         */
         /* Q. Curious. Why is Category retained? (I know why URL is not.) Hmm.
         A. Ah-hah-ho. It is the damned DEFAULT value. Yeesh. (We in fact LOSE our original value, e.g. 'U.S.")
 
@@ -850,12 +1063,29 @@ Phase II. Files too (for Photo(s))
         // const idToPass: string = this.articleHereInDetailPage._id.value; // << oi. don't look for ".value"
         const idToPass: string = this.articleHereInDetailPage._id; // << Here you want the (lazy) BE convention. sheesh.
         console.log('WTF & Etc. this.articleHereInDetailPage ', this.articleHereInDetailPage);
+        /* Hmm. Ok, we can here LOOK at this "articleHereInDetailPage",
+        but we are not really DOING anything with it, right here. Hmm.
+        {
+        articleCategory: "politics" // <<<<<<<<<< N.B. The BE stored .value.  Ok. no biggie.
+articleTitle: "How Has Donald Trump Survived?"
+articleUrl: "https://www.nytimes.com/2020/08/31/books/review/donald-trump-v-the-united-states-michael-s-schmidt.html"
+__v: 0
+_id: "5f554ebb4d2835ae66510f48"
+}
+         */
         /* Yeah, we have _id:
         articlePhotos: ["["justsomestring-in-an-array"]"]
 articleTitle: "Trump’s WAYZO Gots to go 3345 Twice BAZZhhhhARRO  We Love The Donald older Ye Olde Edite HONESTLY REALLY CRAZY VERY INEFFICIENT Fuel Efficiency Rollbacks Will Hurt Drivers"
 articleUrl: "myhttp"
 __v: 0
 _id: "5af746cea7008520ae732e2c"
+         */
+
+        console.log('myFormFieldsAndFiles ', myFormFieldsAndFiles);
+        /* Does Not Work in console.log()
+        FormData {}
+        __proto__: FormData
+
          */
 
         this.goEditArticle(idToPass, myFormFieldsAndFiles);
@@ -898,7 +1128,10 @@ _id: "5af746cea7008520ae732e2c"
 
         this.myFormFieldsData.append(
             'articleCategory_name',
-            this.editArticleFormGroup.controls['articleCategory_formControlName'].value
+            this.editArticleFormGroup.controls['articleCategory_formControlName'].value.value // <<<<<<<<<< just send the 'value', not the whole Category object. WUL
+            /* e.g. we want just the string 'news'
+            { value: 'news', viewValue: 'News' }
+             */
         )
 
         console.log('o la. prepare EDIT this.myFormFieldsData: ', this.myFormFieldsData); // hmm. FormData {}
@@ -907,6 +1140,27 @@ _id: "5af746cea7008520ae732e2c"
         -- OR --
         just (lazily) use that Chrome DevTools Network Headers FormData:
         -----
+        NEWER EXAMPLE:
+        ===========
+        ------WebKitFormBoundarylxMomW0gcyaEVcOo
+Content-Disposition: form-data; name="articleTitle_name"
+
+How Has Donald Trump Survived? I mean Really.
+------WebKitFormBoundarylxMomW0gcyaEVcOo
+Content-Disposition: form-data; name="articleUrl_name"
+
+https://www.nytimes.com/2020/08/31/books/review/donald-trump-v-the-united-states-michael-s-schmidt.html
+------WebKitFormBoundarylxMomW0gcyaEVcOo
+Content-Disposition: form-data; name="articleCategory_name"
+
+[object Object] // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< !!
+------WebKitFormBoundarylxMomW0gcyaEVcOo--
+        ===========
+
+
+
+
+        OLDER EXAMPLE:
         ------WebKitFormBoundaryfNJTOZUW1y6QoaUw
 Content-Disposition: form-data; name="articleTitle_name"
 
@@ -941,7 +1195,15 @@ News
             .subscribe(
                 (whatWeGotBackFromUpdate) => {
                     console.log('whatWeGotBackFromUpdate BE ', whatWeGotBackFromUpdate);
-
+/*
+{
+articleCategory: "[object Object]" // <<<<<<<<<<<<<<<<<<<<<<<<<
+articleTitle: "How Has Donald Trump Survived? I mean Really."
+articleUrl: "https://www.nytimes.com/2020/08/31/books/review/donald-trump-v-the-united-states-michael-s-schmidt.html"
+__v: 0
+_id: "5f554ebb4d2835ae66510f48"
+}
+ */
                     /* TODO (maybe)
                     BE-to-FE convert, to DISPLAY result on FE << NAH
 

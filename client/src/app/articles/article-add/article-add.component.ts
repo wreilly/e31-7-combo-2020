@@ -224,9 +224,32 @@ export class ArticleAddComponent implements OnInit {
     https://github.com/angular/angular.js/commit/ffb6b2fb56d9ffcb051284965dd538629ea9687a
      */
 
-    this.articleCategory_formControl = new FormControl(null,[
+    /*
+    Hmm. Seems that initializing the FormControl for Category - works (not breaking things, as I Add an Article)
+     for both "init" values:
+    - as a Category literal object (w. default choice of News, but that is not seen on U/I)
+    - as simple null
+    Unclear yet what that initial value and type does, when the code (at present) goes on
+    to basically assign just a single string to the FormControl value e.g. 'u.s.' for BE ".value"
+    Next will be (I think ?) to get the value on the FormControl to be the whole Category object:
+    { value: 'u.s.', viewValue: 'U.S.'}
+    Then to get at the FE "display" one, would be FormControl.value.viewValue << I believe
+    And the BE "stored" one would be FormControl.value.value  << I think
+
+    SEE ALSO ArticleDetailTwoComponent re: EDITING
+     */
+/* This "didn't break" adding an Article, but, seems not super intuitive. Let's not use.
+(The AddArticle form Category formControl was still (appropriately) empty. It did NOT show a "default" of "News". Good. (I guess))
+
+    this.articleCategory_formControl = new FormControl({value: 'news', viewValue: 'News'},[
         Validators.required,
     ]);
+*/
+/* WORKING FINE ... */
+    this.articleCategory_formControl = new FormControl(null, [
+      Validators.required,
+    ]);
+
     /* Note:
 Here on a SELECT form element, this "default formState" does *NOT* work (boo).
 'News-DEFAULT'   nor  'News-SERVICE'

@@ -26,6 +26,7 @@ import { ArticlesComponent } from './articles.component';
     ArticleComponent,
     ArticleListComponent,
     // ArticleAddComponent, // << t.b.d. ?
+    ArticleDetailTwoComponent, // << needed here in exports ? apparently yes; see Component
   ],
   imports: [
     CommonModule,
