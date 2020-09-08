@@ -50,11 +50,29 @@ https://gist.github.com/jareware/4738651
 See also all this complexity:
 https://medium.com/@amcdnl/theming-angular-with-css-variables-3c78a5b20b24   O la!
  */
+
+// ***********  FROM TYPESCRIPT, DYNAMICALLY CHANGE *RESULTANT CSS* VARIABLE  *********************
+/*
+That is, NO, we do not, can not, change this *SCSS* Variable. No.
+But we can and do change the resultant, post-processed *CSS* Variable, using
+plain old web standard CSS Custom Properties var() function.
+https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties#Values_in_JavaScript
+https://medium.com/angular-in-depth/build-truly-dynamic-theme-with-css-variables-539516e95837
+ */
+
+$wr__hide-show-scss-var: var(--wr__hide-show-css-var);
+
+.component-label {
+  font-size: 10px;
+  font-weight: bold;
+  display: $wr__hide-show-scss-var;
+}
+
 //$wr__hide: true; // yeah, Hide those (ugly though useful!) Component labels...
 $wr__hide: false; // don't hide. Show!
 // Q. How to programmatically change above ?? ?? o well...
 
-.component-label {
+.component-label-using-wr-hide { // worked fine, albeit via manual edit of this .scss file
   font-size: 10px;
   @if($wr__hide) {
     display: none;

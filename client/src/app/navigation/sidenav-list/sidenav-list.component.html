@@ -47,5 +47,12 @@
                 on-change="onThemeChange($event.checked); myCloseSidenav()"
         ></mat-slide-toggle>
     </mat-list-item>
+    <mat-list-item>
+        <mat-checkbox
+                on-change="onLabelShowHideChange($event.checked); myCloseSidenav()"
+        >
+            Show/Hide Labels
+        </mat-checkbox>
+    </mat-list-item>
 </mat-nav-list>
 

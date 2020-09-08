@@ -16,6 +16,9 @@ export class SidenavListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    /* Note: UN-like over in HeaderComponent ngOnInit(), here in SideNav we do *NOT* run
+             any default "init" of our onLabelShowHideChange(). No.
+     */
   }
 
   myCloseSidenav() {
@@ -25,6 +28,17 @@ export class SidenavListComponent implements OnInit {
 
   onThemeChange(checkedOrNot: boolean) {
     this.myThemeService.setThemeToggle(checkedOrNot);
+  }
+
+  onLabelShowHideChange(checkedOrNot: boolean) {
+    /* NON-D.R.Y.
+       Also in Header o well. Service, anyone? Hmm. And, maybe some Store use, hey?
+    */
+    if (checkedOrNot) { // checked. so DO SHOW Labels
+      document.documentElement.style.setProperty('--wr__hide-show-css-var', 'inline')
+    } else if (!checkedOrNot) { // not checked. We HIDE Labels
+      document.documentElement.style.setProperty('--wr__hide-show-css-var', 'none')
+    }
   }
 
 }

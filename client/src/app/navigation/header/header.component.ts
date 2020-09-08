@@ -32,15 +32,20 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit(): void {
-    this.myThemeService.isThemeDarkInServiceObservable
-        .subscribe(
-            (whatIGot) => {
-              console.log('OnInit. ThemeDark subscribe whatIGot: boolean - ', whatIGot);
-              this.isThemeDarkInComponent = whatIGot;
-            }
-        )
+      this.onLabelShowHideChange(false);
+
+      this.myThemeService.isThemeDarkInServiceObservable
+          .subscribe(
+              (whatIGot) => {
+                  console.log('OnInit. ThemeDark subscribe whatIGot: boolean - ', whatIGot);
+                  this.isThemeDarkInComponent = whatIGot;
+              }
+          )
 
 
+ /*
+  Do Note: We have (long) since REMOVED the "scroll biz" from the HeaderComponent Template. So, Not Using this! okay.
+ */
       this.myScrollService.scrollOffsetInServiceObservable
           .subscribe(
               (scrollOffsetWeGot) => {
@@ -57,6 +62,9 @@ export class HeaderComponent implements OnInit, AfterViewInit {
         /* NEW   COPIED HERE FROM SCROLL-TOP.COMPONENT.
         Kinda crazy to run there, and here.
         https://stackoverflow.com/questions/46996191/how-to-detect-scroll-events-in-mat-sidenav-container
+         */
+        /*
+        Do Note: We have (long) since REMOVED the "scroll biz" from the HeaderComponent Template. So, Not Using this! okay.
          */
         this.myScrollDispatcher.scrolled(100)
             .subscribe(
@@ -81,6 +89,17 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
     onThemeChange(checkedOrNot: boolean) {
       this.myThemeService.setThemeToggle(checkedOrNot);
+    }
+
+    onLabelShowHideChange(checkedOrNot: boolean) {
+        /* NON-D.R.Y.
+        Also in SideNav o well. Service, anyone? Hmm. And, maybe some Store use, hey?
+         */
+        if (checkedOrNot) { // checked. so DO SHOW Labels
+            document.documentElement.style.setProperty('--wr__hide-show-css-var', 'inline')
+        } else if (!checkedOrNot) { // not checked. We HIDE Labels
+            document.documentElement.style.setProperty('--wr__hide-show-css-var', 'none')
+        }
     }
 
     myToggleMatSidenavHeader() {

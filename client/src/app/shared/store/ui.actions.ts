@@ -14,6 +14,11 @@ export interface MyState {
 }
  */
 
+/* TODO (notions re: Store)
+- Toggle Angular Material theme: dark, light
+- Toggle component labels: show, hide
+ */
+
 export const SET_SIDENAV_TO_OPPOSITE_STATE = '[UI] Set Sidenav To Opposite State';
 
 export const START_LOADING = '[UI] Start Loading';
