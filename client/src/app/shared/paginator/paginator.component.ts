@@ -76,8 +76,9 @@ These @Output EventEmitters emit from child component, listened to in parent com
     pageSizeSelected = 5; // default
     pageSize = this.pageSizeSelected;
 
-    rangeAroundArray = [1,2];
+    rangeAroundArray = [1,2]; // for mat-option *ngFor
     rangeAroundSelected = 2; // default
+    // RANGE_AROUND: number; // << No.
     RANGE_AROUND = this.rangeAroundSelected; // (on each side of currentPageNumber)
     /* Since both 'pageSize' and 'RANGE_AROUND' are configurable by user on U/I,
     no need to make either of them configurable as an "@Input()" here. (IMO.)
@@ -535,7 +536,7 @@ These @Output EventEmitters emit from child component, listened to in parent com
         "up, over, back down" sending, to get it from "bottom" to "top"
         Paginator. No. Why? Because the existing method to go get another
         page's worth of Articles already carries that variable with it: pageSize.
-        So it is already going up,over, back etc.
+        So it is already going up, over, back etc.
 
         But RangeAround isn't really needed in the ArticleList component, to
         fetch Articles etc. So I had no need and was not sending it.
@@ -561,3 +562,65 @@ These @Output EventEmitters emit from child component, listened to in parent com
     } // /setRangeAround()
 
 }
+
+/*
+LARGE COMMENTS GO HERE:
+
+$ git commit -m 'Clean up ArticleListComponent: remove duplicated code now instead in PaginatorComponent. Add LARGE Comments for I. PAGE SIZE and II. RANGE AROUND, re: "round-trip-plus" child-to-parent-to-other-child etc. (!)'
+
+####  I. PAGE SIZE  #################################################
+I. PAGE SIZE = How Many Articles on One Page
+pageSize:
+- CHILD Paginator (bottom)
+-- Template: <mat-select on-valueChange="setPageSize()" e.g. 5, or 10, or 20
+-- TypeScript: .setPageSize()
+@@@@  GO GET ARTICLES  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--             .emitCallGetArticlesPaginated()
+--             .paginationGetNextPageArticlesEvent.emit()  @Output()
+- PARENT ArticleList
+-- Template: <app-paginator on-paginationGetNextPageArticlesEvent="getArticlesPaginated()
+-- TypeScript: .getArticlesPaginated()
+--             .updateArticlesControlledPaginator()
+--              this.updatePageSize = pageSize;
+-- Template: <app-paginator bind-pageSizeInputName="updatePageSize">
+- CHILD Paginator (bottom)
+-- TypeScript: @Input('pageSizeInputName')
+-- .updateRedrawHereArticlesControlledPaginator(pageSizeInput)
+@@@@  /GO GET ARTICLES  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+####  /I. PAGE SIZE  ################################################
+
+
+####  II. RANGE AROUND  #############################################
+II. RANGE AROUND = How Many Page # Buttons to Left and to Right of CurrentPage
+rangeAround:
+- CHILD Paginator (bottom)
+-- Template: <mat-select on-valueChange="setRangeAround()" e.g. 1, or 2
+-- TypeScript: .setRangeAround()
+--             .emitPassUpToParentRangeAroundNewValue()
+--             .rangeAroundChangedPaginatorBottomEvent.emit()  @Output()
+- PARENT ArticleList
+-- Template: <app-paginator on-rangeAroundChangedPaginatorBottomEvent="updateRangeAroundToTopPaginator()
+-- TypeScript: .updateRangeAroundToTopPaginator()
+--             this.RANGE_AROUND = rangeAroundFromOutput;
+-- Template: <app-paginator bind-rangeAroundInputName="RANGE_AROUND"
+- CHILD Paginator (bottom)
+-- TypeScript: .updateHereRangeAroundForPaginator()
+--             this.RANGE_AROUND = rangeAroundFromParent;
+- CHILD Paginator (BOTH bottom AND top)
+-- Template:   <button> {{ ... currentPageNumber + RANGE_AROUND ...}} etc.
+
+@@@@  GO GET ARTICLES  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-- TypeScript: .emitCallGetArticlesPaginated()
+--             .paginationGetNextPageArticlesEvent.emit()  @Output()
+- PARENT ArticleList
+-- Template: <app-paginator on-paginationGetNextPageArticlesEvent="getArticlesPaginated()
+-- TypeScript: .getArticlesPaginated()
+--             .updateArticlesControlledPaginator()
+--              this.updatePageSize = pageSize;
+-- Template: <app-paginator bind-pageSizeInputName="updatePageSize">
+- CHILD Paginator (bottom)
+-- TypeScript: @Input('pageSizeInputName')
+-- .updateRedrawHereArticlesControlledPaginator(pageSizeInput)
+@@@@  /GO GET ARTICLES  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+####  /II. RANGE AROUND  ############################################
+ */

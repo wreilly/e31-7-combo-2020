@@ -164,11 +164,11 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
 
         <!-- FILTER by CATEGORY Time !
         TODONE: Dynamically generate these buttons from list of Categories
-        TODO: Fix now broken "Latest" #goto. (Only works for one Category! sigh.) (Welcome page. Works OK from Articles List page. cheers.)
+        TODONE: N/A NOW: Fix now broken "Latest" #goto. (Only works for one Category! sigh.) (Welcome page. Works OK from Articles List page. cheers.)
         TODONE: For 0 - provide "No articles in that category" message.
-        TODO: (Mebbe) Provide # of items in given Category y not  e.g.  Politics (12)
+        TODO: (Mebbe) Provide # of items in given Category, right on the button - y not  e.g.  Politics (12)
         TODONE: Also, update "Count" at top of this Component to match the selected Category count (e.g. Count: 12)
-        TODO: Hmm, can I also get the "Latest" to reflect date of latest addition in this selected Category? Tlicky.
+        TODONE: N/A NOW: Hmm, can I also get the "Latest" to reflect date of latest addition in this selected Category? Tlicky.
         -->
         <mat-card-content>
             <div>
@@ -278,16 +278,12 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
 
     </mat-card>
 
-    <!-- ***  "CONTROLLED" PAGINATOR - TOP *** -->
-
-    <!-- ***  /"CONTROLLED" PAGINATOR - TOP  *** -->
-
     <app-paginator
             bind-topOrBottom="'top'"
 
-            bind-currentPageNumberInputName="updateRedrawCurrentPageNumber"
-            bind-pageSizeInputName="updateRedrawPageSize"
-            bind-articlesCountInputName="updateRedrawArticlesCount"
+            bind-currentPageNumberInputName="updateCurrentPageNumber"
+            bind-pageSizeInputName="updatePageSize"
+            bind-articlesCountInputName="updateArticlesCount"
 
             bind-rangeAroundInputName="RANGE_AROUND"
 
@@ -297,13 +293,6 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
             )"
     ></app-paginator>
 
-    <!--
-        "You can add mat-list-item as the directive to your app-car-item component..."
-        https://stackoverflow.com/questions/58477720/how-to-use-in-angular-material-list-an-item-component
-
-        As for WebStorm not recognizing mat-list-item as directive on my app-article, I simply "added as custom "HTML" attribute" (right-click). Warning goes away. Seems all totally benign, & Etc. Oi!
->>  WebStorm Preferences | Editor | Inspections | HTML | Unknown HTML tag attribute
-        -->
     <div
             *ngIf="noArticlesInCategory"
     >
@@ -317,14 +306,29 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
             *ngFor="let article of articlesToDisplay"
             [articleToSendDownName]="article"
     ></app-article>
+    <!-- WAS *NOT* WORKING. See above instead.
+            <mat-list-item
+                    *ngFor="let article of articles"
+            >
+                <app-article
+                        [articleToSendDownName]="article"
+                ></app-article>
+            </mat-list-item>
+    -->
+    <!--
+        "You can add mat-list-item as the directive to your app-car-item component..."
+        https://stackoverflow.com/questions/58477720/how-to-use-in-angular-material-list-an-item-component
 
+        As for WebStorm not recognizing mat-list-item as directive on my app-article, I simply "added as custom "HTML" attribute" (right-click). Warning goes away. Seems all totally benign, & Etc. Oi!
+>>  WebStorm Preferences | Editor | Inspections | HTML | Unknown HTML tag attribute
+        -->
 
     <app-paginator
             bind-topOrBottom="'bottom'"
 
-            bind-currentPageNumberInputName="updateRedrawCurrentPageNumber"
-            bind-pageSizeInputName="updateRedrawPageSize"
-            bind-articlesCountInputName="updateRedrawArticlesCount"
+            bind-currentPageNumberInputName="updateCurrentPageNumber"
+            bind-pageSizeInputName="updatePageSize"
+            bind-articlesCountInputName="updateArticlesCount"
 
             bind-rangeAroundInputName="RANGE_AROUND"
 
@@ -337,11 +341,6 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
             $event.rangeAroundOutput
             )"
     ></app-paginator>
-
-
-    <!-- ***  "CONTROLLED" PAGINATOR - BOTTOM *** -->
-
-     <!-- ***  /"CONTROLLED" PAGINATOR - BOTTOM  *** -->
 
 
     <div
@@ -366,7 +365,7 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
         The other Categories just wouldn't have it displayed. No jump.)
         cheers.
 
-        TODO: (minor) The "Latest" *DATE* is wrong. sigh. (from Welcome Page that is. from Articles List page, it's okay)
+        TODONE: N/A NOW: (minor) The "Latest" *DATE* is wrong. sigh. (from Welcome Page that is. from Articles List page, it's okay)
         For the one Category (e.g. 'Politics') that actually HAS the Latest, the date tells the correct story.
         But for all others, the "cheat" jump to bottom of page brings you to whatever is
         "latest" *for that Category*  (which is okay), BUT, the *DATE* on that
@@ -375,13 +374,5 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
         A. Not Very (bloody) High.
         -->
     </div>
-<!-- WAS *NOT* WORKING. See above instead.
-        <mat-list-item
-                *ngFor="let article of articles"
-        >
-            <app-article
-                    [articleToSendDownName]="article"
-            ></app-article>
-        </mat-list-item>
--->
+
 </mat-nav-list>
