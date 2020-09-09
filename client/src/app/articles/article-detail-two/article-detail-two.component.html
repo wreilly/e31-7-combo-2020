@@ -259,8 +259,13 @@ Thu Aug 20 2020 18:14:22 GMT-0400 (Eastern Daylight Time) // << FULL
                             mat-icon-button
                             type="submit"
                             bind-disabled="!editArticleFormGroup.valid"
+                            *ngIf="!(myUIIsLoadingStore$ | async)"
+
                     >
-                        <!-- TODO Hide that button while spinner appears
+                        <!-- TODONE Hide that button while spinner appears
+                         *ngIf="!(myUIIsLoadingStore$ | async)"
+
+
                             bind-disabled="!editArticleFormGroup.valid"
                             *ngIf="!(myUIIsLoadingStore$ | async)"
                             *ngIf="myUIIsLoadingStore$ | async"
@@ -272,13 +277,15 @@ Thu Aug 20 2020 18:14:22 GMT-0400 (Eastern Daylight Time) // << FULL
                         {{areWeEditing ? 'Update' : 'Post'}} Your Article
                         -->
                     </button>
-                    <!--
-                          TODO      <mat-progress-spinner
-                                        mode="indeterminate"
 
-                                >
-                                </mat-progress-spinner>
-                    -->
+                    <!-- TODONE spinner on EDIT submit() -->
+                    <mat-progress-spinner
+                            mode="indeterminate"
+                            *ngIf="myUIIsLoadingStore$ | async"
+                            bind-diameter="75"
+                    >
+                    </mat-progress-spinner>
+
                     <div>
                         <button
                                 mat-raised-button

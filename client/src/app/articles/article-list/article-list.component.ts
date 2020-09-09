@@ -1,4 +1,6 @@
 import { Component, OnInit, AfterViewInit, Input, Output, Inject, NgZone } from '@angular/core';
+import {Observable} from "rxjs";
+import { Store } from '@ngrx/store';
 /* CRAP
 import { PageScrollService } from 'ngx-page-scroll-core';
 */
@@ -15,6 +17,11 @@ import { FilterSortService } from '../../core/services/filter-sort.service';
 
 import {Article} from "../article.model";
 import {calcPossibleSecurityContexts} from "@angular/compiler/src/template_parser/binding_parser";
+
+
+import * as fromRoot from '../../store/app.reducer';
+import * as UIActions from '../../shared/store/ui.actions'; // Not needed. hmmph.
+
 
 
 @Component({
@@ -118,6 +125,8 @@ articleUrl_name: 'http://nytimes.com/three',
 
 categoryThatMatches: Category;
 
+myUIIsLoadingStore$: Observable<boolean>;
+
 constructor(
 private myArticleService: ArticleService,
 private myFilterSortService: FilterSortService,
@@ -128,6 +137,7 @@ private myDocument: Document,
 */
 private myScrollDispatcher: ScrollDispatcher,
 private myNgZone: NgZone,
+private myStore: Store,
   ) { }
 
   ngOnInit(): void {
@@ -147,6 +157,8 @@ private myNgZone: NgZone,
       this.categories = this.myArticleService.getCategoriesInService();
 
       this.currentPageNumber = 1; // init, "1"-based.
+
+      this.myUIIsLoadingStore$ = this.myStore.select(fromRoot.getIsLoading);
 
       this.getArticlesPaginated(this.currentPageNumber, this.pageSize)
 /* Too Early!
@@ -279,7 +291,12 @@ private myNgZone: NgZone,
 
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        // TODO: SPINNER HERE!
+        /* SPINNER # 1 triggered from here, arguably.
+           But spinner-related code is elsewhere:
+        - Spinner ~dispatch.startLoading is over in ArticleService
+        - Spinner setTimeout() -> ~dispatch.stopLoading is over in ArticleService
+        - Spinner <mat-progress-spinner ~isLoading$|async> is in ArticleListComponent template
+         */
         this.myArticleService.listArticlesPaginated(page, pagesize)
             .subscribe(
                 (allArticlesWeGot: {

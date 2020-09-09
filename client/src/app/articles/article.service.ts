@@ -37,7 +37,7 @@ export class ArticleService {
       ).pipe( // instead of: subscribe(
           tap(
           (articleConfirmationWeGot) => {
-              console.log('PIPE. TAP. articleConfirmationWeGot ', articleConfirmationWeGot);
+              console.log('CREATE00 PIPE. TAP. articleConfirmationWeGot ', articleConfirmationWeGot);
               /* PIPE. TAP. articleConfirmationWeGot
               articleTitle: "The Trump Administration Is Reversing 100 Environmental Rules. Here’s the Full List."
 articleUrl: "https://www.nytimes.com/interactive/2020/climate/trump-environment-rollbacks.html?action=click&pgtype=Article&state=default&module=styln-climate&variant=show&region=TOP_BANNER&context=storylines_menu"
@@ -49,11 +49,21 @@ _id: "5f1364e304e544a462218215"
               /*
               TIMER ! (Fake it taking a little longer)
                */
-              setTimeout(
+              setTimeout( // CREATE ARTICLE
                   ()=> {
-                      this.myStore.dispatch(new UIActions.StopLoading());                  },
+                      console.log('CREATE01 SETTIMEOUT 01 o la'); // yeah 5 seconds later
+                      this.myStore.dispatch(new UIActions.StopLoading());
+                      console.log('CREATE02 SETTIMEOUT 02 o la'); // yeah 5 seconds later
+                      },
                   1000);
-
+              console.log('CREATE03 PIPE. TAP. articleConfirmationWeGot ', articleConfirmationWeGot);
+              /* Yes
+              {articleCategory: "business"
+articleTitle: "sadf jkl;f"
+articleUrl: "https://nytimes.com/focusissimo"
+__v: 0
+_id: "5f593f744d2835ae66510f4d"}
+               */
           }
           ), // tap()
 
@@ -111,6 +121,10 @@ _id: "5f1364e304e544a462218215"
         Just sort of benign "ACK" msg. (or error, of course)
         But no data of substance is returned to calling Component
        */
+        /* SPINNER Time
+        (As seen in createArticleB() )
+         */
+        this.myStore.dispatch(new UIActions.StartLoading());
 
         /* NEW. Category handling
 
@@ -142,19 +156,46 @@ articleCategory: {value: 'politics', viewValue: 'Politics'}  // <<<<<<<<<<<<<<<<
 So we need to make small change to our "editedArticle" object, before sending to BE Server.
          */
 
-
-/* NAH:
-        let editedArticleWithBECategoryValue = Object.assign(editedArticle); // shallow copy. uh-oh. hmm.
-*/
-
-        // Put string 'politics' in, instead of whole Category object.
-/* This is NOT WORKING
-        editedArticleWithBECategoryValue.articleCategory = editedArticle.articleCategory.value;
-*/
-
         // DON'T FORGET!  PUT 'return' AT FRONT OF THIS LINE:
+        return this.myHttp.put(`http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`, editedArticle)
+            .pipe(
+                tap(
+                    (whatWeGotBackFromUpdateHereInPipe) => {
 
-        return this.myHttp.put(`http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`, editedArticle);
+                        console.log('EDIT PipeTap 00 o la whatWeGotBackFromUpdateHereInPipe y not: ', whatWeGotBackFromUpdateHereInPipe);
+                        /* Yes
+{ articleCategory: "opinion"
+articleTitle: "asd99 HOME no navigate u orkeay ffdasdfttt is bad"
+articleUrl: "https://nytimes.com/focusissimo"
+__v: 0
+_id: "5f592ed54d2835ae66510f4b" }
+                         */
+
+                        // this.myStore.dispatch(new UIActions.StopLoading()); // << direct. no timeout
+                     //   return whatWeGotBackFromUpdateHereInPipe; // NOT critical to return, apparently. Okay.
+
+/* MOVED TO CALLING COMPONENT ArticleDetailTwo. See Comment there.
+
+                        setTimeout( // EDIT ARTICLE
+                            () => {
+                                console.log('EDIT SETTIMEOUT 01 o la idPassedIn y not: ', idPassedIn); // yeah, seen 5 seconds later ... 5f592ed54d2835ae66510f4b
+                                this.myStore.dispatch(new UIActions.StopLoading());
+                                console.log('EDIT SETTIMEOUT 02 o la idPassedIn y not: ', idPassedIn); // yeah, seen 5 seconds later ... 5f592ed54d2835ae66510f4b
+
+
+             // ??? NO RETURN ??      return whatWeGotBackFromUpdateHereInPipe;
+                            },
+                            5000);*/
+
+                        console.log('EDIT PipeTap 03 o la whatWeGotBackFromUpdateHereInPipe y not: ', whatWeGotBackFromUpdateHereInPipe);
+                        /* Yes
+                        Same as above for EDIT PipeTap 00
+                         */
+
+                    } // /(whatWeGotBackFromUpdateHereInPipe) {
+                ) // /tap()
+            ); // /pipe()
+
 
         // NAH: return this.myHttp.put(`http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`, editedArticleWithBECategoryValue);
 
@@ -179,7 +220,7 @@ Content-Disposition: form-data; name="articleCategory_name"
 ------WebKitFormBoundarySOA9tTpW5R60QA5Y-
          */
 
-    }
+    } // /updateArticle()
 
 
     deleteArticle(idPassedIn) {
@@ -223,13 +264,33 @@ Content-Disposition: form-data; name="articleCategory_name"
 /*
     listArticlesPaginated(page, pagesize): Observable<Object> {
 */
-        // GET "pagesize" # of Articles. TODONE: HARD-CODED so far: 1, 5
+
+        /* SPINNER Time
+(As in createArticleB() )
+ */
+        this.myStore.dispatch(new UIActions.StartLoading());
+
 
         // YES. DON'T FORGET THAT BLOODY 'return' !!! !!! !!!
         return this.myHttp.get<{message: string, articlesPaginated: any, maxArticles: number}>(
             `http://0.0.0.0:8089/api/v1/articles?page=${page}&pagesize=${pagesize}`,
         )
             .pipe(
+                tap(
+                    (dataWeGotFromServerInTap: {
+                        message: string,
+                        articlesPaginated: any,
+                        maxArticles: number,
+                    }) => {
+                        console.log('dataWeGotFromServerInTap.message ', dataWeGotFromServerInTap.message);
+                        // for Spinner:
+                        setTimeout( // GET ARTICLES PAGINATED
+                            () => {
+                                this.myStore.dispatch(new UIActions.StopLoading());
+                            },
+                            500);
+                    }
+                ),
                 map(
                     (dataWeGotFromServer) => {
                         console.log('Service. dataWeGotFromServer ', dataWeGotFromServer);

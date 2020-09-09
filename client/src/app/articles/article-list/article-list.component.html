@@ -301,6 +301,17 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
         </div>
     </div>
 
+    <mat-progress-spinner
+            *ngIf="myUIIsLoadingStore$ | async"
+            mode="indeterminate"
+            bind-diameter="50"
+    >
+    </mat-progress-spinner>
+    <!-- Ok. works. let's see if we can make it an overlay. (whoa)
+    https://stackoverflow.com/questions/42963444/angular-2-material-progress-spinner-display-as-overlay
+    https://stackblitz.com/edit/overlay-progress-spinner-8o275a?file=app%2Foverlay%2Foverlay.service.ts
+    -->
+
     <app-article
             mat-list-item
             *ngFor="let article of articlesToDisplay"

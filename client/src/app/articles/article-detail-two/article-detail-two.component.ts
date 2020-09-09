@@ -37,6 +37,7 @@ import { DateService } from '../../core/services/date.service';
 
 
 class myCustomCategorySelectErrorStateMatcher implements ErrorStateMatcher {
+// SEE NOTE BELOW how this ErrorStateMatcher is in fact SUPERSEDED. OBSOLETE. o well.
 
     /* WORKING ASSUMPTION
     Any one form field can have one, & only one, ErrorStateMatcher.
@@ -61,21 +62,70 @@ class myCustomCategorySelectErrorStateMatcher implements ErrorStateMatcher {
 
 
     categoriesHereInMatcher = this.myArticleService.getCategoriesInService();
-/* BACK TO ORIG null */
+
+
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-  /* NOPE
+  /* Yes. BACK TO ORIG null */
+  /* NOPE:
      "error TS2339: Property 'setValue' does not exist on type 'FormControl | { value: "news"; viewValue: "News"; }'."
 
     isErrorState(control: FormControl | {value: 'news', viewValue: 'News'}, form: FormGroupDirective | NgForm | null): boolean {
   */
 
+        /* ****  UPDATE:  NOW SUPERSEDED !!!  *****
 
-        console.log('Custom Error Matcher! 11 control ', control); // control  null    :o(
+        O la la. "Overtaken by events!"
+        This whole Custom ErrorMatcher, for Category, is
+        now NOT REALLY NEEDED.
+        O la.
+        Excellent exercise in GETTING IT TO WORK, man. Good show.
+        But, you THEN went on to actually FIX the potential
+        issue *Upstream* of here.
+        Whoa.
+
+        That is:
+        - We had (have!) data in DB with:
+        1. Normal - a Category with BE value from our Categories e.g. 'u.s.'
+        2. Missing - NO Category property at all on the DB
+        3. Bad - Category BE value is spurious ("foobar") - NOT from our Categories
+
+        We created this Custom ErrorMatcher to handle all 3.
+        Before, scenario # 2 would get here as 'undefined'
+        and scenario # 3 would get here as the bad data "foobar" whatever.
+        ** (Now, with the upstream fix, they both get here as 'News'/'news' default) **
+        But before that upstream fix, we handled these two scenarios
+         (# 2 and # 3) by, as you'll see below,
+        essentially "WHACKING" the data value to null.
+        That is what would get this ErrorMatcher to finally
+        return indeed a Boolean false (correct), and it is that which
+        would finally successfully protect our Form Submit button -
+        It could not be clicked with bad Category data like that.
+        The user had to pick a good Category from dropdown (or Cancel out).
+        h'rrah.
+        cheers.
+
+        It is just that now, this Custom ErrorMatcher is really
+        >> No Longer Needed. <<
+
+        Why?
+        To reiterate: Because now with upstream fix, ALL Category values
+        that get here will be acceptable. Either:
+        - A true member of Categories 'u.s.', 'world', 'news' etc.
+        - OR, bad/missing data that got transformed to the default Category 'news'
+        So: No more error catching, here. Done earlier. cheers.
+
+        sigh.
+        We'll leave the damned code in, for now. ... ...
+           ****  /UPDATE:  NOW SUPERSEDED !!!  *****
+         */
+
+       // console.log('Custom Error Matcher! 11 control ', control); // control  null    :o(
         // Huh. Must be vagaries of console.log etc why control.value shows null for above. sheesh.
-        console.log('Custom Error Matcher! 11 control.value ', control.value); // control.value  null    :o)
-        // {value: "u.s.", viewValue: "U.S."} // << looking (maybe ?) promising ?
+        console.log('isErrorState() Custom Error Matcher! 11 control.value ', control.value);
+        // {value: "u.s.", viewValue: "U.S."} // << good.
+        // OR default of {value: "news", viewValue: "News"} // << also good.
 
-        console.log('Custom Error Matcher! this.categoriesHereInMatcher ', this.categoriesHereInMatcher);
+       // console.log('Custom Error Matcher! this.categoriesHereInMatcher ', this.categoriesHereInMatcher);
         // Yes, all 8 Categories. bueno
         /*
         0: {value: "news", viewValue: "News"}
@@ -92,7 +142,7 @@ class myCustomCategorySelectErrorStateMatcher implements ErrorStateMatcher {
         categoryFoundAmongOptions = this.categoriesHereInMatcher.find(
             (eachCategory) => {
 
-                console.log('777A eachCategory ', eachCategory);
+                // console.log('777A eachCategory ', eachCategory);
                 /* Yeah:
                      {value: "world", viewValue: "World"}
 
@@ -101,34 +151,19 @@ method (which I've named "eachCategory")
 is the entire Category object (above) ... Good.
  */
 
-                console.log('777 control.value 33 control.value ', control.value); // 'U.S.' <<< HMM! SHOULDN'T THIS BE 'u.s.'??? << I have corrected this.
-                /* New.
+                console.log('777 control.value 33 control.value ', control.value);
+                /* Yes:
+                For # 1 (below) e.g.
                 {value: "u.s.", viewValue: "U.S."}
+
+                And for # 2 and # 3 below, we get default:
+                {value: "news", viewValue: "News"}
                  */
                 /*
-                Corrected above over in ArticleService in the
-                "myMapBEArticlesToFEArticles()"
-                where I now *preserve* the BE _value_ for Category
-                e.g. 'politics'
-
-                Note however:
                 1. - Normal. BE Category is one of the options. OK. 'u.s.'
                 2. - Empty. BE Category is simply NOT a Property at all on BE. OK.
                 3. - Dis-Allowed Value. BE Category is some string like "No Category etc.", or "foobar". Hmmph.
                  */
-                /*
-                ...whereas the "control.value" turns out
-                to be:
-                 - NOT that entire Category object
-                 - Instead, just the "view value" in the
-                control.  That is, the part the user sees in the
-                U/I for this select form field, e.g. 'World'
-                (even though behind the scenes the select options
-                are populated from an array of Category objects
-                including {value: 'world', viewValue: 'World') )
-                 */
-                // console.log('777B control.status ? ', control.status); // VALID
-
 
 /* I had it wrong:
                 return control.value === eachCategory;
@@ -141,7 +176,7 @@ is the entire Category object (above) ... Good.
 */
                 return control.value.value === eachCategory.value; // << We have a winner.
                 /* N.B. Above works right for Use Case # 1 = normal Category values
-                Still failing for Use Case # 2 and # 3. << TODO next to fix
+                Still failing for Use Case # 2 and # 3. << TODONE next to fix
                 -------------
                 -------
 PRETTY GOOD PROGRESS:
@@ -171,7 +206,7 @@ More moving parts than you would ever expect:
 ==========
 
 NEXT UP:
-- Use Case # 2 and # 3 need fixing.
+- Use Case # 2 and # 3 need fixing. << DONE. whew.
 Should mostly have to do with getting the .patchValue() right.
 From there, we'll probably use a "default" choice like { value: 'news', viewValue: 'News' }
 and then the errorStateMatcher and compareWith probably won't need to be touched.
@@ -183,7 +218,7 @@ We'll see.
             }
         ) // /.find()  << returns a Category object. From the array of available Categories. bueno.
 
-        console.log('categoryFoundAmongOptions straight-up ', categoryFoundAmongOptions);
+        // console.log('categoryFoundAmongOptions straight-up ', categoryFoundAmongOptions);
         // undefined  when not found because Empty/Not Present = correct
         // undefined  when not found because Dis-Allowed Value = correct
         /* When found: yes:
@@ -195,7 +230,7 @@ We'll see.
             // categoryIsAmongOptionsOK = false;
             categoryIsAmongOptionsOK = true; // ORIG
         } else if (typeof categoryFoundAmongOptions === 'undefined') {
-
+            console.log('0000 *** SHOULD NEVER GET HERE NOW See big Comment above about "Superseded" cheers. ****** control.value ', control.value);
             /*
             Hmm. This "update validity" thing does, er, ah, what it says.
             It (re-)runs validity biz, and if you're valid, you're valid.
@@ -257,7 +292,9 @@ We'll see.
             Had to WHACK the data. See above.
             WUL.
              */
-        }
+        } // /(typeof categoryFoundAmongOptions === 'undefined') {
+            // /'0000 *** SHOULD NEVER GET HERE NOW See big Comment above about "Superseded" cheers. ******
+
 
         // **************
         console.log('******************');
@@ -271,13 +308,13 @@ We'll see.
          */
 
         console.log('categoryIsAmongOptionsOK ', categoryIsAmongOptionsOK); // true
-        console.log('control ', control);
+       // console.log('control ', control);
         /*
         FormControl {asyncValidator: null, pristine: true, ...
          */
-        console.log('control.invalid ', control.invalid); // false
-        console.log('control.dirty ', control.dirty); // false
-        console.log('control.touched ', control.touched); // false
+        // console.log('control.invalid ', control.invalid); // false
+        // console.log('control.dirty ', control.dirty); // false
+        // console.log('control.touched ', control.touched); // false
         console.log('******************');
         // **************
 
@@ -302,9 +339,14 @@ We'll see.
          */
         return !!(categoryIsAmongOptionsOK && control && control.invalid && (control.dirty || control.touched));
         // return !!(control && control.invalid && (control.dirty || control.touched)); // << don't "test" for "amongOptionsOK" ... wasn't working.
+        /*
+        Do Note: As in our regular ErrorStateMatcher (for Title, for URL),
+        we in line above *omit* the "control.submitted" on purpose. Thx.
+         */
 
     } // /isErrorState()
 } // /myCustomCategorySelectErrorStateMatcher {}
+
 
 @Component({
     selector: 'app-article-detail-two',
@@ -312,7 +354,7 @@ We'll see.
     styleUrls: ['article-detail-two.component.scss'],
     providers: [
         {
-            provide: NG_VALUE_ACCESSOR, // 99% sure we ain't using this stuff no mo'. GOOD.
+            provide: NG_VALUE_ACCESSOR, // 99% sure we ain't using this stuff no mo'. GOOD. GLAD.
             useExisting: forwardRef(() => ArticleDetailTwoComponent),
             // multi: true,
         }
@@ -406,7 +448,7 @@ export class ArticleDetailTwoComponent implements OnInit, OnDestroy, ControlValu
     // Title and URL formControls
 
     myOwnCustomCategorySelectErrorStateMatcher: myCustomCategorySelectErrorStateMatcher;
-    // Category formControl
+    // Category formControl. Do see notes how in fact this thing is Superseded. Obsolete. o well.
 
     public categories: Category[]; // << from ArticleService now. :o)
 
@@ -422,6 +464,8 @@ export class ArticleDetailTwoComponent implements OnInit, OnDestroy, ControlValu
 
     areWeEditingObservable$: Observable<boolean>;
     areWeEditing = false;
+
+    myUIIsLoadingStore$: Observable<boolean>;
 
     articleHereInDetailPage: { // BE version of an "Article". cheers
         // This "type" gets "BOOM-ed" onto, from .getArticle() BE retrieval, "whatIGot"
@@ -536,10 +580,13 @@ articleUrl_formControlName: "https://www.nytimes.com/2020/08/20/nyregion/donald-
 }
          */
 
-        this.myOwnErrorStateMatcher = new MyErrorStateMatcher(); // << imported.
-        this.myOwnCustomCategorySelectErrorStateMatcher = new myCustomCategorySelectErrorStateMatcher(this.myArticleService);
+        this.myOwnErrorStateMatcher = new MyErrorStateMatcher(); // << imported. Used for Title, URL fields
 
-        // TODO this.myUIIsLoadingStore$ = this.myStore.select(fromRoot.getIsLoading);
+        this.myOwnCustomCategorySelectErrorStateMatcher = new myCustomCategorySelectErrorStateMatcher(this.myArticleService);
+        // Used for Category ('select') field
+
+        // TODONE
+        this.myUIIsLoadingStore$ = this.myStore.select(fromRoot.getIsLoading);
 
 
         // ****   /FORM for EDIT MODE  **********
@@ -985,16 +1032,33 @@ cheers.
         console.log('COMPARE 1.value optionCategory1.viewValue ', optionCategory1.viewValue); // undefined
 
         console.log('COMPARE 2 selectionCategory2 ', selectionCategory2);
-        console.log('COMPARE 2 selectionCategory2.value ', selectionCategory2.value);
-        console.log('COMPARE 2 selectionCategory2.viewValue ', selectionCategory2.viewValue);
-        /*
-        U.S. <<<<< HMM! SHOULDN'T THIS BE 'u.s.' ???
-
-        Hmm. Why (the hell) is it 'U.S.'
-        the viewValue, and not 'u.s.'
-        the value
-        ???
+        /* e.g.
+        1. Render Component for Editing:
+        {value: "opinion", viewValue: "Opinion"}
+        2. Submit Edit, re-render for Display:
+        null
          */
+        if (selectionCategory2) {
+            /* Test whether null. (see above)
+
+            Turns out, AFTER edit/update done, in the
+            re-rendering of this same Component (now for Display)
+            there is NO "selection" value (apparently) for
+            the formControl for "Category"
+            (the "selectionCategory2" variable above).
+
+            And, for some reason ( ? ), during the
+            re-rendering (after Edit submit), this
+            CompareWith() function gets run again,
+            and it finds NO value for "selectionCategory2"
+            as it goes to compare each <mat-option>
+            "optionCategory1" to the "selectionCategory2".
+            That latter one is null.
+             */
+            console.log('COMPARE 2 selectionCategory2.value ', selectionCategory2.value);
+            console.log('COMPARE 2 selectionCategory2.viewValue ', selectionCategory2.viewValue);
+        }
+
 
         /* YES. Worked. Try # 3 as t'were:
          */
@@ -1300,10 +1364,12 @@ News
             - 2. No 'return' (void)
          */
 
+        // TODONE There'll be a SPINNER "#2", triggered from here, arguably.
+        //        But the spinner-related code is elsewhere: ArticleService, and this Component's template.
         this.myArticleService.updateArticle(idPassedIn, myFormFieldsAndFiles)
             .subscribe(
                 (whatWeGotBackFromUpdate) => {
-                    console.log('whatWeGotBackFromUpdate BE ', whatWeGotBackFromUpdate);
+                    console.log('990 whatWeGotBackFromUpdate BE ', whatWeGotBackFromUpdate);
 /*
 {
 articleCategory: "[object Object]" // <<<<<<<<<<<<<<<<<<<<<<<<<
@@ -1313,14 +1379,37 @@ __v: 0
 _id: "5f554ebb4d2835ae66510f48"
 }
  */
-                    /* TODO (maybe)
-                    BE-to-FE convert, to DISPLAY result on FE << NAH
 
-                    -- OR --
-                    just navigate away from this page ? T.B.D. << YAH
-                     */
+// ****  1) RESET FORM ! ************* PRIOR to setTimeout() is OK
+                    // Also can be inside setTimeout(), but better before.
+                    this.editArticleFormGroup.reset();
 
-                    this.editArticleFormGroup.reset(); // << hmm. not what we want ?
+                    setTimeout( // EDIT ARTICLE
+                        /* N.B. setTimeout() is HERE in calling Component.
+                        NOT over in (called) ArticleService.
+                        cf. createArticleB() which has its setTimeout()
+                        over in the Service.
+                        Q. Why different here?
+                        A. For EDIT we navigate back to same page,
+                        in Display mode. Needed more control, via
+                        setTimeout(), of when 1) form.reset() occurs,
+                        and more importantly 2) when .navigate() occurs.
+                        (For CREATE Article the form merely resets - no issues)
+                        But the .navigate() on EDIT caused errors,
+                        esp. re: our famous Category Select with
+                        its compareWith() biz. cheers.
+
+                         */
+                        () => {
+                            this.myStore.dispatch(new UIActions.StopLoading());
+
+// ****  2) NAVIGATE !  ********** << INSIDE the SetTimeout() OK
+                            this.myRouter.navigate([`/articles/${idPassedIn}`]); // back to page we just edited
+
+                            // ??? NO RETURN ?? apparently fine
+                        },
+                        1000);
+
                     /*
                     I'd (apparently) forgotten this ( ? ). To "turn off editing" here!
                     Tell NgRx Store!
@@ -1346,10 +1435,6 @@ All Set Now!
                     // So, per above discussion, this is Not Needed Right Here:
                     // this.myStore.dispatch(new UIActions.TellingYouIfWeAreEditing({areWeEditingInAction: false}));
 
-
-
-                    this.myRouter.navigate([`/articles/${idPassedIn}`]); // back to page we just edited
-
                 },
                 (errWeGot) => {
                     console.log('updateArticle. errWeGot ', errWeGot);
@@ -1358,7 +1443,7 @@ All Set Now!
                 () => {
                     console.log('updateArticle. complete. that\'s it. eom.');
                 }
-            );
+            ); // /.subscribe()
 
     } // /goEditArticle()
 
