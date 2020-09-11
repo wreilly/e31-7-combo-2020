@@ -1,5 +1,6 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import { ThemeService } from '../../core/services/theme.service';
+import { DebugDevelService } from '../../core/services/debug-devel.service';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../../store/app.reducer';
 import * as fromUI from '../../shared/store/ui.actions';
@@ -20,6 +21,7 @@ export class SidenavListComponent implements OnInit {
   constructor(
       private myThemeService: ThemeService,
       private myStore: Store,
+      private myDebugDevelService: DebugDevelService,
   ) { }
 
   ngOnInit(): void {
@@ -28,8 +30,48 @@ export class SidenavListComponent implements OnInit {
      */
 
     this.myShowLabelsStore$ = this.myStore.select(fromRoot.getShowLabels);
+    /* NgRx (both Header and Sidenav)
+    Yes, we need above line. We use it here in Component
+    to correctly have the mat-checkbox show checked or not.
+    We do *not* make use of this property here in
+    Component to drive logic whether Component Labels
+    are shown or hidden. That logic is over in Service.
+     */
 
-  }
+    /* ngOnInit() in DebugDevelService ?
+    NO. Not in a Service
+https://stackoverflow.com/questions/35110690/ngoninit-not-being-called-when-injectable-class-is-instantiated
+Give this a go:
+"@Thom - you can add a regular public init() method on your service, import the service and call it from your AppComponent's ngOnInit() – Joe Hanink Oct 28 '19 "
+*/
+
+      this.myDebugDevelService.myOwnInitForService();
+    /* Q. Hmm, should BOTH call this ?? Header. Sidenav. hmm.
+
+    For the non, guess I'll leave the call (above) in. hmm.
+
+       A.1. Well, looks like we CAN call it ... but...
+       That is, not breaking things (from what I can tell).
+       Unsure if it is doing a lot of unnecessary redundant
+       calling of the reducer .select() etc. etc.
+       o well.
+
+       A.2. But do note that it appears we can
+       get away with NOT calling it from Sidenav!
+
+       Why is that? I dunno, may be because the Header
+       Component is ALWAYS instantiated, and does its own
+       call for this init() in Service biz,
+       and by the time we see the (user-requested-via-click)
+       Sidenav instantiated, the Service already
+       has gotten this Observable hooked up to the Store,
+       re: show or hide labels. Doesn't need to be called
+       by the just-showed-up Sidenav to have the
+       Service (re)-perform this init() biz.
+       Don't you think?
+     */
+
+  } // /ngOnInit()
 
   myCloseSidenav() {
     // Here in Sidenav, we only Close, not Toggle, really ...
@@ -41,6 +83,18 @@ export class SidenavListComponent implements OnInit {
   }
 
   onLabelShowHideChange(checkedOrNot: boolean) {
+
+    // Call Service!
+    this.myDebugDevelService.onLabelShowHideChangeInService(checkedOrNot);
+    /* Q. fire & forget pretty much ?
+       A.1. I don't think so...
+       A.2. Well, maybe it is! t.b.d. << YEAH
+     */
+
+  } // onLabelShowHideChange()  (Call Service!)
+
+
+  onLabelShowHideChangeNGRXBEAUTIFULLY(checkedOrNot: boolean) { // << NO LONGER CALLED
     /* NON-D.R.Y.
        Also in Header o well. Service, anyone? Hmm. And, maybe some Store use, hey?
     */
@@ -60,6 +114,6 @@ export class SidenavListComponent implements OnInit {
     } else if (!localShowLabels) { // not checked. We HIDE Labels
       document.documentElement.style.setProperty('--wr__hide-show-css-var', 'none')
     }
-  }
+  } // /onLabelShowHideChangeNGRXBEAUTIFULLY()
 
 }

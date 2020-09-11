@@ -9,6 +9,7 @@ https://auth0.com/blog/real-world-angular-series-part-3/#L-span-id--angular-filt
 
 // import { DateService } from './services/date.service';
 // import { FilterSortService } from './services/filter-sort.service';
+import { DebugDevelService } from './services/debug-devel.service';
 
 @NgModule({
     imports: [
@@ -26,6 +27,7 @@ https://auth0.com/blog/real-world-angular-series-part-3/#L-span-id--angular-filt
         // DateService,
         // FilterSortService,
         DatePipe,
+        DebugDevelService,
     ],
 })
 export class CoreModule { }

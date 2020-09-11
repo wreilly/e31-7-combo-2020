@@ -2,16 +2,17 @@ import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, NgZone }
 import { Store } from '@ngrx/store';
 import * as fromUI from '../../shared/store/ui.actions'; // dispatch for sure
 import * as fromRoot from '../../store/app.reducer'; // select too? prob.
+import {Observable} from "rxjs";
 import { tap } from 'rxjs/operators';
 
 import {CdkScrollable, ScrollDispatcher} from "@angular/cdk/overlay";
 
 
-
 // https://grensesnittet.computas.com/dynamic-themes-in-angular-material/
 import {ThemeService} from "../../core/services/theme.service";
 import { ScrollService } from '../../core/services/scroll.service';
-import {Observable} from "rxjs";
+import { DebugDevelService } from '../../core/services/debug-devel.service';
+
 
 @Component({
   selector: 'app-header',
@@ -37,6 +38,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       private myScrollDispatcher: ScrollDispatcher,
       private myZone: NgZone,
       private myStore: Store,
+      private myDebugDevelService : DebugDevelService,
   ) { }
 
   ngOnInit(): void {
@@ -47,6 +49,13 @@ No longer running this onInit() first go to set its value.
       this.onLabelShowHideChange(false);
 */
       this.myShowLabelsStore$ = this.myStore.select(fromRoot.getShowLabels);
+      /* NgRx (both Header and Sidenav)
+Yes, we need above line. We use it here in Component
+to correctly have the mat-checkbox show checked or not.
+    We do *not* make use of this property here in
+    Component to drive logic whether Component Labels
+    are shown or hidden. That logic is over in Service.
+ */
 
       this.myThemeService.isThemeDarkInServiceObservable
           .subscribe(
@@ -69,6 +78,20 @@ No longer running this onInit() first go to set its value.
                   // this.showToTopIfScrolled(scrollOffsetWeGot);
               }
           )
+
+      /* ngOnInit() in DebugDevelService ?
+          NO. Not in a Service
+https://stackoverflow.com/questions/35110690/ngoninit-not-being-called-when-injectable-class-is-instantiated
+Give this a go:
+"@Thom - you can add a regular public init() method on your service, import the service and call it from your AppComponent's ngOnInit() – Joe Hanink Oct 28 '19 "
+ */
+      this.myDebugDevelService.myOwnInitForService();
+      /* See also long-ish Comment in SidenavComponent
+      ngOnInit()
+      I there deliberate: Hmm, should this DebugService's
+      "ownInit()" be called by BOTH these Components?
+      Good? Bad? discuss.
+       */
 
   } // /ngOnInit()
 
@@ -104,8 +127,18 @@ No longer running this onInit() first go to set its value.
       this.myThemeService.setThemeToggle(checkedOrNot);
     }
 
-
     onLabelShowHideChange(checkedOrNot: boolean) {
+
+        // Call Service!
+        this.myDebugDevelService.onLabelShowHideChangeInService(checkedOrNot);
+        /* Q. fire & forget pretty much ?
+           A.1. I don't think so...
+           A.2. Well, maybe it is! t.b.d. << YEAH
+         */
+
+    } // onLabelShowHideChange()  (Call Service!)
+
+    onLabelShowHideChangeNGRXBEAUTIFULLY(checkedOrNot: boolean) { // << NO LONGER CALLED
     // onLabelShowHideChange() { // << tried with no param from template click; hmm. maybe? we may well ignore it even if we do take it in.
         /* STORE
         WUL
@@ -137,7 +170,7 @@ Instead we'll test on our Observable$ from the Store. Won't we? o la.
         Observable or whatever it is useless huge impenetrable object. La.
         */
 
-        // DOES NOTHING:
+        // PIPE BIZ - DOES NOTHING:
         let localShowLabel$ = this.myShowLabelsStore$.pipe( // localShowLabel$ is Observable<boolean>  interesting.
             tap(
                 (whatWeGetPipeTap: boolean) => {
@@ -196,9 +229,9 @@ Instead we'll test on our Observable$ from the Store. Won't we? o la.
         } else if (!localShowLabel) { // not checked. We HIDE Labels
             document.documentElement.style.setProperty('--wr__hide-show-css-var', 'none')
         }
-    }
+    } // /onLabelShowHideChangeNGRXBEAUTIFULLY()
 
-    onLabelShowHideChangeWORKSBEAUTFULLY(checkedOrNot: boolean) {
+    onLabelShowHideChangeWORKSBEAUTFULLY(checkedOrNot: boolean) { // << NO LONGER CALLED
         /* NON-D.R.Y.
         Also in SideNav o well. Service, anyone? Hmm. And, maybe some Store use, hey?
          */
@@ -207,7 +240,7 @@ Instead we'll test on our Observable$ from the Store. Won't we? o la.
         } else if (!checkedOrNot) { // not checked. We HIDE Labels
             document.documentElement.style.setProperty('--wr__hide-show-css-var', 'none')
         }
-    }
+    } // /onLabelShowHideChangeWORKSBEAUTFULLY()
 
     myToggleMatSidenavHeader() {
         this.myToggleMatSidenavEventEmitterHeader.emit(null); // ? null o well
