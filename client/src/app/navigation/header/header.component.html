@@ -181,12 +181,13 @@ https://angular.io/api/router/NavigationExtras#state
                 <li>
                     <mat-slide-toggle
                             on-change="onThemeChange($event.checked)"
+                            bind-checked="myDarkThemeStore$ | async"
                     ></mat-slide-toggle>
                 </li>
                 <li>
                     <mat-checkbox
                             on-change="onLabelShowHideChange($event.checked)"
-                            [checked]="myShowLabelsStore$ | async"
+                            bind-checked="myShowLabelsStore$ | async"
                     >
                         <!--  Nope:
                         bind-value="myShowLabelsStore$ | async"

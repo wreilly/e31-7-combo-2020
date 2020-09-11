@@ -19,6 +19,7 @@ import {ScrollService} from "./core/services/scroll.service";
 export class AppComponent implements OnInit, OnDestroy {
 
     public isThemeDarkInAppComponent: boolean; // = false;
+    isThemeDarkInAppComponent$: Observable<boolean>; // NgRx now
 
     isSidenavOpenInApp$: Observable<boolean>;
 
@@ -63,6 +64,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
 
+        // ABOUT TO COMMENT OUT. NgRx now ...
         this.myThemeService.isThemeDarkInServiceObservable
             .subscribe(
                 (whatIGot) => {
@@ -70,6 +72,15 @@ export class AppComponent implements OnInit, OnDestroy {
                     this.isThemeDarkInAppComponent = whatIGot;
                 }
             );
+        /*
+        NgRx for THEME DARK (or not)
+        Note: Here we do .select to "listen" to
+        the Store.
+        But maybe in AppComponent we do NOT do
+        any .dispatch. NO user-driven event
+        re: theme dark or light, from here. Hmm.
+         */
+        this.isThemeDarkInAppComponent$ = this.myStore.select(fromRoot.getThemeDark);
 
         // TRY 03 ? << YES WORKS :o)
         this.isSidenavOpenInApp$ = this.myStore.select(fromRoot.getIsSidenavOpen);
@@ -169,6 +180,8 @@ actionsObserver: ActionsSubject { ...
 
         this.myStore.dispatch(new UIActions.SetSidenavToOppositeState());
     }
+
+
 
     ngOnDestroy(): void {
         if(this.scrollingSubscription) {

@@ -32,13 +32,17 @@ export class DebugDevelService {
         /* ngOnInit() ? NO. Not for Service
 
         https://stackoverflow.com/questions/35110690/ngoninit-not-being-called-when-injectable-class-is-instantiated
-        Give this a go:
-        "@Thom - you can add a regular public init() method on your service, import the serivce and call it from your AppComponent's ngOnInit() – Joe Hanink Oct 28 '19 "
+        Give this a go: << Working!
+        "@Thom - you can add a regular public init() method on your service, import the service and call it from your AppComponent's ngOnInit() – Joe Hanink Oct 28 '19 "
+
+        Alternative notions: (Same SO page)
+        "for services you can do initialization in the constructor, or better make init method and call it from the constructor"
+        "use the constructor to initialize ..."
 
          */
 
         this.myShowLabelsStoreInService$ = this.myStoreInService.select(fromRoot.getShowLabels);
-    }
+    } // /myOwnInitForService()
 
     onLabelShowHideChangeInService(checkedOrNot: boolean) {
         console.log('this.onLabelShowHideChange - checkedOrNot ', checkedOrNot);

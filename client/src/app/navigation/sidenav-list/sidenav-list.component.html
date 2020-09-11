@@ -44,14 +44,16 @@
     </mat-list-item>
     <mat-list-item>
         <mat-slide-toggle
-                on-change="onThemeChange($event.checked); myCloseSidenav()"
+                on-change="onThemeChange($event.checked);"
+                bind-checked="myDarkThemeStore$ | async"
         ></mat-slide-toggle>
+        <!-- put back... :)   myCloseSidenav() -->
     </mat-list-item>
     <mat-list-item>
         <mat-checkbox
-                on-change="onLabelShowHideChange($event.checked); myCloseSidenav()"
-                [checked]="myShowLabelsStore$ | async"
-        > <!-- put back... :) DONE  myCloseSidenav() -->
+                on-change="onLabelShowHideChange($event.checked);"
+                bind-checked="myShowLabelsStore$ | async"
+        > <!-- put back... :)   myCloseSidenav() -->
             Show/Hide Labels
         </mat-checkbox>
     </mat-list-item>

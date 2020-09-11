@@ -26,7 +26,7 @@ const myInitialState: MyState = {
     isLoading: false,
     articleIdIs: '', // null,
     areWeEditing: false,
-    themeDark: true, // we've been starting dark y not
+    themeDark: false, // true, // we've been starting dark y not
     showLabels: true, // dev/debug mode 4ever, kid
 }
 

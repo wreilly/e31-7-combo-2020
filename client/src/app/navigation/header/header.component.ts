@@ -22,6 +22,7 @@ import { DebugDevelService } from '../../core/services/debug-devel.service';
 export class HeaderComponent implements OnInit, AfterViewInit {
 
     myShowLabelsStore$: Observable<boolean>;
+    myDarkThemeStore$: Observable<boolean>;
 
     isThemeDarkInComponent: boolean;
     scrollOffsetWeJustGotToDisplay: number;
@@ -57,6 +58,10 @@ to correctly have the mat-checkbox show checked or not.
     are shown or hidden. That logic is over in Service.
  */
 
+      // NgRx for "DarkTheme" (or not)
+      this.myDarkThemeStore$ = this.myStore.select(fromRoot.getThemeDark);
+
+      // ABOUT TO COMMENT OUT. Now NgRx instead
       this.myThemeService.isThemeDarkInServiceObservable
           .subscribe(
               (whatIGot) => {
@@ -82,7 +87,7 @@ to correctly have the mat-checkbox show checked or not.
       /* ngOnInit() in DebugDevelService ?
           NO. Not in a Service
 https://stackoverflow.com/questions/35110690/ngoninit-not-being-called-when-injectable-class-is-instantiated
-Give this a go:
+Give this a go: << Working!
 "@Thom - you can add a regular public init() method on your service, import the service and call it from your AppComponent's ngOnInit() – Joe Hanink Oct 28 '19 "
  */
       this.myDebugDevelService.myOwnInitForService();
@@ -92,6 +97,10 @@ Give this a go:
       "ownInit()" be called by BOTH these Components?
       Good? Bad? discuss.
        */
+
+      this.myThemeService.myOwnInitForService();
+      // Above has Service do Store.select to get ThemeDark listener too...
+      // Just like we do here  in this Component.
 
   } // /ngOnInit()
 
@@ -125,6 +134,7 @@ Give this a go:
 
     onThemeChange(checkedOrNot: boolean) {
       this.myThemeService.setThemeToggle(checkedOrNot);
+      // Fire & Forget. Service does the .dispatch()
     }
 
     onLabelShowHideChange(checkedOrNot: boolean) {

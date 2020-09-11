@@ -17,6 +17,7 @@ export class SidenavListComponent implements OnInit {
   myToggleMatSidenavEventEmitterSidenav: EventEmitter<any> = new EventEmitter<any>();
 
   myShowLabelsStore$: Observable<boolean>;
+  myDarkThemeStore$: Observable<boolean>;
 
   constructor(
       private myThemeService: ThemeService,
@@ -38,10 +39,13 @@ export class SidenavListComponent implements OnInit {
     are shown or hidden. That logic is over in Service.
      */
 
+    // NgRx for "DarkTheme" (or not)
+    this.myDarkThemeStore$ = this.myStore.select(fromRoot.getThemeDark);
+
     /* ngOnInit() in DebugDevelService ?
     NO. Not in a Service
 https://stackoverflow.com/questions/35110690/ngoninit-not-being-called-when-injectable-class-is-instantiated
-Give this a go:
+Give this a go: << Working!
 "@Thom - you can add a regular public init() method on your service, import the service and call it from your AppComponent's ngOnInit() – Joe Hanink Oct 28 '19 "
 */
 
@@ -70,6 +74,10 @@ Give this a go:
        Service (re)-perform this init() biz.
        Don't you think?
      */
+
+    this.myThemeService.myOwnInitForService();
+    // Above has Service do Store.select to get ThemeDark listener too...
+    // Just like we do here  in this Component.
 
   } // /ngOnInit()
 
