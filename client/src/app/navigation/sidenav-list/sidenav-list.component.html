@@ -50,7 +50,8 @@
     <mat-list-item>
         <mat-checkbox
                 on-change="onLabelShowHideChange($event.checked); myCloseSidenav()"
-        >
+                [checked]="myShowLabelsStore$ | async"
+        > <!-- put back... :) DONE  myCloseSidenav() -->
             Show/Hide Labels
         </mat-checkbox>
     </mat-list-item>

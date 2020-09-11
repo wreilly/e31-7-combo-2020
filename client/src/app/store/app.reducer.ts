@@ -2,6 +2,10 @@
 REDUCERS:
 1. Is Sidenav Open? Y/N
 2. IsLoading (spinner)? Y/N
+3. Article ID# is: string
+4. Are We in Edit Mode? Y/N
+5. Is Theme Dark? Y/N
+6. Do We Show (Component) Labels? Y/N
 
 /app/shared/store/ui.reducer.ts
 
@@ -25,9 +29,13 @@ export const myRootReducersMap: ActionReducerMap<MyOverallState> = {
 
 export const getUiState = createFeatureSelector<fromUi.MyState>('uiPartOfStore');
 
-export const getIsSidenavOpen = createSelector(getUiState, fromUi.getIsSidenavOpen)
+export const getIsLoading = createSelector(getUiState, fromUi.getIsLoading);
 
-export const getIsLoading = createSelector(getUiState, fromUi.getIsLoading)
+export const getThemeDark = createSelector(getUiState, fromUi.getThemeDark);
+
+export const getShowLabels = createSelector(getUiState, fromUi.getShowLabels);
+
+export const getIsSidenavOpen = createSelector(getUiState, fromUi.getIsSidenavOpen)
 
 export const getArticleIdIs = createSelector(getUiState, fromUi.getArticleIdIs);
 

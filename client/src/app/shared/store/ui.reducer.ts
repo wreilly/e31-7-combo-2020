@@ -7,7 +7,18 @@ export interface MyState {
     isLoading: boolean;
     articleIdIs: string;
     areWeEditing: boolean;
+    themeDark: boolean;
+    showLabels: boolean;
 }
+/*
+REDUCERS:
+1. Is Sidenav Open? Y/N
+2. IsLoading (spinner)? Y/N
+3. Article ID# is: string
+4. Are We in Edit Mode? Y/N
+5. Is Theme Dark? Y/N
+6. Do We Show (Component) Labels? Y/N
+ */
 
 const myInitialState: MyState = {
     sidenavIsOpen: false,
@@ -15,6 +26,8 @@ const myInitialState: MyState = {
     isLoading: false,
     articleIdIs: '', // null,
     areWeEditing: false,
+    themeDark: true, // we've been starting dark y not
+    showLabels: true, // dev/debug mode 4ever, kid
 }
 
 export function UIReducer(
@@ -44,6 +57,14 @@ export function UIReducer(
                 ...state,
                 isLoading: false,
             }
+
+        case fromUIActions.TOGGLE_THEME:
+
+            return Object.assign({}, state, {themeDark: !state.themeDark});
+
+        case fromUIActions.TOGGLE_SHOW_LABELS:
+
+            return Object.assign({}, state, {showLabels: !state.showLabels});
 
 
         case fromUIActions.SET_SIDENAV_TO_OPPOSITE_STATE:
@@ -232,14 +253,23 @@ ERROR TypeError: Cannot assign to read only property 'sidenavIsOpen' of object '
 // /******    UTILITY FUNCTIONS   *******************
 
 
+
+export function getIsLoading(statePassedIn: MyState) {
+    return statePassedIn.isLoading;
+}
+
+export function getThemeDark(statePassedIn: MyState) {
+    return statePassedIn.themeDark;
+}
+
+export function getShowLabels(statePassedIn: MyState) {
+    return statePassedIn.showLabels;
+}
+
 export function getIsSidenavOpen(statePassedIn: MyState) {
     console.log('8888 UI Reducer - getIsSidenavOpen() - statePassedIn ', statePassedIn);
 
     return statePassedIn.sidenavIsOpen;
-}
-
-export function getIsLoading(statePassedIn: MyState) {
-    return statePassedIn.isLoading;
 }
 
 export function getArticleIdIs(statePassedIn: MyState) {

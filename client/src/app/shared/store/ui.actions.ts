@@ -3,14 +3,16 @@ import { Action } from '@ngrx/store';
 /* *************************
     INTERFACE DEFINITION
    *************************
-   Copy here in Actions, from Reducer,
-   for *convenience*. cheers.
+   Copy here into a comment in UI Actions, from UI Reducer.
+   This is merely for *convenience*. cheers.
 
 export interface MyState {
     sidenavIsOpen: boolean;
     isLoading: boolean;
     articleIdIs: string;
     areWeEditing: boolean;
+    themeDark: boolean;
+    showLabels: boolean;
 }
  */
 
@@ -28,26 +30,49 @@ export const STOP_LOADING = '[UI] Stop Loading';
 ArticleDetailComponent (viz. "parent" ArticlesComponent, and <router-outlet> and on-activate())
  */
 export const TELLING_YOU_MY_ID = '[UI] Telling You My Id';
-export const TELLING_YOU_IF_WE_ARE_EDITING = '[UI] Telling You If We Are We Editing'
+export const TELLING_YOU_IF_WE_ARE_EDITING = '[UI] Telling You If We Are We Editing';
+
+export const TOGGLE_THEME = '[UI] Toggle Theme to Other Mode (Dark/Light)';
+export const TOGGLE_SHOW_LABELS = '[UI] Toggle Show/Hide Component Labels';
 
 export class SetSidenavToOppositeState implements Action {
     readonly type = SET_SIDENAV_TO_OPPOSITE_STATE;
-    // No payload
-    constructor() { }
+
+    constructor(
+        // No payload
+    ) { }
+}
+
+export class ToggleTheme implements Action {
+    readonly type = TOGGLE_THEME;
+
+    constructor(
+        // No payload
+    ) { }
+}
+
+export class ToggleShowLabels implements Action {
+    readonly type = TOGGLE_SHOW_LABELS;
+
+    constructor(
+        // No payload
+    ) { }
 }
 
 export class StartLoading implements Action {
     readonly type = START_LOADING;
-    // No payload
-    constructor() {
-    }
+
+    constructor(
+        // No payload
+    ) { }
 }
 
 export class StopLoading implements Action {
     readonly type = STOP_LOADING;
-    // No payload
-    constructor() {
-    }
+
+    constructor(
+        // No payload
+    ) { }
 }
 
 export class TellingYouMyId implements Action {
@@ -101,6 +126,8 @@ export class TellingYouIfWeAreEditing implements Action {
 
 export type UIActions =
       SetSidenavToOppositeState
+    | ToggleTheme
+    | ToggleShowLabels
     | StartLoading
     | StopLoading
     | TellingYouMyId

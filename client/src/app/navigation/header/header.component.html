@@ -186,7 +186,17 @@ https://angular.io/api/router/NavigationExtras#state
                 <li>
                     <mat-checkbox
                             on-change="onLabelShowHideChange($event.checked)"
+                            [checked]="myShowLabelsStore$ | async"
                     >
+                        <!--  Nope:
+                        bind-value="myShowLabelsStore$ | async"
+                        Above: "Error: mat-checkbox - type boolean is not assignable to type string"
+                        https://material.angular.io/components/checkbox/api
+                        -->
+                        <!--
+                        Hmm, ought we send no value? As the Store etc. will control the boolean for this? Hmm.
+                            on-change="onLabelShowHideChange()"
+                        -->
                         <span style="font-size: 10px">Show/Hide Labels</span>
                     </mat-checkbox>
                 </li>
