@@ -147,6 +147,10 @@ private myStore: Store,
       being loaded into the page:
       - "Welcome"? /    << via @Input param passed
       - "Articles List"? /articles/list/  << via history.state.data
+
+      Note (much) later [2020-09-12]: Looks like we do nothing with
+      the distinction. Okay. YAGNI, eh? Ah well, still good learning
+      on How To Do & Etc. cheers.
        */
       if (history.state.data) {
           if (history.state.data.articleListOnArticlesListPage) {
@@ -515,7 +519,7 @@ II. RANGE AROUND = How Many Page # Buttons to Left and to Right of CurrentPage
 
             let articlesFilteredFromService: any[];
 
-            articlesFilteredFromService = this.myFilterSortService.myFilter(this.articles, 'articleCategory_name', categoryStoredValuePassedIn)
+            articlesFilteredFromService = this.myFilterSortService.myFilter(this.articles, 'articleCategory_name', categoryStoredValuePassedIn);
 
             if (categoryStoredValuePassedIn === 'No Category (thx Service!)') { // << special case, kids
                 this.articlesInCategoryWhichCategory = 'No Category Assigned';

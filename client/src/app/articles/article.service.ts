@@ -251,7 +251,7 @@ Content-Disposition: form-data; name="articleCategory_name"
     return this.myHttp.get(
         'http://0.0.0.0:8089/api/v1/articles/',
     );
-  }
+  } // /listArticles()
 
     listArticlesPaginated(page, pagesize): Observable<object> { // Hmm. t.b.d. what this returns ?
       /*
@@ -273,7 +273,7 @@ Content-Disposition: form-data; name="articleCategory_name"
 
         // YES. DON'T FORGET THAT BLOODY 'return' !!! !!! !!!
         return this.myHttp.get<{message: string, articlesPaginated: any, maxArticles: number}>(
-            `http://0.0.0.0:8089/api/v1/articles?page=${page}&pagesize=${pagesize}`,
+            `http://0.0.0.0:8089/api/v1/articles/paginated?page=${page}&pagesize=${pagesize}`,
         )
             .pipe(
                 tap(
@@ -282,7 +282,16 @@ Content-Disposition: form-data; name="articleCategory_name"
                         articlesPaginated: any,
                         maxArticles: number,
                     }) => {
-                        console.log('dataWeGotFromServerInTap.message ', dataWeGotFromServerInTap.message);
+                        console.log('9999A dataWeGotFromServerInTap.message ', dataWeGotFromServerInTap.message);
+                        /*
+                        (Paginated) Articles fetched successfully. Total count in Collection is 98.
+                         */
+
+                        console.log('9999B dataWeGotFromServerInTap ', dataWeGotFromServerInTap);
+                        /*
+
+                         */
+
                         // for Spinner:
                         setTimeout( // GET ARTICLES PAGINATED
                             () => {

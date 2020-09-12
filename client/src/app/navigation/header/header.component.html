@@ -165,6 +165,20 @@ https://angular.io/api/router/NavigationExtras#state
                 <li>
                     <p>
                         <a
+                                routerLink="/articles/categorized"
+                                routerLinkActive="my-active"
+                                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: true
+                            }}"
+                        >Articles Categorized</a>
+                    </p>
+                </li>
+                <!--
+                TODONE you'll be removing this attribute: articleListOnArticlesListPage: true
+                -->
+                <li>
+                    <p>
+                        <a
                                 routerLink="/articles/add"
                                 routerLinkActive="my-active"
                                 [state]="{data: {

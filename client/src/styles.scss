@@ -108,3 +108,24 @@ a.my-active {
 .teeny {
   font-size: 9px;
 }
+
+a[ng-reflect-router-link] {
+
+}
+/* Used in ArticleList, ArticlesCategorized.
+
+color: blue !important; was needed because
+mat-nav-list a  has  color:inherit (was black)
+
+Hah! but that "!important" in turn messes up my Header links,
+which were happily aqua. Hmm. Revert time.
+
+font-weight: bold; // << seems not necessary
+
+https://stackoverflow.com/questions/52000277/angular-how-to-style-routerlink/52001698
+https://stackblitz.com/edit/angular-lfts4r?file=src%2Fstyles.css
+ */
+
+.blue-link {
+  color: blue !important;
+}

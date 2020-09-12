@@ -33,6 +33,53 @@
     </mat-list-item>
     <mat-list-item>
         <a
+                routerLink="/articles/categorized"
+                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: true
+                            }}"
+                on-click="myCloseSidenav()"
+        >
+            <mat-icon>folder_open</mat-icon>
+            <span>Articles Categorized</span></a>
+        <!--
+TODONE remove: articleListOnArticlesListPage: true
+
+Interesting Finding:
+- Here you can *NOT* leave a "trailing comma" on an attribute (or whatever it is).
+Breaks compilation.
+
+So:
+BREAKS: (see that trailing comma after "true")
+[state]="{data: {
+                            articleMostRecentHideRouterLinkState: true, // <<<<<<< TRAILING COMMA **NOT** O.K.
+                            }}"
+WORKS:
+[state]="{data: {
+                            articleMostRecentHideRouterLinkState: true
+                            }}"
+
+Q. Why interesting?
+A. Because I leave trailing commas all over the place.
+e.g.
+constructor(
+private myArticleService: ArticleService,
+private myFilterSortService: FilterSortService,
+private myScrollDispatcher: ScrollDispatcher,
+private myNgZone: NgZone,
+private myStore: Store, // <<<<<<< TRAILING COMMA O.K.
+  ) { }
+
+Q. Why (the hell) do I do that?
+A. Because when you (inevitably) wind up adding Yet Another item/whatever it is
+to that listing, then, in Git/version-control, you do NOT wind up
+with a "change" on that previous line.
+
+private myStore: Store, // <<<<<<<<<< Will NOT be a "change" in Git. Bit better.
+private myNewThing: NewThing,
+        -->
+    </mat-list-item>
+    <mat-list-item>
+        <a
                 routerLink="/articles/add"
                 [state]="{data: {
                             articleMostRecentHideRouterLinkState: true

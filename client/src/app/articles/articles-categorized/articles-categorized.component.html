@@ -1,0 +1,44 @@
+<div class="component-label">ARTICLES-CATEGORIZED.COMPONENT</div>
+<mat-nav-list role="navigation">
+    <mat-card class="spacing">
+        <mat-card-subtitle>
+            <span>Count (ALL Articles): {{ articlesCount }}</span>
+        </mat-card-subtitle>
+        <mat-card-content>
+            <div>
+                <h2>{{ articlesInCategoryWhichCategory }}</h2>
+            </div>
+            <span
+                    *ngFor="let oneCategory of categories"
+            >
+                <button
+                        mat-raised-button
+                        color="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'accent' : 'primary' }}"
+                        type="button"
+                        on-click="letUsFilterByCategory(oneCategory.viewValue)"
+                >
+                    {{ oneCategory.viewValue }}
+                </button> |
+            </span>
+        </mat-card-content>
+    </mat-card>
+
+    <div
+            *ngIf="noArticlesInCategory"
+    >
+        No articles in the "{{noArticlesInCategoryWhichCategory}}" category. Consider <a routerLink="../add" class="blue-link">adding</a> one!
+    </div>
+
+    <!-- TODO mat-progress-spinner -->
+
+    <app-article
+            mat-list-item
+            *ngFor="let article of articlesToDisplay"
+            bind-articleToSendDownName="article"
+    ></app-article>
+    <!--
+        "You can add mat-list-item as the directive to your app-car-item component..."
+        https://stackoverflow.com/questions/58477720/how-to-use-in-angular-material-list-an-item-component
+        -->
+
+</mat-nav-list>
