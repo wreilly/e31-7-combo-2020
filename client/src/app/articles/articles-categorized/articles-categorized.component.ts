@@ -16,7 +16,7 @@ export class ArticlesCategorizedComponent implements OnInit {
   // Be that ALL, or Filtered
 
   articlesCount: number;
-  articlesInCategoryWhichCategory = 'All Articles'; // init  // string; // e.g. 'Politics' when there ARE articles
+  articlesInCategoryWhichCategory = 'ALL Articles'; // init  // string; // e.g. 'Politics' when there ARE articles
 
   categories: Category[];
   noArticlesInCategory = false; // init

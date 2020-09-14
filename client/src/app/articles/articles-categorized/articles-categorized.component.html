@@ -1,6 +1,7 @@
 <div class="component-label">ARTICLES-CATEGORIZED.COMPONENT</div>
 <mat-nav-list role="navigation">
     <mat-card class="spacing">
+        <!-- TOP CATEGORY BUTTONS ROW -->
         <mat-card-subtitle>
             <span>Count: {{ articlesCount }}</span>
 <!--            ({{ articlesInCategoryWhichCategory }})-->
@@ -16,6 +17,7 @@
                         mat-raised-button
                         color="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'accent' : 'primary' }}"
                         type="button"
+                        class="my-smaller-button"
                         on-click="letUsFilterByCategory(oneCategory.viewValue)"
                 >
                     {{ oneCategory.viewValue }}
@@ -26,11 +28,12 @@
                     mat-raised-button
                     color="{{articlesInCategoryWhichCategory === 'No Category Assigned' ? 'accent' : ''}}"
                     type="button"
+                    class="my-smaller-button"
                     on-click="letUsFilterByCategory('No Category (thx Service!)')"
             >
                 No Category Assigned
             </button>
-            <!--
+            <!-- re: above
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 const NO_CATEGORY         = 'No Category (thx Service!)';
 const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
@@ -39,8 +42,9 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
             |
             <button
                     mat-raised-button
-                    color="{{articlesInCategoryWhichCategory === 'All Articles' ? 'accent' : ''}}"
+                    color="{{articlesInCategoryWhichCategory === 'ALL Articles' ? 'accent' : ''}}"
                     type="button"
+                    class="my-smaller-button"
                     on-click="letUsFilterByCategory('ALL')"
             >
                 <i>All Articles</i>
@@ -66,5 +70,62 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
         "You can add mat-list-item as the directive to your app-car-item component..."
         https://stackoverflow.com/questions/58477720/how-to-use-in-angular-material-list-an-item-component
         -->
+    <mat-card class="spacing"
+              *ngIf="articlesCount > 4"
+    >
+        <!-- BOTTOM CATEGORY BUTTONS ROW
+        Magic number of '4' (kinda arbitrary) -
+        Only show bottom repeat buttons row
+         if there are 5 or more Articles in this Category...
+        -->
+        <mat-card-subtitle>
+            <span>Count: {{ articlesCount }}</span>
+            <!--            ({{ articlesInCategoryWhichCategory }})-->
+        </mat-card-subtitle>
+        <mat-card-content>
+            <div>
+                <h1>{{ articlesInCategoryWhichCategory }}</h1>
+            </div>
+            <span
+                    *ngFor="let oneCategory of categories"
+            >
+                <button
+                        mat-raised-button
+                        color="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'accent' : 'primary' }}"
+                        type="button"
+                        class="my-smaller-button"
+                        on-click="letUsFilterByCategory(oneCategory.viewValue)"
+                >
+                    {{ oneCategory.viewValue }}
+                </button> |
+            </span>
+            <!-- Couple of necessary exception-case manual entries: -->
+            <button
+                    mat-raised-button
+                    color="{{articlesInCategoryWhichCategory === 'No Category Assigned' ? 'accent' : ''}}"
+                    type="button"
+                    class="my-smaller-button"
+                    on-click="letUsFilterByCategory('No Category (thx Service!)')"
+            >
+                No Category Assigned
+            </button>
+            <!-- re: above
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+const NO_CATEGORY         = 'No Category (thx Service!)';
+const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+            -->
+            |
+            <button
+                    mat-raised-button
+                    color="{{articlesInCategoryWhichCategory === 'ALL Articles' ? 'accent' : ''}}"
+                    type="button"
+                    class="my-smaller-button"
+                    on-click="letUsFilterByCategory('ALL')"
+            >
+                <i>All Articles</i>
+            </button>
+        </mat-card-content>
+    </mat-card>
 
 </mat-nav-list>

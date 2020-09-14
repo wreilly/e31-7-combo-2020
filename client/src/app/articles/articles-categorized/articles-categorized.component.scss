@@ -2,3 +2,18 @@
   margin: 0 0 5px 0;
   padding: 4px 16px 4px 16px;
 }
+
+.my-smaller-button {
+  line-height: 20px;
+  min-height: 22px;
+  min-width: 60px;
+  vertical-align: top;
+  font-size: 10px;
+  padding: 0px 5px 0px 5px;
+  margin-right: 1px;
+}
+/*
+Bit more padding here than on Paginator.
+We have wider button: "No Category Assigned" text to accommodate.
+cheers.
+ */
