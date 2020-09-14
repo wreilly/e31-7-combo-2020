@@ -166,114 +166,15 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
         TODONE: Dynamically generate these buttons from list of Categories
         TODONE: N/A NOW: Fix now broken "Latest" #goto. (Only works for one Category! sigh.) (Welcome page. Works OK from Articles List page. cheers.)
         TODONE: For 0 - provide "No articles in that category" message.
-        TODO: (Mebbe) Provide # of items in given Category, right on the button - y not  e.g.  Politics (12)
+        TODOMEH: (Mebbe) Provide # of items in given Category, right on the button - y not  e.g.  Politics (12)
         TODONE: Also, update "Count" at top of this Component to match the selected Category count (e.g. Count: 12)
         TODONE: N/A NOW: Hmm, can I also get the "Latest" to reflect date of latest addition in this selected Category? Tlicky.
         -->
         <mat-card-content>
-            <div>
-<!--                <h2>Category: {{articlesInCategoryWhichCategory}}</h2>-->
-                <h2>{{articlesInCategoryWhichCategory}}</h2>
-            </div>
-            <span
-                    *ngFor="let oneCategory of categories"
-            >
-                <!-- Doing span wrapper, just to get in that "pipe" | separator. woot. -->
-                <button
-                        mat-raised-button
-                        color="{{oneCategory.viewValue === articlesInCategoryWhichCategory ? 'accent' : 'primary'}}"
-                        type="button"
-                        on-click="letUsFilterByCategory(oneCategory.viewValue)"
-                >
-                    {{ oneCategory.viewValue }}
-                </button> |
-            </span>
-            <!-- Couple of necessary exception-case manual entries: -->
-            <button
-                    mat-raised-button
-                    color="{{articlesInCategoryWhichCategory === 'No Category Assigned' ? 'accent' : ''}}"
-                    type="button"
-                    on-click="letUsFilterByCategory('No Category (thx Service!)')"
-            >
-                No Category Assigned
-            </button>
-            |
-            <button
-                    mat-raised-button
-                    color="{{articlesInCategoryWhichCategory === 'All Articles' ? 'accent' : ''}}"
-                    type="button"
-                    on-click="letUsFilterByCategory('ALL')"
-            >
-                <i>All Articles</i>
-            </button>
-
-            <!-- Bad Old Manual Entries: pah!
-                        <button
-                                mat-raised-button
-                                type="button"
-                                on-click="letUsFilterByCategory('News')"
-                        >
-                            News
-                        </button>
-                        |
-                        <button
-                                mat-raised-button
-                                type="button"
-                                on-click="letUsFilterByCategory('World')"
-                        >
-                            World
-                        </button>
-                        |
-                        <button
-                                mat-raised-button
-                                type="button"
-                                on-click="letUsFilterByCategory('U.S.')"
-                        >
-                            U.S.
-                        </button>
-                        |
-                        <button
-                                mat-raised-button
-                                type="button"
-                                on-click="letUsFilterByCategory('Politics')"
-                        >
-                            Politics
-                        </button>
-                        |
-                        <button
-                                mat-raised-button
-                                type="button"
-                                on-click="letUsFilterByCategory('Opinion')"
-                        >
-                            Opinion
-                        </button>
-                        |
-                        <button
-                                mat-raised-button
-                                type="button"
-                                on-click="letUsFilterByCategory('Business')"
-                        >
-                            Business
-                        </button>
-                        |
-                        <button
-                                mat-raised-button
-                                type="button"
-                                on-click="letUsFilterByCategory('Arts')"
-                        >
-                            Arts
-                        </button>
-                        |
-                        <button
-                                mat-raised-button
-                                type="button"
-                                on-click="letUsFilterByCategory('Living')"
-                        >
-                            Living
-                        </button>
-                        |
+            <!-- REMOVING category markup.
+            See Instead: ArticlesCategorizedComponent.
+            (Also removed letUsFilterByCategory())
             -->
-
         </mat-card-content>
 
     </mat-card>
@@ -295,6 +196,7 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
 
     <div
             *ngIf="noArticlesInCategory"
+            style="margin: 15px 0px 15px 15px;"
     >
         <div>
             No articles in the "{{ noArticlesInCategoryWhichCategory }}" category. Consider <a routerLink="../add" class="blue-link">adding</a> one!
@@ -357,7 +259,12 @@ Above use of "flex-end" similar to in HeaderComponent. cheers.
     <div
             id="fake-bottom-id-article-list"
     >
-        <!--
+        <!-- NOT USING this fake-bottom.
+        Instead, in ScrollTopComponent, using
+        fake-bottom-id-app
+        cheers.
+
+
         URL: http://0.0.0.0:4200/#fake-bottom-id
 
         Bit of cheat.

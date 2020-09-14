@@ -503,42 +503,6 @@ II. RANGE AROUND = How Many Page # Buttons to Left and to Right of CurrentPage
      */
 
 
-
-    letUsFilterByCategory(categoryStoredValuePassedIn: string) {
-        this.noArticlesInCategory = false; // << Make sure to reset!
-        this.noArticlesInCategoryWhichCategory = ''; // ditto
-
-        if (categoryStoredValuePassedIn === 'ALL') {
-            // SPECIAL CASE. We simply want All Articles.
-            // No consideration re: Category (or "No Category Assigned") value. All of 'em.
-            // We do NOT call the Filter Service
-            this.articlesToDisplay = this.articles;
-            this.articlesInCategoryWhichCategory = 'All Articles';
-
-        } else {
-
-            let articlesFilteredFromService: any[];
-
-            articlesFilteredFromService = this.myFilterSortService.myFilter(this.articles, 'articleCategory_name', categoryStoredValuePassedIn);
-
-            if (categoryStoredValuePassedIn === 'No Category (thx Service!)') { // << special case, kids
-                this.articlesInCategoryWhichCategory = 'No Category Assigned';
-            } else {
-                this.articlesInCategoryWhichCategory = categoryStoredValuePassedIn;
-            }
-
-            this.articlesToDisplay = articlesFilteredFromService;
-        }
-
-        this.articlesCount = this.articlesToDisplay.length;
-
-        if (this.articlesCount === 0) { // e.g. right now, 0 articles under "Arts" (sigh)
-            this.noArticlesInCategory = true;
-            this.noArticlesInCategoryWhichCategory = categoryStoredValuePassedIn;
-        }
-
-} // /letUsFilter()
-
 // Now in our DateService (under /core/services)
 /* NOT CALLED FROM HERE
     // https://steveridout.github.io/mongo-object-time/

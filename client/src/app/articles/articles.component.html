@@ -29,6 +29,15 @@
         </a>
         <a
                 mat-tab-link
+                routerLink="categorized"
+                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: true
+                            }}"
+        >
+            Articles Categorized
+        </a>
+        <a
+                mat-tab-link
                 routerLink="add"
                 [state]="{data: {
                             articleMostRecentHideRouterLinkState: true

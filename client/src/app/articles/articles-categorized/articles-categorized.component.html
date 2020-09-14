@@ -2,11 +2,12 @@
 <mat-nav-list role="navigation">
     <mat-card class="spacing">
         <mat-card-subtitle>
-            <span>Count (ALL Articles): {{ articlesCount }}</span>
+            <span>Count: {{ articlesCount }}</span>
+<!--            ({{ articlesInCategoryWhichCategory }})-->
         </mat-card-subtitle>
         <mat-card-content>
             <div>
-                <h2>{{ articlesInCategoryWhichCategory }}</h2>
+                <h1>{{ articlesInCategoryWhichCategory }}</h1>
             </div>
             <span
                     *ngFor="let oneCategory of categories"
@@ -20,11 +21,36 @@
                     {{ oneCategory.viewValue }}
                 </button> |
             </span>
+            <!-- Couple of necessary exception-case manual entries: -->
+            <button
+                    mat-raised-button
+                    color="{{articlesInCategoryWhichCategory === 'No Category Assigned' ? 'accent' : ''}}"
+                    type="button"
+                    on-click="letUsFilterByCategory('No Category (thx Service!)')"
+            >
+                No Category Assigned
+            </button>
+            <!--
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+const NO_CATEGORY         = 'No Category (thx Service!)';
+const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+            -->
+            |
+            <button
+                    mat-raised-button
+                    color="{{articlesInCategoryWhichCategory === 'All Articles' ? 'accent' : ''}}"
+                    type="button"
+                    on-click="letUsFilterByCategory('ALL')"
+            >
+                <i>All Articles</i>
+            </button>
         </mat-card-content>
     </mat-card>
 
     <div
             *ngIf="noArticlesInCategory"
+            style="margin: 15px 0px 15px 15px;"
     >
         No articles in the "{{noArticlesInCategoryWhichCategory}}" category. Consider <a routerLink="../add" class="blue-link">adding</a> one!
     </div>

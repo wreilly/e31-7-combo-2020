@@ -72,31 +72,83 @@ _id: "5f58ae8d4d2835ae66510f4a"
 
               this.articlesToDisplay = this.articles; // whamma-jamma
 
+              this.articlesCount = this.articlesToDisplay.length;
+
             }
         ) // /.subscribe()
   } // /getArticles()
 
-  letUsFilterByCategory (categoryStoredValuePassedIn: string) {
+  letUsFilterByCategory (categoryStoredValuePassedIn: string): void {
+    /*
+    Doesn't return anything. Just sets variables for use in display.
+     */
     // Hmm. Is it "StoredValue" ? ('arts')
-    // I think it's viewValue ('Arts')
+    // I think it's viewValue ('Arts') << YEAH!
     this.noArticlesInCategory = false; // reset
     this.noArticlesInCategoryWhichCategory = ''; // reset
 
     if (categoryStoredValuePassedIn === 'ALL') {
+      /*  *************
+      01 - USER CLICK ON THE 'ALL' BUTTON
+          *************
+       */
       this.articlesToDisplay = this.articles;
       this.articlesInCategoryWhichCategory = 'ALL Articles';
-    } else {
-      let articlesFilteredFromService: any[];
-      articlesFilteredFromService = this.myFilterSortService.myFilter(this.articles,'articleCategory_name', categoryStoredValuePassedIn);
+    } else if (categoryStoredValuePassedIn === 'No Category (thx Service!)') {
+      /*  *************
+      02 - USER CLICK ON THE 'NO CATEGORY' BUTTON
+          *************
+      */
 
-      // TODO 2020-09-12_11:15AM
-      if (categoryStoredValuePassedIn === 'No Category (thx Service!)') {
-        this.articlesInCategoryWhichCategory = 'No Category Assigned';
-      } else {
-        this.articlesInCategoryWhichCategory = categoryStoredValuePassedIn;
-      }
+      // << YES, actually passed in (from that user button click
+
+      /* COMBO HERE
+Looking to account for both:
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+const NO_CATEGORY         = 'No Category (thx Service!)'; // << Count 62 (right now)
+const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)'; // << Count 3 (right now)
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+Goal is to display both sets together: 65 count
+That is, user click on "No Category Assigned" button
+yields both No Category, and No Correct Category.
+cheers.
+ */
+      let articlesNoCategorySpecialFilteredFromService: any[];
+      articlesNoCategorySpecialFilteredFromService = this.myFilterSortService.mySpecialFilter(this.articles, 'articleCategory_name', categoryStoredValuePassedIn);
+      /* e.g.
+        No Category (thx Service!) // << YES, actually passed in (from that user button click)
+        "5f3515d7dec9620d8d5fe63a"
+
+        No Correct Category (thx Service!)
+        // NO! Perhaps surprisingly, the U/I
+        button click is NOT passing this string.
+        No. But, triggered by the above string
+        of "No C.", we, over in the FilterService
+        HARD-CODE in to test ALSO for this
+        string of "No Correct C."
+        cheers.
+        "5af83649f2fffa14c4a22cd7"
+       */
+
+      this.articlesToDisplay = articlesNoCategorySpecialFilteredFromService;
+
+      this.articlesInCategoryWhichCategory = 'No Category Assigned'; // << To show on U/I
+      // Accounts for both: No C., No Correct C.
+
+
+    } else {
+      /*  *************
+      03 - USER CLICK ON ANY REGULAR CATEGORY BUTTON (e.g. Politics)
+          *************
+      */
+      // A proper Category, from our approved list :)
+
+      let articlesFilteredFromService: any[];
+      articlesFilteredFromService = this.myFilterSortService.myFilter(this.articles, 'articleCategory_name', categoryStoredValuePassedIn);
 
       this.articlesToDisplay = articlesFilteredFromService;
+
+      this.articlesInCategoryWhichCategory = categoryStoredValuePassedIn;
 
     }
 
@@ -108,6 +160,6 @@ _id: "5f58ae8d4d2835ae66510f4a"
       this.noArticlesInCategoryWhichCategory = categoryStoredValuePassedIn;
     }
 
-  } // /letUsFilter()
+  } // /letUsFilterByCategory()
 
-}
+} // /ArticlesCategorizedComponent {}
