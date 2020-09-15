@@ -53,9 +53,10 @@ const apiArticleControllerHereInApi = require('.././../controllers/api/api-artic
 /* ***********  TOC  ********
    *****   API ROUTER  ******
 - GET '/recent' ==> '/api/v1/articles/recent' // 1, for now. NEW.
-- GET '/' ==> '/api/v1/articles/paginated?page=1&pagesize=10' // << NEW: *PAGINATION*
+- GET '/api/v1/articles/paginated?page=1&pagesize=10' // << NEW: *PAGINATION*
+- GET '/api/v1/articles/more?offset=40' // << NEW: *LOAD MORE*
 - GET '/:id' ==> '/api/v1/articles/123456'
-- GET '/' ==> '/api/v1/articles/'
+- GET '/' ==> '/api/v1/articles/' // << ALL Articles
 - PUT '/:id' ==> '/api/v1/articles/123456'
 - POST '/'  ==> '/api/v1/articles'
 - DELETE '/:id' ==> '/api/v1/articles/123456'
@@ -118,6 +119,34 @@ apiArticlesRouter.get('/paginated', // << ? Q. Can that also be '' ? A. IDK.
         const pageSize = +req.query.pagesize; // ditto
 
         apiArticleControllerHereInApi.apiGetAllArticlesPaginated(req, res, next, pageNumber, pageSize);
+    })
+
+/* ************************************************** */
+/* ******** GET '/api/v1/articles/more?offset=40' ************ */
+/* ************************************************** */
+// This /articles/more must (also) go BEFORE the /articles/:idHere route !!
+/* LOAD MORE - See also (of course) api-articleController.js and articleService.js
+Note: - re: offset numbers in the URL: We "hide" from end-users
+        the "1-based" (21-40 is the second 20) mode.
+        We instead present them the sort of "easy" offsets of
+        easy even numbers: 20, 40, 60...
+        As opposed to:     21, 41, 61...
+        - Note that, behind-the-scenes of course, the
+        inescapable zero-based array numbering (0-19 is first 20)
+        is going on, giving us that: 0, 20, 40, 60.
+        - Finally, note that we omit the first 0 from initial URL,
+        (keeping things easy-peasy).
+
+        Yes, pageSize is hard-coded. Currently at 20 articles/page.
+ */
+apiArticlesRouter.get('/more',
+    function(req, res, next) {
+        const offsetNumber = +req.query.offset; // '+' makes string to number
+        const pageSize = 20; // hard-coded. 20 articles per "Load More" page.
+
+       // console.log('API /more offset is: ', offsetNumber); // << YES. e.g. 40
+
+        apiArticleControllerHereInApi.apiGetAllArticlesLoadMore(req, res, next, offsetNumber, pageSize);
     })
 
 

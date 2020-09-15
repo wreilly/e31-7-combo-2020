@@ -5,7 +5,8 @@ const apiArticleController = {};
 /* **********  TOC  *************
    ********  API CONTROLLER  ****
 - GET '/' = apiGetAllArticles
-- GET '/api/v1/articles?page=0&pagesize=10' = = apiGetAllArticlesPaginated // << NEW: *PAGINATION*
+- GET '/api/v1/articles?page=0&pagesize=10' = apiGetAllArticlesPaginated
+- GET '/api/v1/articles?more=40' = apiGetAllArticlesLoadMore
 - GET '/recent' ==> '/api/v1/articles/recent' // 1, for now. NEW.
 - GET '/:id' = apiGetArticleById
 - PUT '/:id' = apiUpdateArticle
@@ -107,6 +108,38 @@ apiArticleController.apiGetAllArticlesPaginated = function (req, res, next, page
         )
         .catch( (err) => console.log('Err in Catch API Controller for GET all articlesPaginated ', err));
 } // /.apiGetAllArticlesPaginated()
+
+
+
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+/* !!!!!  apiArticleController
+          .apiGetAllArticlesLoadMore   !!!!! */
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+apiArticleController.apiGetAllArticlesLoadMore = function (req, res, next, offsetNumber, pageSize) {
+    articleDataServiceHereInApiController.findAllArticlesLoadMore(offsetNumber, pageSize)
+        .then(
+            (whatIGot) => {
+                // resolved
+                /* HERE is what we're GETTING !
+                   {
+                        message: "(Load More) Articles fetched successfully. Total count in Collection is" + countOfAllArticlesInCollection + ".",
+                        loadMoreArticles: fetchedArticles,
+                        maxArticles: countOfAllArticlesInCollection,
+                    }
+                 */
+                // console.log('1.A.0. Controller - getAllArticlesLoadMore - whatIGot.message (from data service) ', whatIGot.message); // Yes
+                // console.log('1.A. Controller - getAllArticlesLoadMore - whatIGot.articlesLoadMore[0].articleTitle (from data service) ', whatIGot.articlesLoadMore[0].articleTitle); // Yes
+
+                // Send data back in Response to API Request
+                // res.send(whatIGot); // << WORKS FINE TOO
+                res.send(JSON.stringify(whatIGot)); // << WORKS FINE
+            },
+            (problemo) => {
+                console.log('problemo in API Controller, rejected Promise for \'/\' GET all articlesLoadMore ', problemo)
+            }
+        )
+        .catch( (err) => console.log('Err in Catch API Controller for GET all articlesLoadMore ', err));
+} // /.apiGetAllArticlesLoadMore()
 
 
 

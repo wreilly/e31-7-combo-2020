@@ -10,7 +10,8 @@ const articleModelHereInService = require('../models/articleModel');
 (not for Node/Express app)
 
 - .get('/') ==> findAllArticles
-- .get('/') ==> findAllArticlesPaginated // << NEW: *PAGINATION*
+- .get('/paginated') ==> findAllArticlesPaginated
+- .get('/more') ==> findAllArticlesLoadMore
 - .get('/recent') ==> findArticleMostRecent
 - .get('/:id') ==> findArticleById
 - .put('/:id') ==> updateArticle
@@ -64,6 +65,7 @@ Top/First is Oldest/First-Entered.
                 }
             )
     } // /findAllArticles()
+
 
     /* **************************** */
     /* *** Find All Articles Paginated ****** */
@@ -121,6 +123,59 @@ Top/First is Oldest/First-Entered.
             )
     } // /findAllArticlesPaginated()
 
+
+    /* **************************** */
+    /* *** Find All Articles LoadMore ****** */
+    /* **************************** */
+
+    static findAllArticlesLoadMore(offsetNumber, pageSize) {
+        let fetchedArticles; // [] of Articles
+        return articleModelHereInService.find({})
+            .sort({_id: -1})
+            // .skip(pageSize * (offsetNumber - 1)) // << Hah! wrong math man.
+            // .skip(offsetNumber - 1) // << wrong too. MongoError: Skip value must be non-negative, but received: -1
+            .skip(offsetNumber)
+            .limit(pageSize)
+            .then(
+                (whatIGot) => { // "pageSize" # [] of new2020articles!
+                    // resolved
+                    console.log('articleService. findAllArticles. resolved whatIGot[0].articleTitle', whatIGot[0].articleTitle);
+
+                    fetchedArticles = whatIGot; // whamma-jamma
+
+                    return articleModelHereInService.countDocuments();
+                    // Very handy. Model can get you the count. Nice.
+                    // Above line passes the
+                    // "countOfAllArticlesInCollection'
+                    // figure/number on to the next ".then()", below.
+                    /* Hah!  ".count()" no more. Now .countDocuments(). OK.
+                    "DeprecationWarning: collection.count is deprecated, and will be removed in a future version. Use Collection.countDocuments or Collection.estimatedDocumentCount instead"
+                     */
+
+                    // return whatIGot; // << WAS (direct back to Controller)
+                },
+                (problemo) => {
+                    console.log('Here in articleService - findAllArticlesLoadMore - Rejected Promise problemo: ', problemo)
+                    throw Error('AllArticlesFindLoadMoreError ' + problemo);
+                }
+            ) // /.then() 1st
+            .then(
+                (countOfAllArticlesInCollection) => {
+
+                    return {
+                        message: "(Load More) Articles fetched successfully. Total count in Collection is " + countOfAllArticlesInCollection + ".",
+                        articlesLoadMore: fetchedArticles,
+                        maxArticles: countOfAllArticlesInCollection,
+                    }
+
+                }
+            ) // /.then() 2nd
+            .catch(
+                (err) => {
+                    console.log('Here in articleService - findAllArticlesLoadMore - .catch err: ', err);
+                }
+            )
+    } // /findAllArticlesLoadMore()
 
 
 
