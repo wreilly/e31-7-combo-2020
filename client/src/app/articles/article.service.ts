@@ -324,6 +324,66 @@ cheers.
     } // /listArticlesPaginated()
 
 
+    listArticlesLoadMore(offsetNumber): Observable<object> {
+        /* SPINNER Time
+(As in createArticleB() )
+ */
+        this.myStore.dispatch(new UIActions.StartLoading());
+
+
+        // YES. DON'T FORGET THAT BLOODY 'return' !!! !!! !!!
+        return this.myHttp.get<{message: string, articlesLoadMore: any, maxArticles: number}>(
+            `http://0.0.0.0:8089/api/v1/articles/more?offset=${offsetNumber}`,
+        )
+            .pipe(
+                tap(
+                    (dataWeGotFromServerInTap: {
+                        message: string,
+                        articlesLoadMore: any,
+                        maxArticles: number,
+                    }) => {
+                        console.log('9999A dataWeGotFromServerInTap.message ', dataWeGotFromServerInTap.message);
+                        /*
+                        (LoadMore) Articles fetched successfully. Total count in Collection is 98.
+                         */
+
+                        console.log('9999B dataWeGotFromServerInTap ', dataWeGotFromServerInTap);
+                        /*
+
+                         */
+
+                        // for Spinner:
+                        setTimeout( // GET ARTICLES LOADMORE
+                            () => {
+                                this.myStore.dispatch(new UIActions.StopLoading());
+                            },
+                            500);
+                    }
+                ),
+                map(
+                    (dataWeGotFromServer) => {
+                        console.log('Service. dataWeGotFromServer ', dataWeGotFromServer);
+                        /* Yes.
+                        {
+                           message: "(LoadMore) Articles fetched successfully. Total count in Collection is 99.",
+                           loadMoreArticles: Array(20),
+                           maxArticles: 99
+                        }
+                        So:
+                        - Here in the Client Service, we get 3 properties returned to us from Server to Client (just above).
+                        - But then we return only 2 of those properties back to the calling Client Component (just below).
+                        cheers.
+                         */
+                        return {
+                            articlesLoadMoreFromServer: dataWeGotFromServer.articlesLoadMore,
+                            maxArticlesFromServer: dataWeGotFromServer.maxArticles,
+                        }
+                    }
+                )
+            ); // /.pipe()
+    } // /listArticlesLoadMore()
+
+
     getArticle(idPassedIn) {
     return this.myHttp.get(
         `http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`

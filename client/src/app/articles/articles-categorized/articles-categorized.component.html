@@ -3,12 +3,13 @@
     <mat-card class="spacing">
         <!-- TOP CATEGORY BUTTONS ROW -->
         <mat-card-subtitle>
-            <span>Count: {{ articlesCount }}</span>
-<!--            ({{ articlesInCategoryWhichCategory }})-->
+            <span>Count (ALL Articles): {{ articlesCountAllInCollection }}</span>
+            |
+            <span>Showing: Articles: 1 - {{ articlesShownNumber }}</span>
         </mat-card-subtitle>
         <mat-card-content>
             <div>
-                <h1>{{ articlesInCategoryWhichCategory }}</h1>
+                <h1>{{ articlesInCategoryWhichCategory }} <span class="tiny">Count: {{ articlesCount }}</span></h1>
             </div>
             <span
                     *ngFor="let oneCategory of categories"
@@ -47,7 +48,18 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
                     class="my-smaller-button"
                     on-click="letUsFilterByCategory('ALL')"
             >
-                <i>All Articles</i>
+                <i>All Categories</i>
+            </button>
+            |
+            <button
+                    mat-raised-button
+                    color="warn"
+                    type="button"
+                    class="my-smaller-button"
+                    on-click="getArticlesLoadMore(offsetNumber)"
+                    bind-disabled="loadNoMore"
+            >
+                <strong> >> Load More << </strong>
             </button>
         </mat-card-content>
     </mat-card>
@@ -60,6 +72,17 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
     </div>
 
     <!-- TODO mat-progress-spinner -->
+    <mat-progress-spinner
+            *ngIf="myUIIsLoadingStore$ | async"
+            mode="indeterminate"
+            bind-diameter="20"
+    >
+    </mat-progress-spinner>
+    <!-- Ok. works. let's see if we can make it an overlay. (whoa)
+    https://stackoverflow.com/questions/42963444/angular-2-material-progress-spinner-display-as-overlay
+    https://stackblitz.com/edit/overlay-progress-spinner-8o275a?file=app%2Foverlay%2Foverlay.service.ts
+    -->
+
 
     <app-article
             mat-list-item
@@ -71,20 +94,21 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
         https://stackoverflow.com/questions/58477720/how-to-use-in-angular-material-list-an-item-component
         -->
     <mat-card class="spacing"
-              *ngIf="articlesCount > 4"
+              *ngIf="articlesCount > 3"
     >
         <!-- BOTTOM CATEGORY BUTTONS ROW
-        Magic number of '4' (kinda arbitrary) -
+        Magic number of '3' (kinda arbitrary) -
         Only show bottom repeat buttons row
-         if there are 5 or more Articles in this Category...
+         if there are 4 or more Articles in this Category...
         -->
         <mat-card-subtitle>
-            <span>Count: {{ articlesCount }}</span>
-            <!--            ({{ articlesInCategoryWhichCategory }})-->
+            <span>Count (ALL Articles): {{ articlesCountAllInCollection }}</span>
+            |
+            <span>Showing: Articles: 1 - {{ articlesShownNumber }}</span>
         </mat-card-subtitle>
         <mat-card-content>
             <div>
-                <h1>{{ articlesInCategoryWhichCategory }}</h1>
+                <h2>{{ articlesInCategoryWhichCategory }} <span class="tiny">Count: {{ articlesCount }}</span></h2>
             </div>
             <span
                     *ngFor="let oneCategory of categories"
@@ -123,7 +147,18 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
                     class="my-smaller-button"
                     on-click="letUsFilterByCategory('ALL')"
             >
-                <i>All Articles</i>
+                <i>All Categories</i>
+            </button>
+            |
+            <button
+                    mat-raised-button
+                    color="warn"
+                    type="button"
+                    class="my-smaller-button"
+                    on-click="getArticlesLoadMore(offsetNumber)"
+                    bind-disabled="loadNoMore"
+            >
+                <strong> >> Load More << </strong>
             </button>
         </mat-card-content>
     </mat-card>

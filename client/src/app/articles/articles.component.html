@@ -36,16 +36,6 @@
         >
             Articles Categorized
         </a>
-        <a
-                mat-tab-link
-                routerLink="add"
-                [state]="{data: {
-                            articleMostRecentHideRouterLinkState: true
-                            }}"
-        >
-<!--            on-click="hideArticleMostRecent()"-->
-            Add Article
-        </a>
         <!-- HARD-CODED (to begin) Twitter Hacker article 2020-07-27 -->
         <!-- (below)
         - We HIDE this link until a single ArticleDetailComponent is selected, for Display
@@ -133,6 +123,16 @@
         </a>
         </span>
 -->
+        <a
+                mat-tab-link
+                routerLink="add"
+                [state]="{data: {
+                            articleMostRecentHideRouterLinkState: true
+                            }}"
+        >
+            <!--            on-click="hideArticleMostRecent()"-->
+            Add Article
+        </a>
     </nav>
     <div
 style="margin: 5px 10px 0 10px;"
