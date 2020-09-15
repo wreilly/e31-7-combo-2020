@@ -143,6 +143,10 @@ apiArticlesRouter.get('/more',
     function(req, res, next) {
         const offsetNumber = +req.query.offset; // '+' makes string to number
         const pageSize = 20; // hard-coded. 20 articles per "Load More" page.
+        /* // HARD-CODED. Matches FE
+        src/app/articles/articles-categorized/articles-categorized.component.ts:23
+          offsetPageSize = 20;
+         */
 
        // console.log('API /more offset is: ', offsetNumber); // << YES. e.g. 40
 

@@ -134,8 +134,16 @@ Top/First is Oldest/First-Entered.
             .sort({_id: -1})
             // .skip(pageSize * (offsetNumber - 1)) // << Hah! wrong math man.
             // .skip(offsetNumber - 1) // << wrong too. MongoError: Skip value must be non-negative, but received: -1
-            .skip(offsetNumber)
-            .limit(pageSize)
+            // .skip(offsetNumber) // Hah, encore! No. No skipping!
+            /*
+            Boys and girls, we want to get ALL the articles, up to the LoadMore limit.
+            We do NOT want to "skip" the first, whatever, 20, 40. No.
+            Always GET from 0 (first, most recent), on up to LoadMore present
+            limit (be that 20, 40, etc.).
+             // */
+            // .limit(pageSize) // << No. Worked fine w. above "skip" biz, but not what we want. Thx.
+            .limit(offsetNumber) //  That ought to be the magic. Sheesh.
+            // N.B. MongoDB limit(0) is same as NO limit. o la!
             .then(
                 (whatIGot) => { // "pageSize" # [] of new2020articles!
                     // resolved
