@@ -498,7 +498,7 @@ N.B. This "get" lookup function here in the Service is used by these Components:
  */
         /* WAS IN ArticleListComponent (and ArticleAdd). Better here in Service. cheers.   */
 
-        console.log('555 PASSED IN storedCategoryValue ', storedCategoryValue); // e.g. living (lowercase, BE value)
+        // console.log('555 PASSED IN storedCategoryValue ', storedCategoryValue); // e.g. living (lowercase, BE value)
         /* Presumably:
         - 'u.s.'
         - 'foobar' or 'No Category etc.'
@@ -554,7 +554,7 @@ N.B. This "get" lookup function here in the Service is used by these Components:
                          */
                     } else {
                         // Not "the answer" (yet)
-                       console.log('getCategoryViewValue. ERROR! Value from BE for "Category" is: 1) NOT undefined, and 2) NOT a match on anything in our list of Categories. What the Sam Hay is it? W-a-a-l, it is: storedCategoryValue: ', storedCategoryValue );
+                    //   console.log('getCategoryViewValue. ERROR! Value from BE for "Category" is: 1) NOT undefined, and 2) NOT a match on anything in our list of Categories. What the Sam Hay is it? W-a-a-l, it is: storedCategoryValue: ', storedCategoryValue );
                        /* Yes.
                        - "" << for 5afac7603fa7e949fa00a64e
                        - "Dis-Allowed AGAIN Category Text inserted at database" << for 5af83649f2fffa14c4a22cd7
@@ -619,7 +619,7 @@ it got saved back to the database. sigh."
             viewValue: 'U.S.',
         },
         {
-            value: 'politics', // TODO rename to 'politics'
+            value: 'politics',
             viewValue: 'Politics',
         },
         {

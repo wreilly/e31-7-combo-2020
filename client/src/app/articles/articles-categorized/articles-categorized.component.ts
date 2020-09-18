@@ -24,7 +24,7 @@ export class ArticlesCategorizedComponent implements OnInit {
 
   filterIsOn = false; // init
   filterCategory: string; // init ? '';
-  /* ? should it be 'ALL Articles'
+  /* ? should init value be 'ALL Articles'
   (or 'ALL Categories' for that matter) ?
   - Seems not necessary
    */
@@ -35,12 +35,17 @@ export class ArticlesCategorizedComponent implements OnInit {
   routes/api/api-articles.js:145
   const pageSize = 20; // hard-coded. 20 articles per "Load More" page.
    */
+  updateOffsetNumber: number; // << Variable. I hope this is right
+  updateOffsetPageSize = this.offsetPageSize; // constant as it were - HARD-CODED 20. // : number;
 
-  offsetNumber = this.offsetPageSize;// 0; // init. Also in ngOnInit()
-  articlesShownNumber: number;
-  loadNoMore: boolean; // disable when max articlesShownNumber
+  offsetNumber = this.offsetPageSize; // VARIABLE. Initialized here to 20, not 0; // init. Also (re-)initialized in ngOnInit()
+  articlesRetrievedNumber: number;
+  loadNoMore: boolean; // disable when max articlesRetrievedNumber
 
 
+  updateArticlesCount: number;
+  updateArticlesCountAllInCollection: number;
+  updateArticlesRetrievedNumber: number;
 
   offsetNumberNext: number; // << Not using (after all)
   /* Update on Note below.
@@ -76,6 +81,8 @@ export class ArticlesCategorizedComponent implements OnInit {
 
   myUIIsLoadingStore$: Observable<boolean>;
 
+  categorizerReadyToShow: boolean;
+
   constructor(
       private myArticleService: ArticleService,
       private myFilterSortService: FilterSortService,
@@ -84,64 +91,28 @@ export class ArticlesCategorizedComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.categorizerReadyToShow = false; // wait till asynch call done, below, getArticlesLoadMore()
+
     this.myUIIsLoadingStore$ = this.myStore.select(fromRoot.getIsLoading);
 
     this.categories = this.myArticleService.getCategoriesInService(); // whamma-jamma
 
-    this.offsetNumber = this.offsetPageSize;
+    this.offsetNumber = this.offsetPageSize; // 20, not 0
     /* // be sure to re-initialize, here. bueno.
     Hah. you don't want 0;
     N.B. MongoDB limit(0) is same as NO limit. o la!
      */
 
     // this.getArticles();
-    this.getArticlesLoadMore(this.offsetNumber); // init with offsetNumber of 0. (Get first twenty --> 0-19)
+    this.getArticlesLoadMore(this.offsetNumber, false); // init with offsetNumber of 20, not 0. (Get first twenty --> 0-19)
 
-  }
-
-  getArticles() { // << NO LONGER CALLED. NOW "LOAD MORE"
-    this.myArticleService.listArticles()
-        .subscribe(
-            (allArticlesWeGot: []) => {
-              console.log('allArticlesWeGot ', allArticlesWeGot);
-              /* [] of {} = OK
-articleCategory: "u.s."
-articleTitle: "Covid-19EDIT jjj kkk NAV ARTICLES Live Updates: a One More Vaccine Trial Is Halted After Patient Becomes Ill"
-articleUrl: "https://www.nytimes.com/2020/09/09/world/covid-19-coronavirus.html"
-__v: 0
-_id: "5f58ae8d4d2835ae66510f4a"
-               */
-
-              /* Hmm. Error:
-"core.js:6228 ERROR TypeError: allArticlesWeGot.map is not a function"
-
-              (allArticlesWeGot: [
-                { // "BE Article"
-                  _id: string,
-                  articleTitle: string,
-                  articleUrl: string,
-                  articleCategory: string, // << BE 'value' e.g. 'u.s.'
-                }
-              ]) => {
-*/
-
-              // HMM. this.articlesCount = allArticlesWeGot.length;
-
-/* HMM. */
-              this.articles = allArticlesWeGot.map(
-                  this.myArticleService.myMapBEArticlesToFEArticles
-              );
+  } // /ngOnInit()
 
 
-              this.articlesToDisplay = this.articles; // whamma-jamma
-
-              this.articlesCount = this.articlesToDisplay.length;
-
-            }
-        ) // /.subscribe()
-  } // /getArticles() // << NO LONGER CALLED.
-
-  getArticlesLoadMore(offsetNumberHere) {
+  getArticlesLoadMore(offsetNumberHere, emitted) {
+    /*
+    offsetNumberHere is variable: 20, 40, 60...
+     */
 
     // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     /* SPINNER triggered from here, arguably.
@@ -157,8 +128,8 @@ _id: "5f58ae8d4d2835ae66510f4a"
               articlesLoadMoreFromServer: [],
               maxArticlesFromServer: number,
             }) => {
-              console.log('loadMoreArticlesWeGot ', loadMoreArticlesWeGot);
-              /* [] of {} = OK
+              console.log('loadMoreArticlesWeGot EDIT THIS LINE ', loadMoreArticlesWeGot);
+              /* [] of {} = OK  count: 20 first time, then 40, 60, 80 ...
 articleCategory: "u.s."
 articleTitle: "Covid-19EDIT jjj kkk NAV ARTICLES Live Updates: a One More Vaccine Trial Is Halted After Patient Becomes Ill"
 articleUrl: "https://www.nytimes.com/2020/09/09/world/covid-19-coronavirus.html"
@@ -177,28 +148,43 @@ _id: "5f58ae8d4d2835ae66510f4a"
 
               this.articlesCount = this.articlesToDisplay.length;
 
+              /* INCREMENT offSetNumber
+              N.B. I should be doing this near/at bottom
+              of this method, rather than right here.
+              Doing increment here, in following lines of logic,
+              I need to (artificially) subtract it right back off!
+              d'oh. TODO refactor/fix
+               */
               this.offsetNumber = offsetNumberHere + this.offsetPageSize;
+              /*
+offsetNumberHere is variable: 20, 40, 60...
+Incremented to 40, 60, 80...
+ */
 
-              this.articlesShownNumber = (
+              this.articlesRetrievedNumber = (
                   ( this.offsetNumber - this.offsetPageSize )
-                  <=
+                  <= // less-than-or-equal
                   this.articlesCountAllInCollection
               )
                   ? (this.offsetNumber - this.offsetPageSize)
                   : this.articlesCountAllInCollection;
-              /* Two things fixed here.
-              1. Just to get correct "1-20", "1-40" etc.
-              - Kinda dumb have to subtract our hard-coded 20
+              /* Two things fixed here in this ternary conditional expression:
+
+              1. To get correct upper number in the
+                 "1-20", "1-40", "1-60" etc.
+              - Kinda dumb but have to subtract our hard-coded 20
                back off of 'offsetNumber' (because offsetNumber
                has by now been incremented) o well it works.
-              2. The incrementing 20, 40...80, 100, 120 was sailing
-              past the Max Number in the Collection (e.g. 98).
+
+              2. The incrementing 20, 40...80, 100, 120, 140
+              was sailing up past the
+              Max Number in the Collection (e.g. 98).
               So, with this "ternary" ? : we test for which
               of these expressions above is
               smaller, and show that.
                */
 
-              if (this.articlesShownNumber === this.articlesCountAllInCollection) {
+              if (this.articlesRetrievedNumber === this.articlesCountAllInCollection) {
                 this.loadNoMore = true;
               }
               /* Final bit of business (above)
@@ -216,14 +202,58 @@ _id: "5f58ae8d4d2835ae66510f4a"
                 // all set. we're on "All Categories" - no filtering needed
               }
 
-            }
+
+              if (emitted) {
+                this.categorizerReadyToShow = true;
+                console.log('EMIT => TRUE this.categorizerReadyToShow ', this.categorizerReadyToShow);
+              } else {
+                /*
+                ATTENTION! (en francais)
+                TODO ? is ths ok? Artificially setting to TRUE - REGARDLESS! o la.
+                 */
+                this.categorizerReadyToShow = true;
+                console.log('ARTIFICIAL TO TRUE YE GODS - EMIT => FALSE this.categorizerReadyToShow ', this.categorizerReadyToShow);
+              }
+
+              this.updateArticlesControlledCategorizer (this.offsetNumber, this.articlesCount, this.articlesCountAllInCollection, this.articlesRetrievedNumber);
+              /* 1st param:
+WAS: this.offsetPageSize
+IS NOW: this.offsetNumber  << I hope this is right
+ */
+
+            } // /next() == ( inside .subscribe() )
+
         ) // /.subscribe()
   } // /getArticlesLoadMore()
+
+  updateArticlesControlledCategorizer (offsetNumber, articlesCount, articlesCountAllInCollection, articlesRetrievedNumber) {
+    /* 1st param:
+    WAS: offsetPageSize
+    IS NOW: offsetNumber  << I hope this is right
+     */
+    /*
+            bind-articlesCountInputName="articlesCount" // << count in Category, within current RetrievedNumber
+            bind-offsetPageSizeInputName="offsetPageSize" // << constant, really. 20.
+            bind-articlesCountAllInCollectionInputName="articlesCountAllInCollection"
+            bind-articlesRetrievedNumberInputName="articlesRetrievedNumber"
+     */
+
+    this.updateOffsetNumber = offsetNumber; // << I hope this is right
+/* No need to update. This (I think?) is a constant HARD-CODED 20.
+    this.updateOffsetPageSize = offsetPageSize; // << No.
+*/
+
+    this.updateArticlesCount = articlesCount;
+    this.updateArticlesCountAllInCollection = articlesCountAllInCollection;
+    this.updateArticlesRetrievedNumber = articlesRetrievedNumber;
+
+  } // /updateArticlesControlledCategorizer()
 
 
   letUsFilterByCategory (categoryStoredValuePassedIn: string): void {
     /* :void
     Doesn't return anything. Just sets variables for use in display.
+    In particular the this.articlesToDisplay
      */
     // Hmm. Is it "StoredValue" ? ('arts') << No it ain't. (How tum called "Stored"? Hmm.)
     // I think it's viewValue ('Arts') << YEAH!
@@ -313,5 +343,48 @@ cheers.
     }
 
   } // /letUsFilterByCategory()
+
+  getArticles() { // << NO LONGER CALLED. NOW "LOAD MORE"
+    this.myArticleService.listArticles()
+        .subscribe(
+            (allArticlesWeGot: []) => {
+              console.log('allArticlesWeGot ', allArticlesWeGot);
+              /* [] of {} = OK
+articleCategory: "u.s."
+articleTitle: "Covid-19EDIT jjj kkk NAV ARTICLES Live Updates: a One More Vaccine Trial Is Halted After Patient Becomes Ill"
+articleUrl: "https://www.nytimes.com/2020/09/09/world/covid-19-coronavirus.html"
+__v: 0
+_id: "5f58ae8d4d2835ae66510f4a"
+               */
+
+              /* Hmm. Error:
+"core.js:6228 ERROR TypeError: allArticlesWeGot.map is not a function"
+
+              (allArticlesWeGot: [
+                { // "BE Article"
+                  _id: string,
+                  articleTitle: string,
+                  articleUrl: string,
+                  articleCategory: string, // << BE 'value' e.g. 'u.s.'
+                }
+              ]) => {
+*/
+
+              // HMM. this.articlesCount = allArticlesWeGot.length;
+
+              /* HMM. */
+              this.articles = allArticlesWeGot.map(
+                  this.myArticleService.myMapBEArticlesToFEArticles
+              );
+
+
+              this.articlesToDisplay = this.articles; // whamma-jamma
+
+              this.articlesCount = this.articlesToDisplay.length;
+
+            }
+        ) // /.subscribe()
+  } // /getArticles() // << NO LONGER CALLED.
+
 
 } // /ArticlesCategorizedComponent {}

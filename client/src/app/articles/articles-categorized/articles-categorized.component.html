@@ -1,26 +1,81 @@
 <div class="component-label">ARTICLES-CATEGORIZED.COMPONENT</div>
 <mat-nav-list role="navigation">
+    <app-categorizer
+            *ngIf="categorizerReadyToShow"
+            bind-articlesCountInputName="updateArticlesCount"
+            bind-offsetPageSizeInputName="updateOffsetPageSize"
+            bind-offsetNumberInputName="updateOffsetNumber"
+            bind-articlesCountAllInCollectionInputName="updateArticlesCountAllInCollection"
+            bind-articlesRetrievedNumberInputName="updateArticlesRetrievedNumber"
+
+            bind-articlesInputName="articles"
+
+            on-categorizerGetArticlesLoadMoreEvent="getArticlesLoadMore(
+            $event.offsetNumberOutput, true
+            )"
+    ></app-categorizer>
+    <!-- bind-offsetPageSizeInputName="updateOffsetPageSize"
+    // << I (believe?) this is constant as it were. Always 20. Hmm.
+    -->
+<!-- YA HAD IT ALL WRRROOONNNGGG!
+Missing "bind-" !!
+
+Couple more notes on SYNTAX.
+I don't remember exactly what those durned '{{ }}' interpolating double-braces are called, or exactly what they do/don't-do.
+
+But here is how they work/don't-work:
+1. bind-articlesCountInputName="{{articlesCount}}" // << NO. bind- with "{{}}" = No.
+2. bind-articlesCountInputName="articlesCount" // << YES. bind- with "" = Yes.
+3. articlesCountInputName="{{articlesCount}}" // << OK. (no bind-) with "{{}}" = OK
+4. articlesCountInputName="articlesCount" // << NO. (non bind-) with "" = No.
+
+Notes:
+1. IDE complains. Error.
+2. Hopefully our FIX/ANSWER!
+3. "OK" means: No IDE complaint. But, doesn't really work. No binding. One-time (?) property value assignment, right ? Useless.
+4. "No" means: No IDE complaint. But, that "articlesCount" is merely a (meaningless) string. Nuttin' doin'.
+
+
+WRRROOONNNGGG:
+    <app-categorizer
+            *ngIf="categorizerReadyToShow"
+            articlesCountInputName="{{articlesCount}}"
+            offsetPageSizeInputName="{{offsetPageSize}}"
+            articlesCountAllInCollectionInputName="{{articlesCountAllInCollection}}"
+            articlesRetrievedNumberInputName="{{articlesRetrievedNumber}}"
+
+            articlesInputName="{{articles}}"
+
+            on-categorizerGetArticlesLoadMoreEvent="getArticlesLoadMore(
+            $event.offsetNumberOutput, true
+            )"
+    ></app-categorizer>
+-->
     <mat-card class="spacing">
         <!-- TOP CATEGORY BUTTONS ROW -->
         <mat-card-subtitle>
-            <span>Count (ALL Articles): {{ articlesCountAllInCollection }}</span>
+            <span>Count (All Articles): {{ articlesCountAllInCollection }}</span>
             |
-            <span>Showing: Articles: 1 - {{ articlesShownNumber }}</span>
+            <span>Retrieved: Articles 1 - {{ articlesRetrievedNumber }}</span>
         </mat-card-subtitle>
         <mat-card-content>
             <div>
-                <h1>{{ articlesInCategoryWhichCategory }} <span class="tiny">Count: {{ articlesCount }}</span></h1>
+                <h1>{{ articlesInCategoryWhichCategory }} <span class="tiny">Category count: {{ articlesCount }}</span></h1>
             </div>
             <span
                     *ngFor="let oneCategory of categories"
             >
+                <!-- span wrapper allows that following '|' to be part of each displayed bit  -->
                 <button
                         mat-raised-button
                         color="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'accent' : 'primary' }}"
+
+                        style="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'cursor: none;' : 'cursor: pointer' }}"
                         type="button"
                         class="my-smaller-button"
                         on-click="letUsFilterByCategory(oneCategory.viewValue)"
                 >
+
                     {{ oneCategory.viewValue }}
                 </button> |
             </span>
@@ -56,7 +111,7 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
                     color="warn"
                     type="button"
                     class="my-smaller-button"
-                    on-click="getArticlesLoadMore(offsetNumber)"
+                    on-click="getArticlesLoadMore(offsetNumber, true)"
                     bind-disabled="loadNoMore"
             >
                 <strong> >> Load More << </strong>
@@ -78,10 +133,7 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
             bind-diameter="20"
     >
     </mat-progress-spinner>
-    <!-- Ok. works. let's see if we can make it an overlay. (whoa)
-    https://stackoverflow.com/questions/42963444/angular-2-material-progress-spinner-display-as-overlay
-    https://stackblitz.com/edit/overlay-progress-spinner-8o275a?file=app%2Foverlay%2Foverlay.service.ts
-    -->
+
 
 
     <app-article
@@ -104,7 +156,7 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
         <mat-card-subtitle>
             <span>Count (ALL Articles): {{ articlesCountAllInCollection }}</span>
             |
-            <span>Showing: Articles: 1 - {{ articlesShownNumber }}</span>
+            <span>Showing: Articles: 1 - {{ articlesRetrievedNumber }}</span>
         </mat-card-subtitle>
         <mat-card-content>
             <div>
@@ -155,7 +207,7 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
                     color="warn"
                     type="button"
                     class="my-smaller-button"
-                    on-click="getArticlesLoadMore(offsetNumber)"
+                    on-click="getArticlesLoadMore(offsetNumber, false)"
                     bind-disabled="loadNoMore"
             >
                 <strong> >> Load More << </strong>

@@ -14,12 +14,14 @@ import { MyMaterialModule } from '../my-material.module';
 import { InputFocusDirective } from './input-focus/input-focus.directive';
 import { ScrollTopComponent } from './scroll-top/scroll-top.component';
 import { PaginatorComponent } from './paginator/paginator.component';
+import { CategorizerComponent } from './categorizer/categorizer.component';
 
 @NgModule({
     declarations: [
         InputFocusDirective,
         ScrollTopComponent,
         PaginatorComponent,
+        CategorizerComponent,
     ],
     imports: [
         CommonModule,
@@ -41,6 +43,7 @@ import { PaginatorComponent } from './paginator/paginator.component';
         InputFocusDirective,
         ScrollTopComponent,
         PaginatorComponent,
+        CategorizerComponent, // << ng g component did NOT place this line here. Needed it. Interesting. I guess.
     ],
     providers: [
 

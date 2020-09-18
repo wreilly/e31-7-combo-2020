@@ -1,0 +1,97 @@
+<div class="component-label">CATEGORIZER.COMPONENT</div>
+<mat-card class="spacing">
+    <mat-card-subtitle>
+        <span>Count (All Articles): {{ articlesCountAllInCollectionInput }} << articlesCountAllInCollection</span>
+        |
+        <span>Retrieved: Articles 1 - {{ articlesRetrievedNumberInput }} << articlesRetrievedNumberInput</span>
+    </mat-card-subtitle>
+    <mat-card-content>
+        <div>
+            <h1>{{ articlesInCategoryWhichCategory }} << articlesInCategoryWhichCategory <span class="tiny">Category count: {{ articlesCountInput }} << articlesCountInput</span></h1>
+        </div>
+        <span
+                *ngFor="let oneCategory of categories"
+        >
+                            <!-- span wrapper allows that following '|' to be part of each displayed bit  -->
+            <button
+                    mat-raised-button
+                    color="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'accent' : 'primary' }}"
+                    style="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'cursor: none;' : 'cursor: pointer;' }}"
+                    type="button"
+                    class="my-smaller-button"
+                    on-click="letUsFilterByCategory(oneCategory.viewValue)"
+            >
+<!--  "About that red squiggle..."
+(That WebStorm IDE places beneath the "?" in the ternary conditional statement above.)
+
+Q. What's up with that?
+A. I believe it's benign.
+To get the active Category button un-clickable or at least appearing to be so...
+01. NOPE.
+Too strong. "Works," but unacceptable. Color turns gray.
+disabled="{{ oneCategory.viewValue === articlesInCategoryWhichCategory }}"
+
+02. OK.
+Odd. Works, but WebStorm IDE "complains" w. red squiggle under the ternary "?". Hmm.
+"Good enough."
+style="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'cursor: none;' : 'cursor: pointer;' }}"
+-->
+                {{ oneCategory.viewValue }}
+            </button>
+            |
+        </span>
+        <!-- Couple of necessary exception-case manual entries: -->
+        <button
+                mat-raised-button
+                color="{{articlesInCategoryWhichCategory === 'No Category Assigned' ? 'accent' : ''}}"
+                type="button"
+                class="my-smaller-button"
+                on-click="letUsFilterByCategory('No Category (thx Service!)')"
+        >
+            No Category Assigned
+        </button>
+        <!-- re: above
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+const NO_CATEGORY         = 'No Category (thx Service!)';
+const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+        -->
+        |
+        <button
+                mat-raised-button
+                color="{{articlesInCategoryWhichCategory === 'ALL Articles' ? 'accent' : ''}}"
+                type="button"
+                class="my-smaller-button"
+                on-click="letUsFilterByCategory('ALL')"
+        >
+            <i>All Categories</i>
+        </button>
+        |
+        <button
+                mat-raised-button
+                color="warn"
+                type="button"
+                class="my-smaller-button"
+                on-click="emitCallGetArticlesLoadMore(offsetNumberInput)"
+                bind-disabled="loadNoMore"
+        >
+            <strong> >> Load More << </strong>
+        </button>
+        <span> | {{ offsetNumberInput }} << offsetNumberInput</span>
+        <span> | {{ offsetNumberInCategorizer }} << offsetNumberInCategorizer - Always 20.</span>
+        <!-- This was unchanging 20. hmm
+        on-click="emitCallGetArticlesLoadMore(offsetNumberInCategorizer)"
+        -->
+        <span> | {{ offsetPageSizeInput }} << offsetPageSizeInput Q. Always 20 ? A. Yes.</span>
+
+        <mat-progress-spinner
+                *ngIf="myUIIsLoadingStore$ | async"
+                mode="indeterminate"
+                bind-diameter="20"
+        ></mat-progress-spinner>
+        <!-- Ok. works. let's see if we can make it an overlay. (whoa)
+https://stackoverflow.com/questions/42963444/angular-2-material-progress-spinner-display-as-overlay
+https://stackblitz.com/edit/overlay-progress-spinner-8o275a?file=app%2Foverlay%2Foverlay.service.ts
+-->
+    </mat-card-content>
+</mat-card>

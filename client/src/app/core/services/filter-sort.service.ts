@@ -225,25 +225,30 @@ https://addyosmani.com/blog/exploring-javascripts-logical-or-operator/
 Although a specific falsy value hasn't been assigned to either side above, the first object is considered truthy in this case, which is why foo is returned. The second object would be returned if the first was falsy."
 ***
 
-
+FAIL:
 01 - Count: 61 (NC)
 myItem[myKey] === ( valuePassedIn || 'No Correct Category (thx Service!)' )
 
+FAIL:
 02 - Count: 99 (all of 'em)
 myItem[myKey] === 'No Correct Category (thx Service!)' || valuePassedIn
 MISSING '( )' parentheses!
 
+FAIL:
 03 - Count: 3 (NCC)
 myItem[myKey] === ('No Correct Category (thx Service!)' || valuePassedIn)
 
+FAIL:
 04 - Count: 3 (NCC)
 myItem[myKey] === (localSpecialVariableForNcc || valuePassedIn)
 ( myItem[myKey] === (localSpecialVariableForNcc || valuePassedIn) ) // << extra parens? no difference. hmmph.
 
+FAIL:
 05- Count: 61 (NC)
 myItem[myKey] === (valuePassedIn || localSpecialVariableForNcc)
 // likewise here. // << extra parens? no difference. hmmph.
 
+PASS:  <<  !!!
 06 - Count: 64 (NC + NCC) // << H'rrah. "Sixth time's the charm!"
 (
   myItem[myKey] === valuePassedIn
