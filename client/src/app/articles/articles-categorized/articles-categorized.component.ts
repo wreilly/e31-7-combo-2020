@@ -75,6 +75,8 @@ export class ArticlesCategorizedComponent implements OnInit {
 
 
   categories: Category[];
+
+  updateNoArticlesInCategory: boolean; // init false ?
   noArticlesInCategory = false; // init
   noArticlesInCategoryWhichCategory: string;
   // e.g. 'Arts' when there are 0 articles in Arts
@@ -82,6 +84,8 @@ export class ArticlesCategorizedComponent implements OnInit {
   myUIIsLoadingStore$: Observable<boolean>;
 
   categorizerReadyToShow: boolean;
+
+
 
   constructor(
       private myArticleService: ArticleService,
@@ -104,12 +108,15 @@ export class ArticlesCategorizedComponent implements OnInit {
      */
 
     // this.getArticles();
-    this.getArticlesLoadMore(this.offsetNumber, false); // init with offsetNumber of 20, not 0. (Get first twenty --> 0-19)
+    this.getArticlesLoadMore(this.offsetNumber, false, 'ALL');
+    /* init with offsetNumber of 20, not 0. (Get first twenty --> 0-19).
+    Also, default 'ALL' category to begin.
+     */
 
   } // /ngOnInit()
 
 
-  getArticlesLoadMore(offsetNumberHere, emitted) {
+  getArticlesLoadMore(offsetNumberHere, filterIsOnParam, filterCategoryParam) { // WAS: emitted
     /*
     offsetNumberHere is variable: 20, 40, 60...
      */
@@ -194,26 +201,48 @@ Incremented to 40, 60, 80...
               cheers.
                */
 
-
-              if (this.filterIsOn) {
+              if (filterIsOnParam) {
+              // if (this.filterIsOn) {
                 // re-apply filter to new "load more" of articles
+/* Worked fine, here within ArticlesCategorizedComponent
+
                 this.letUsFilterByCategory(this.filterCategory);
+
+CRAZY NOTE:
+We are considering sorta using 'COMPONENT_OVERRIDE' here. hmm. maybe not.
+but see it also in the HTML. bit of mixed bag
+going on here. be right back.
+*/
+/* But now we're trying Child-to-Parent
+communicating from Categorizer...
+ */
+                this.letUsFilterByCategory(filterCategoryParam);
               } else {
                 // all set. we're on "All Categories" - no filtering needed
               }
 
 
+              this.categorizerReadyToShow = true;
+              /* QUESTION
+              Do I even need above any longer?
+              Will find out.
+               */
+/* NO LONGER doing this T/F check.
+In fact, "stealing" that boolean parameter f.k.a. "emitted"
+to now be instead "filterIsOn". Hah!
+
               if (emitted) {
                 this.categorizerReadyToShow = true;
                 console.log('EMIT => TRUE this.categorizerReadyToShow ', this.categorizerReadyToShow);
               } else {
-                /*
+                /!*
                 ATTENTION! (en francais)
                 TODO ? is ths ok? Artificially setting to TRUE - REGARDLESS! o la.
-                 */
+                 *!/
                 this.categorizerReadyToShow = true;
                 console.log('ARTIFICIAL TO TRUE YE GODS - EMIT => FALSE this.categorizerReadyToShow ', this.categorizerReadyToShow);
               }
+*/
 
               this.updateArticlesControlledCategorizer (this.offsetNumber, this.articlesCount, this.articlesCountAllInCollection, this.articlesRetrievedNumber);
               /* 1st param:
@@ -247,7 +276,15 @@ IS NOW: this.offsetNumber  << I hope this is right
     this.updateArticlesCountAllInCollection = articlesCountAllInCollection;
     this.updateArticlesRetrievedNumber = articlesRetrievedNumber;
 
+    this.updateNoArticlesInCategory = this.noArticlesInCategory
+
   } // /updateArticlesControlledCategorizer()
+
+
+  assignArticlesToDisplayFromCategorizer(articlesToDisplayOutputArrayPassedIn: Article[]) {
+    console.log('assignArticlesToDisplayFromCategorizer articlesToDisplayOutputArrayPassedIn: ', articlesToDisplayOutputArrayPassedIn);
+    this.articlesToDisplay = articlesToDisplayOutputArrayPassedIn;
+  }
 
 
   letUsFilterByCategory (categoryStoredValuePassedIn: string): void {

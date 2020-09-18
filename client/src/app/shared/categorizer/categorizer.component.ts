@@ -33,8 +33,24 @@ export class CategorizerComponent implements OnInit, AfterViewInit, AfterViewChe
   const pageSize = 20; // hard-coded. 20 articles per "Load More" page.
    */
 
+  /* What Is Going On Here. << WE ABANDONED THIS COMPLEXITY FRANK GOODNESS.
+  1. We capture the INITIAL report from Parent Component on
+  How Many Articles are in MongoDB Collection.
+  2. We do subsequently UPDATE that (not-often-changing) figure,
+  with each "Load More"
+  Q. Why this bother?
+  A. Because the timing for getting that UPDATED value was
+  not in time to use for U/I logic here in Child Component,
+  for disabling the "Load More" button. sigh.
+   TURNS OUT WE DID NOT NEED THIS COMPLEXITY FRANK GOODNESS
+NO>>  @Input('articlesCountAllInCollectionInitialInputName')
+  articlesCountAllInCollectionInitialInput: number; // in entire MongoDB Collection
+  */
+
+  // re: above, this is all we need, right here:
   @Input('articlesCountAllInCollectionInputName')
   articlesCountAllInCollectionInput: number; // in entire MongoDB Collection
+
 
   @Input('articlesRetrievedNumberInputName')
   articlesRetrievedNumberInput: number;
@@ -42,22 +58,45 @@ export class CategorizerComponent implements OnInit, AfterViewInit, AfterViewChe
   @Input('articlesInputName')
   articlesInput: Article[];
 
+  @Input('noArticlesInCategoryInputName')
+  noArticlesInCategoryInput: boolean;
+
   @Output()
   categorizerGetArticlesLoadMoreEvent = new EventEmitter<{
     offsetNumberOutput: number,
+    filterIsOnParam: boolean,
+    filterCategory: string,
+  }>();
+
+  @Output()
+  articlesToDisplayOutputEvent = new EventEmitter<{
+    articlesToDisplayOutputArray: Article[],
   }>();
 
 
 /* Superseded by @Input('articlesInputName') << ??
   articles: Article[]; //
 */
-  articlesToDisplay: Article[]; //
 
+/* Nah: NOT Superseded by @Output() articlesToDisplayOutputEvent ( ?? ) */
+  articlesToDisplay: Article[];
+
+
+  /* Superseded (je crois) by
+  @Input('articlesCountAllInCollectionInputName')
+  articlesCountAllInCollectionInput
+  Vediamo.
+   *************************** */
   articlesCountAllInCollection: number; // in entire MongoDB Collection
 
 
   filterIsOn = false; // init
+  // filterCategory: string; // init ? ''; NO not up here.
+/* Had not been initializing till letUsFilter() etc.
+But now may need to from start.
+We'll do so in ngOnInit()  Better. */
   filterCategory: string; // init ? '';
+
   /* ? should init value be 'ALL Articles'
   (or 'ALL Categories' for that matter) ?
   - Seems not necessary
@@ -68,7 +107,17 @@ export class CategorizerComponent implements OnInit, AfterViewInit, AfterViewChe
   loadNoMore: boolean; // disable when max articlesRetrievedNumber
 
   categories: Category[];
-  articlesInCategoryWhichCategory: string;
+  articlesInCategoryWhichCategory = 'All Categories'; // init  // string; // e.g. 'Politics' when there ARE articles
+
+  /*  Superseded by @Input('noArticlesInCategoryInputName')
+  re: noArticlesInCategory
+  This too needs to be updated from Parent.
+  Use Case: Load page. Click 'Business' (against initial 20)
+  Get "No articles... add one..."
+  Click Load More (40). Again, (60). NOW we do find a Business.
+  Need to hear about it down here in Child, to be able to turn off
+  this "No articles... add one..." message.
+   */
   noArticlesInCategory = false; // init
   noArticlesInCategoryWhichCategory: string;
   // e.g. 'Arts' when there are 0 articles in Arts
@@ -88,6 +137,7 @@ export class CategorizerComponent implements OnInit, AfterViewInit, AfterViewChe
 
     this.categories = this.myArticleService.getCategoriesInService();
 
+    this.filterCategory = ''; // seems to be best initialize here now
 
 
     this.offsetNumberInCategorizer = this.offsetPageSizeInput;
@@ -115,7 +165,7 @@ export class CategorizerComponent implements OnInit, AfterViewInit, AfterViewChe
   } // /ngOnInit()
 
   ngAfterViewInit() {
-    // what might I do in here ( ? )
+    // what might I do in here ( ? <)
     // Seems next line is NOT needed. Hmm. t.b.d.
     // TODO ? this.emitCallGetArticlesLoadMore(this.offsetNumberInCategorizer);
   } // /ngAfterViewInit()
@@ -140,12 +190,49 @@ TODO see if need to turn on ?     this.myChangeDetectorRef.detectChanges(); // W
     /* Hmm. needs to increment: 20, 40, 60...
     Yes. this is incrementing: 20, 40, 60
      */
+    console.log('CTGZ-04B - emitCallGetArticlesLoadMore() this.filterIsOn ', this.filterIsOn); //
 
-    this.categorizerGetArticlesLoadMoreEvent.emit({
-          offsetNumberOutput: offsetNumberToEmit,
-        }
+    console.log('CTGZ-04C - emitCallGetArticlesLoadMore() this.filterCategory ', this.filterCategory); // Yes. 20.
+
+    this.categorizerGetArticlesLoadMoreEvent.emit( {
+      offsetNumberOutput: offsetNumberToEmit,
+      filterIsOnParam: this.filterIsOn,
+      filterCategory: this.filterCategory,
+  }
     );
+
+
+    console.log('emitCallGetArticlesLoadMore 00 this.articlesCountAllInCollectionInput ', this.articlesCountAllInCollectionInput);
+    console.log('emitCallGetArticlesLoadMore 00A this.offsetNumberInput ', this.offsetNumberInput);
+
+    if (this.offsetNumberInput >= this.articlesCountAllInCollectionInput) {
+      console.log('emitCallGetArticlesLoadMore 01 this.articlesCountAllInCollectionInput ', this.articlesCountAllInCollectionInput);
+      console.log('emitCallGetArticlesLoadMore 01A this.offsetNumberInput ', this.offsetNumberInput);
+
+      this.loadNoMore = true;
+    } else {
+      console.log('emitCallGetArticlesLoadMore 02 this.articlesCountAllInCollectionInput ', this.articlesCountAllInCollectionInput); // undefined
+      console.log('emitCallGetArticlesLoadMore 02A this.offsetNumberInput ', this.offsetNumberInput); // yes. 40, 60 ...but goes above 100, 120, 140
+    }
+    /*  Disable the Load More button, if we've
+    loaded ALL the Articles from the Collection.
+    cheers.
+     */
+
   } // /emitCallGetArticlesLoadMore()
+
+
+  emitArticlesToDisplayOutput(articlesToDisplayPassedIn: Article[]) {
+
+    /*
+    "articlesToDisplayPassedIn" will be our this.articlesToDisplay
+    cheers.
+     */
+
+    this.articlesToDisplayOutputEvent.emit({
+      articlesToDisplayOutputArray: articlesToDisplayPassedIn
+    });
+  }
 
 
   letUsFilterByCategory(categoryViewValuePassedIn: string): void {
@@ -168,7 +255,7 @@ TODO see if need to turn on ?     this.myChangeDetectorRef.detectChanges(); // W
         "5af83649f2fffa14c4a22cd7"
      */
 
-    this.noArticlesInCategory = false; // reset
+    this.noArticlesInCategoryInput = false; // reset
     this.noArticlesInCategoryWhichCategory = ''; // reset
 
     if (categoryViewValuePassedIn === 'ALL') {
@@ -265,9 +352,18 @@ cheers.
 
     if (this.articlesCountInput === 0) {
       // No articles under, e.g. 'Arts' (sigh)
-      this.noArticlesInCategory = true;
+      this.noArticlesInCategoryInput = true;
       this.noArticlesInCategoryWhichCategory = categoryViewValuePassedIn;
     }
+
+    /*
+    LAST THING WE DO HERE -
+    Having used above logic to filter
+    and arrive at 'articlesToDisplay',
+    we invoke method that invokes the .emit() of that array,
+    which passes it up to the Parent ArticlesCategorized.
+     */
+    this.emitArticlesToDisplayOutput(this.articlesToDisplay);
 
   } // /letUsFilterByCategory(): void
 
@@ -284,7 +380,8 @@ cheers.
           this.articlesToDisplay = this.articlesInput; // whamma-jamma
           // current "LoadMore" # of Articles (e.g. 20, 40, 60...)
 
-          this.articlesCountAllInCollection = loadMoreArticlesWeGot.maxArticlesFromServer;
+          this.articlesCountAllInCollectionInput = loadMoreArticlesWeGot.maxArticlesFromServer;
+          // this.articlesCountAllInCollection = loadMoreArticlesWeGot.maxArticlesFromServer;
 
           this.articlesCountInput = this.articlesToDisplay.length;
 
@@ -293,10 +390,10 @@ cheers.
           this.articlesRetrievedNumberInput = (
               ( this.offsetNumberInCategorizer - this.offsetPageSizeInput )
               <= // less-than-or-equal
-              this.articlesCountAllInCollection
+              this.articlesCountAllInCollectionInput
           )
               ? (this.offsetNumberInCategorizer - this.offsetPageSizeInput)
-              : this.articlesCountAllInCollection;
+              : this.articlesCountAllInCollectionInput;
           /* Two things fixed here in this ternary conditional expression:
 
           1. To get correct upper number in the
@@ -313,7 +410,7 @@ cheers.
           smaller, and show that.
            */
 
-          if (this.articlesRetrievedNumberInput === this.articlesCountAllInCollection) {
+          if (this.articlesRetrievedNumberInput === this.articlesCountAllInCollectionInput) {
             this.loadNoMore = true;
           }
           /* (Almost) final bit of business (above)

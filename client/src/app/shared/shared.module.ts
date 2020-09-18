@@ -16,6 +16,10 @@ import { ScrollTopComponent } from './scroll-top/scroll-top.component';
 import { PaginatorComponent } from './paginator/paginator.component';
 import { CategorizerComponent } from './categorizer/categorizer.component';
 
+import {RouterModule} from "@angular/router"; // << Auto by WebStorm
+// CategorizerComponent making use of RouterLink. Needed this line.
+// Imported, but not Exported. Okay.
+
 @NgModule({
     declarations: [
         InputFocusDirective,
@@ -31,6 +35,7 @@ import { CategorizerComponent } from './categorizer/categorizer.component';
         // NgxPageScrollCoreModule, // << CRAP
         // NgxPageScrollModule,
         MyMaterialModule,
+        RouterModule,
     ],
     exports: [
         CommonModule,

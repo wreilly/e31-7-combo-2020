@@ -1,13 +1,22 @@
 <div class="component-label">CATEGORIZER.COMPONENT</div>
 <mat-card class="spacing">
     <mat-card-subtitle>
-        <span>Count (All Articles): {{ articlesCountAllInCollectionInput }} << articlesCountAllInCollection</span>
+        <span>Count (All Articles): {{ articlesCountAllInCollectionInput }}
+<!--            << articlesCountAllInCollection-->
+        </span>
         |
-        <span>Retrieved: Articles 1 - {{ articlesRetrievedNumberInput }} << articlesRetrievedNumberInput</span>
+        <span>Retrieved: Articles 1 - {{ articlesRetrievedNumberInput }}
+<!--            << articlesRetrievedNumberInput-->
+        </span>
     </mat-card-subtitle>
     <mat-card-content>
         <div>
-            <h1>{{ articlesInCategoryWhichCategory }} << articlesInCategoryWhichCategory <span class="tiny">Category count: {{ articlesCountInput }} << articlesCountInput</span></h1>
+            <h1>{{ articlesInCategoryWhichCategory }}
+<!--                << articlesInCategoryWhichCategory -->
+                <span class="tiny">Category count: {{ articlesCountInput }}
+<!--                    << articlesCountInput-->
+                </span>
+            </h1>
         </div>
         <span
                 *ngFor="let oneCategory of categories"
@@ -77,12 +86,24 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
         >
             <strong> >> Load More << </strong>
         </button>
-        <span> | {{ offsetNumberInput }} << offsetNumberInput</span>
+<!-- Debug. Done.
+        <span> | {{ offsetNumberInput }}
+            << offsetNumberInput
+        </span>
         <span> | {{ offsetNumberInCategorizer }} << offsetNumberInCategorizer - Always 20.</span>
-        <!-- This was unchanging 20. hmm
+        &lt;!&ndash; This was unchanging 20. hmm
         on-click="emitCallGetArticlesLoadMore(offsetNumberInCategorizer)"
-        -->
+        &ndash;&gt;
         <span> | {{ offsetPageSizeInput }} << offsetPageSizeInput Q. Always 20 ? A. Yes.</span>
+-->
+
+        <div
+                *ngIf="noArticlesInCategoryInput"
+                style="margin: 15px 0px 15px 15px;"
+        >
+            No articles in the "{{noArticlesInCategoryWhichCategory}}" category. Consider <a routerLink="../add" class="blue-link">adding</a> one!
+        </div>
+
 
         <mat-progress-spinner
                 *ngIf="myUIIsLoadingStore$ | async"

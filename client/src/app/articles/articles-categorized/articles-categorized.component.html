@@ -1,19 +1,34 @@
 <div class="component-label">ARTICLES-CATEGORIZED.COMPONENT</div>
 <mat-nav-list role="navigation">
     <app-categorizer
-            *ngIf="categorizerReadyToShow"
             bind-articlesCountInputName="updateArticlesCount"
             bind-offsetPageSizeInputName="updateOffsetPageSize"
             bind-offsetNumberInputName="updateOffsetNumber"
+
+
             bind-articlesCountAllInCollectionInputName="updateArticlesCountAllInCollection"
+
             bind-articlesRetrievedNumberInputName="updateArticlesRetrievedNumber"
 
             bind-articlesInputName="articles"
 
+            bind-noArticlesInCategoryInputName="updateNoArticlesInCategory"
+
             on-categorizerGetArticlesLoadMoreEvent="getArticlesLoadMore(
-            $event.offsetNumberOutput, true
+            $event.offsetNumberOutput,
+            $event.filterIsOnParam,
+            $event.filterCategory
+            )"
+
+            on-articlesToDisplayOutputEvent="assignArticlesToDisplayFromCategorizer(
+            $event.articlesToDisplayOutputArray
             )"
     ></app-categorizer>
+    <!-- O la - not using I hope: *ngIf="categorizerReadyToShow"
+    -->
+    <!--    Hopefully (?) not going to use? we'll see.
+        NAH WE Ain'tL       bind-articlesCountAllInCollectionInitialInputName="initialArticlesCountAllInCollection"
+    -->
     <!-- bind-offsetPageSizeInputName="updateOffsetPageSize"
     // << I (believe?) this is constant as it were. Always 20. Hmm.
     -->
@@ -111,7 +126,7 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
                     color="warn"
                     type="button"
                     class="my-smaller-button"
-                    on-click="getArticlesLoadMore(offsetNumber, true)"
+                    on-click="getArticlesLoadMore(offsetNumber, true, 'COMPONENT_OVERRIDE')"
                     bind-disabled="loadNoMore"
             >
                 <strong> >> Load More << </strong>
@@ -207,7 +222,7 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
                     color="warn"
                     type="button"
                     class="my-smaller-button"
-                    on-click="getArticlesLoadMore(offsetNumber, false)"
+                    on-click="getArticlesLoadMore(offsetNumber, false, 'COMPONENT_OVERRIDE')"
                     bind-disabled="loadNoMore"
             >
                 <strong> >> Load More << </strong>
