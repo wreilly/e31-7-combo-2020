@@ -19,8 +19,8 @@ import {Article} from "../article.model";
 import {calcPossibleSecurityContexts} from "@angular/compiler/src/template_parser/binding_parser";
 
 
-import * as fromRoot from '../../store/app.reducer';
-import * as UIActions from '../../shared/store/ui.actions'; // Not needed. hmmph.
+import * as fromRoot from '../../store/app.reducer'; // << Just "isLoading"
+import * as UIActions from '../../shared/store/ui.actions'; // Not needed. hmmph. << true. no ".dispatch()" herein.
 
 
 

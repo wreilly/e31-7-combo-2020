@@ -1,3 +1,4 @@
+// <!--  INITIAL SNAPSHOT COPY MADE 19/SEP/20. TODAY 22/SEP/20.  -->
 import {Component, OnInit, AfterViewInit, AfterViewChecked, Input, Output, EventEmitter, ChangeDetectorRef} from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -8,11 +9,11 @@ import { FilterSortService } from '../../core/services/filter-sort.service';
 import { Article, Category } from '../../articles/article.model';
 
 @Component({
-  selector: 'app-categorizer',
-  templateUrl: './categorizer.component.html',
-  styleUrls: ['./categorizer.component.scss']
+  selector: 'app-categorizer-two',
+  templateUrl: './categorizer-two.component.html',
+  styleUrls: ['./categorizer-two.component.css']
 })
-export class CategorizerComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class CategorizerTwoComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   @Input('articlesCountInputName')
   articlesCountInput: number; // in (the selected, filtered) Category
@@ -42,7 +43,7 @@ export class CategorizerComponent implements OnInit, AfterViewInit, AfterViewChe
   A. Because the timing for getting that UPDATED value was
   not in time to use for U/I logic here in Child Component,
   for disabling the "Load More" button. sigh.
-   TURNS OUT WE DID NOT NEED THIS >> "INITIAL" << COMPLEXITY FRANK GOODNESS
+   TURNS OUT WE DID NOT NEED THIS COMPLEXITY FRANK GOODNESS
 NO>>  @Input('articlesCountAllInCollectionInitialInputName')
   articlesCountAllInCollectionInitialInput: number; // in entire MongoDB Collection
   */
@@ -61,38 +62,24 @@ NO>>  @Input('articlesCountAllInCollectionInitialInputName')
   @Input('noArticlesInCategoryInputName')
   noArticlesInCategoryInput: boolean;
 
-  @Input('noArticlesInCategoryWhichCategoryInputName')
-  noArticlesInCategoryWhichCategoryInput: boolean;
-
-
-  @Input('articlesInCategoryWhichCategoryInputName')
-  articlesInCategoryWhichCategoryInput: string;
-
-  @Input('loadNoMoreInputName')
-  loadNoMoreInput: boolean;
-
   @Output()
   categorizerGetArticlesLoadMoreEvent = new EventEmitter<{
     offsetNumberOutput: number,
     filterIsOnParam: boolean,
     filterCategory: string,
-    loadNoMore: boolean, // ? Maybe name w. '__Output' ? t.b.d.
   }>();
 
   @Output()
   articlesToDisplayOutputEvent = new EventEmitter<{
     articlesToDisplayOutputArray: Article[],
-    categoryViewValueOutput: string,
   }>();
-/* This is the "click on a Category button" event.
-Update: We use this to pass the category *name* to Parent
- */
 
-/* Superseded by @Input('articlesInputName') << ??
-  articles: Article[]; //
-*/
 
-/* Nah: NOT Superseded by @Output() articlesToDisplayOutputEvent ( ?? ) */
+  /* Superseded by @Input('articlesInputName') << ??
+    articles: Article[]; //
+  */
+
+  /* Nah: NOT Superseded by @Output() articlesToDisplayOutputEvent ( ?? ) */
   articlesToDisplay: Article[];
 
 
@@ -106,9 +93,9 @@ Update: We use this to pass the category *name* to Parent
 
   filterIsOn = false; // init
   // filterCategory: string; // init ? ''; NO not up here.
-/* Had not been initializing till letUsFilter() etc.
-But now may need to from start.
-We'll do so in ngOnInit()  Better. */
+  /* Had not been initializing till letUsFilter() etc.
+  But now may need to from start.
+  We'll do so in ngOnInit()  Better. */
   filterCategory: string; // init ? '';
 
   /* ? should init value be 'ALL Articles'
@@ -118,34 +105,17 @@ We'll do so in ngOnInit()  Better. */
 
   offsetNumberInCategorizer = this.offsetPageSizeInput; // init here. Also in ngOnInit(). CONSTANT as it were - 20. Has WRONG NAME.
 
-  /*
-  Superseded by @Input('loadNoMoreInputName'). Wotta world.
-  We'll try a variation here.
-  Assign the collected value via the "@Input(...InputName)"
-  onto the plainly-named 'loadNoMore' for
-  "Local" use, right here in the Component.
-  What do you say. Clearer? Complicateder? hmm.
-
-We'll do init:
- - in bottom of ngOnInit(), and, I don't know,
- - in ngAfterViewChecked(), in the method there:
-   'updateDrawRedrawHereArticlesCategorizer()' ?
- We'll see.
-   */
-  loadNoMore: boolean; // << YES being used! // disable when max articlesRetrievedNumber
+  loadNoMore: boolean; // disable when max articlesRetrievedNumber
 
   categories: Category[];
-/* Initialize? or no?
   articlesInCategoryWhichCategory = 'All Categories'; // init  // string; // e.g. 'Politics' when there ARE articles
-*/
-  articlesInCategoryWhichCategory: string; // = 'All Categories'; // init  // string; // e.g. 'Politics' when there ARE articles
 
   /*  Superseded by @Input('noArticlesInCategoryInputName')
   re: noArticlesInCategory
   This too needs to be updated from Parent.
   Use Case: Load page. Click 'Business' (against initial 20)
   Get "No articles... add one..."
-  Click Load More (40). Again, (60). NOW we DO find a Business.
+  Click Load More (40). Again, (60). NOW we do find a Business.
   Need to hear about it down here in Child, to be able to turn off
   this "No articles... add one..." message.
    */
@@ -159,7 +129,7 @@ We'll do init:
       private myArticleService: ArticleService,
       private myFilterSortService: FilterSortService,
       private myStore: Store,
-      private myChangeDetectorRef: ChangeDetectorRef, // << Will I use? hmm. SEEMS NOPE. good.
+      private myChangeDetectorRef: ChangeDetectorRef, // << Will I use? hmm.
   ) { }
 
   ngOnInit(): void {
@@ -178,33 +148,20 @@ We'll do init:
      */
     console.log('CTGZ-01 - ngOnInit() this.offsetPageSizeInput ', this.offsetPageSizeInput); // Yes. 20
     console.log('CTGZ-02 - ngOnInit() this.offsetNumberInCategorizer ', this.offsetNumberInCategorizer); // Yes. 20
-
-/* TOO EARLY. We don't yet have articlesInput apparently. Hmm.
-??
     console.log('CTGZ-02222A - ngOnInit() this.articlesInput ', this.articlesInput); // Yes. [] of {}
     console.log('CTGZ-02222B - ngOnInit() this.articlesInput[0].articleTitle_name ', this.articlesInput[0].articleTitle_name); // undefined :o(
     console.log('CTGZ-02222C - ngOnInit() this.articlesInput[0].articleCategory_name ', this.articlesInput[0].articleCategory_name); // undefined :o(
-*/
 
-/* No Longer run method, from here.
-   Now EventEmitter; causes listening parent Component to run method, over there.
+    /* No Longer run method, from here.
+       Now EventEmitter; causes listening parent Component to run method, over there.
 
-    this.getArticlesLoadMore(this.offsetNumberInCategorizer); // init with offsetNumber of 0. (Get first twenty --> 0-19)
-*/
+        this.getArticlesLoadMore(this.offsetNumberInCategorizer); // init with offsetNumber of 0. (Get first twenty --> 0-19)
+    */
 
-/* TEMP. Maybe do NOT call this upon initializing <app-categorizer>, hey ?
-    this.emitCallGetArticlesLoadMore(this.offsetNumberInCategorizer);
-*/
+    /* TEMP. Maybe do NOT call this upon initializing <app-categorizer>, hey ?
+        this.emitCallGetArticlesLoadMore(this.offsetNumberInCategorizer);
+    */
     // init with offsetNumber of 20. (Get first twenty --> 0-19) (yes, init w. 20. not 0)
-
-    this.loadNoMore = this.loadNoMoreInput;
-    /* ?
-We'll do init:
- - in bottom of ngOnInit(), and, I don't know,
- - in ngAfterViewChecked(), in the method there:
-   'updateDrawRedrawHereArticlesCategorizer()' ?
- We'll see.
- */
 
   } // /ngOnInit()
 
@@ -215,27 +172,6 @@ We'll do init:
   } // /ngAfterViewInit()
 
   ngAfterViewChecked() {
-
-    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    this.updateDrawRedrawHereArticlesCategorizer(
-        this.offsetNumberInput, // ? right number?
-        // this.offsetNumberInCategorizer, // ? right number? // << NO !!! A very wrongly-named variable. yuk.
-        this.articlesCountInput,  // ? right number?
-        this.articlesCountAllInCollectionInput, // << YES
-        this.articlesRetrievedNumberInput,   // ? right number?
-        this.articlesInCategoryWhichCategoryInput,
-        this.noArticlesInCategoryWhichCategoryInput,
-        this.loadNoMoreInput,
-    )
-    /* Hmm - not quite all aligned. Hmm.  // ? right number?
-      offsetNumberHere,
-      articlesCountHere,
-      articlesCountAllInCollectionHere,
-      articlesRetrievedNumberHere,
-      articlesInCategoryWhichCategoryHere,
-     */
-    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
     /* PAGINATOR NOTES: // << Note: Here in CATEGORIZER, I have **NOT** (yet?) seen this kind of error.
 ERROR Error: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'NaN,NaN,NaN,NaN,NaN'. Current value: '1,2,3'.
 
@@ -245,10 +181,10 @@ Though we are not out of the woods.
     /*
 https://stackoverflow.com/questions/34364880/expression-has-changed-after-it-was-checked
  */
-    this.myChangeDetectorRef.detectChanges(); // Will I use ? hmm.
-    // OH YEAH BABY-KIN
-
-  } // /ngAfterViewChecked()
+    /*
+    TODO see if need to turn on ?     this.myChangeDetectorRef.detectChanges(); // Will I use ? hmm.
+    */
+  }
 
   emitCallGetArticlesLoadMore(offsetNumberToEmit) {
     console.log('CTGZ-04 - emitCallGetArticlesLoadMore() offsetNumberToEmit ', offsetNumberToEmit); // Yes. 20.
@@ -259,16 +195,22 @@ https://stackoverflow.com/questions/34364880/expression-has-changed-after-it-was
 
     console.log('CTGZ-04C - emitCallGetArticlesLoadMore() this.filterCategory ', this.filterCategory); // Yes. 20.
 
+    this.categorizerGetArticlesLoadMoreEvent.emit( {
+          offsetNumberOutput: offsetNumberToEmit,
+          filterIsOnParam: this.filterIsOn,
+          filterCategory: this.filterCategory,
+        }
+    );
+
+
     console.log('emitCallGetArticlesLoadMore 00 this.articlesCountAllInCollectionInput ', this.articlesCountAllInCollectionInput);
     console.log('emitCallGetArticlesLoadMore 00A this.offsetNumberInput ', this.offsetNumberInput);
 
     if (this.offsetNumberInput >= this.articlesCountAllInCollectionInput) {
       console.log('emitCallGetArticlesLoadMore 01 this.articlesCountAllInCollectionInput ', this.articlesCountAllInCollectionInput);
-      // Yes. e.g. 102
       console.log('emitCallGetArticlesLoadMore 01A this.offsetNumberInput ', this.offsetNumberInput);
-      // Yes. e.g. 120
 
-      this.loadNoMore = true; // << Yes, set to true correctly. (But, OTHER Categorizer needs to hear about it!)
+      this.loadNoMore = true;
     } else {
       console.log('emitCallGetArticlesLoadMore 02 this.articlesCountAllInCollectionInput ', this.articlesCountAllInCollectionInput); // undefined
       console.log('emitCallGetArticlesLoadMore 02A this.offsetNumberInput ', this.offsetNumberInput); // yes. 40, 60 ...but goes above 100, 120, 140
@@ -278,39 +220,18 @@ https://stackoverflow.com/questions/34364880/expression-has-changed-after-it-was
     cheers.
      */
 
-
-    // I moved the .emit() to AFTER the logic above, re: loadNoMore
-    this.categorizerGetArticlesLoadMoreEvent.emit( {
-          offsetNumberOutput: offsetNumberToEmit,
-          filterIsOnParam: this.filterIsOn,
-          filterCategory: this.filterCategory,
-          loadNoMore: this.loadNoMore,
-          /* Naming Convention notes:
-          1) RHS - No '__Input' on 'this.loadNoMore' (y not; experiment)
-          2) LHS - perhaps should do '__Output' on 'loadNoMore' i.e., 'loadNoMoreOutput' = t.b.d.
-              btw, 'RHS' is "Right-Hand Side" ...
-          */
-        }
-    );
-
   } // /emitCallGetArticlesLoadMore()
 
 
-  emitArticlesToDisplayOutput(
-      articlesToDisplayPassedIn: Article[],
-      categoryViewValuePassedIn: string,
-      ) {
+  emitArticlesToDisplayOutput(articlesToDisplayPassedIn: Article[]) {
 
     /*
     "articlesToDisplayPassedIn" will be our this.articlesToDisplay
     cheers.
-    UPDATE: We are now getting a 2nd param to pass to Parent:
-    category name.
      */
 
     this.articlesToDisplayOutputEvent.emit({
-      articlesToDisplayOutputArray: articlesToDisplayPassedIn,
-      categoryViewValueOutput: categoryViewValuePassedIn,
+      articlesToDisplayOutputArray: articlesToDisplayPassedIn
     });
   }
 
@@ -318,53 +239,21 @@ https://stackoverflow.com/questions/34364880/expression-has-changed-after-it-was
   letUsFilterByCategory(categoryViewValuePassedIn: string): void {
     /*  :void  Doesn't return anything.
         Just sets values for use in display logic.
-
-        UPDATE:
-        Need this method to do two, not just one, job:
-        - 1. (already doing) Filter by Category
-        - 2. (new) Communicate Category choice up to Parent
-        To accomplish that:
-        - No additional parameter needed to be passed in here. No.
-        - But, we need to pass another parameter on the .emit()
-          at bottom of this long method.
-          It is passing, currently: Article [ ]
-          Needs to pass: Article [ ], category name
      */
     /*
         Values we get here: (ViewValues)
-        e.g.
-        1. Proper Category
-        'U.S.',  or 'Opinion'
-
-                -- OR --
-
-        2. Category Missing or "Improper"
-        Passed-in value is: 'No Category (thx Service!)'
-N.B. That one value stands in for BOTH:
+        e.g. 'U.S.',  or 'Opinion'
         'No Category (thx Service!)'
         'No Correct Category (thx Service!)'
-        The "SpecialFilter" takes care of getting both,
-        from the one query.
-        cheers.
-
-        -- OR --
-
-        3. ALL Categories!
-        Passed-in value is: 'ALL'
-
-        The category string for U/I is 'All Categories'
 
          U.S.
-      e.g.  "5f5d244e4deea82fc68aab86"
+        "5f5d244e4deea82fc68aab86"
 
         No Category (thx Service!)
-      e.g.  "5f3515d7dec9620d8d5fe63a"
+        "5f3515d7dec9620d8d5fe63a"
 
         No Correct Category (thx Service!)
-      e.g.  "5af83649f2fffa14c4a22cd7"
-
-        All Categories
-       e.g. "5f647f3b481d7d0b6f91c0a5"
+        "5af83649f2fffa14c4a22cd7"
      */
 
     this.noArticlesInCategoryInput = false; // reset
@@ -383,8 +272,8 @@ N.B. That one value stands in for BOTH:
       // this.articlesToDisplay = this.articles; // << Nope
       this.articlesToDisplay = this.articlesInput;
       console.log('CTGZ-05 letUsFilter() this.articlesToDisplay ', this.articlesToDisplay);
-      console.log('CTGZ-06 letUsFilter() this.articlesToDisplay[0].articleCategory_name ', this.articlesToDisplay[0].articleCategory_name);
-      console.log('CTGZ-07 letUsFilter() this.articlesToDisplay[0].articleTitle_name ', this.articlesToDisplay[0].articleTitle_name);
+      console.log('CTGZ-06 letUsFilter() this.articlesToDisplay[0].articleCategory_name ', this.articlesToDisplay[0].articleCategory_name); // undefined :o(
+      console.log('CTGZ-07 letUsFilter() this.articlesToDisplay[0].articleTitle_name ', this.articlesToDisplay[0].articleTitle_name); // undefined :o(
       /* Whoa. this is finally working
 articleCategory_name: "Politics"
 articleId_name: "5f647f3b481d7d0b6f91c0a5"
@@ -392,11 +281,7 @@ articleTitle_name: "For Trump, It’s Not the United States, It’s Red and Blue
 articleUrl_name: "https://www.nytimes.com/2020/09/17/us/politics/trump-america.html"
        */
 
-      this.articlesInCategoryWhichCategoryInput = 'All Categories';
-      this.filterCategory = 'All Categories';
-      /*
-      TODO something redundantly being repeated and done twice here. don't know what it is; need to find out what it is I tell you.
-       */
+      this.articlesInCategoryWhichCategory = 'All Categories';
 
     } else if (categoryViewValuePassedIn === 'No Category (thx Service!)') {
       /*  *************
@@ -413,8 +298,6 @@ yields both No Category, and No Correct Category.
 cheers.
           See mySpecialFilter()
       */
-
-
 
       this.filterIsOn = true;
       this.filterCategory = 'No Category (thx Service!)';
@@ -439,11 +322,7 @@ cheers.
 
       this.articlesToDisplay = articlesNoCategorySpecialFilteredFromService;
 
-      console.log('CTGZ-05b letUsFilter() this.articlesToDisplay ', this.articlesToDisplay);
-      console.log('CTGZ-06b letUsFilter() this.articlesToDisplay[0].articleCategory_name ', this.articlesToDisplay[0].articleCategory_name);
-      console.log('CTGZ-07b letUsFilter() this.articlesToDisplay[0].articleTitle_name ', this.articlesToDisplay[0].articleTitle_name);
-
-      this.articlesInCategoryWhichCategoryInput = 'No Category Assigned';  // << To show on U/I
+      this.articlesInCategoryWhichCategory = 'No Category Assigned';  // << To show on U/I
       // Accounts for both: No C., No Correct C.
 
     } else {
@@ -465,9 +344,9 @@ cheers.
 
       this.articlesToDisplay = articlesFilteredFromService;
 
-      this.articlesInCategoryWhichCategoryInput = categoryViewValuePassedIn;
+      this.articlesInCategoryWhichCategory = categoryViewValuePassedIn;
 
-    } // /# 03 Proper Category
+    }
 
     this.articlesCountInput = this.articlesToDisplay.length;
     console.log('CTGZ-03 - letUsFilterByCategory() this.articlesCountInput ', this.articlesCountInput); // Yes.  e.g. 3, 25, 0 etc.
@@ -476,11 +355,6 @@ cheers.
       // No articles under, e.g. 'Arts' (sigh)
       this.noArticlesInCategoryInput = true;
       this.noArticlesInCategoryWhichCategory = categoryViewValuePassedIn;
-    } else {
-      // OK - There's at least ONE Article in this Category!
-      console.log('CTGZ-05c letUsFilter() this.articlesToDisplay ', this.articlesToDisplay);
-      console.log('CTGZ-06c letUsFilter() this.articlesToDisplay[0].articleCategory_name ', this.articlesToDisplay[0].articleCategory_name);
-      console.log('CTGZ-07c letUsFilter() this.articlesToDisplay[0].articleTitle_name ', this.articlesToDisplay[0].articleTitle_name);
     }
 
     /*
@@ -490,76 +364,9 @@ cheers.
     we invoke method that invokes the .emit() of that array,
     which passes it up to the Parent ArticlesCategorized.
      */
-    /*
-    Update. Need to ALSO pass up the Category (string, name)
-     */
-
-    /* No. Failing for 'ALL'. Don't use the passed-in param of categoryViewValuePassedIn. Nope.
-
-    this.emitArticlesToDisplayOutput(this.articlesToDisplay, categoryViewValuePassedIn);
-*/
-    this.emitArticlesToDisplayOutput(this.articlesToDisplay, this.articlesInCategoryWhichCategoryInput);
+    this.emitArticlesToDisplayOutput(this.articlesToDisplay);
 
   } // /letUsFilterByCategory(): void
-
-  updateDrawRedrawHereArticlesCategorizer( // << Called from ngAfterViewChecked()
-      offsetNumberHere,
-      articlesCountHere,
-      articlesCountAllInCollectionHere,
-      articlesRetrievedNumberHere,
-      articlesInCategoryWhichCategoryHere,
-      noArticlesInCategoryWhichCategoryHere,
-      loadNoMoreHere,
-  ) {
-    // cf. Paginator's updateRedrawHereArticlesControlledPaginator()
-
-    /*
-    Hmm, unlike Paginator, there is not a lot (any?) of
-    logic in the TypeScript, to "draw/Redraw" the buttons.
-    Just an *ngFor on the list of Categories.
-    Only bit is: Which (if any) is CURRENTLY SELECTED Category?
-
-    We do also track a few counters:
-    - updateArticlesCount (# in Currently Selected Category)
-    - updateOffsetNumber (# incrementer) 40, 60...
-    - updateArticlesRetrievedNumber (duplicates sort of # incrementer; t.b.d. resolution...)
-    - updateArticlesCountAllInCollection (# ALL/TOTAL in MongoDB Collection)
-
-SO - from above two points:
-- Maybe I just need to be passing down same way the CATEGORY string:
-Hmm, either (maybe both ? nah)
--- this.articlesInCategoryWhichCategory = categoryViewValuePassedIn;
--- this.filterCategory = categoryViewValuePassedIn;
-
-Maybe this? Parent HTML:
-            bind-articlesInCategoryWhichCategoryInputName="updateArticlesInCategoryWhichCategory"
-
-After That:
-- 1. Why is Load More not working to get "other" Categorizer to know about new additional 20 ...
-- 2. Why is initial rendering missing data on "Bottom" Categorizer. hmm.
-- 3. Other bugs, doubtless.
-     */
-
-/* GOOD.  Looks like I had it WRONG, putting ".update" on all these.
-Here is hoping.  See below instead.
-
-      this.updateOffsetNumber = offsetNumberHere;
-      this.updateArticlesCount = articlesCountHere;
-      this.updateArticlesCountAllInCollection = articlesCountAllInCollectionHere;
-      this.updateArticlesRetrievedNumber = articlesRetrievedNumberHere;
-      this.updateArticlesInCategoryWhichCategory = articlesInCategoryWhichCategoryHere;
-*/
-
-    this.offsetNumberInput = offsetNumberHere;
-    this.articlesCountInput = articlesCountHere;
-    this.articlesCountAllInCollectionInput = articlesCountAllInCollectionHere;
-    this.articlesRetrievedNumberInput = articlesRetrievedNumberHere;
-    this.articlesInCategoryWhichCategoryInput = articlesInCategoryWhichCategoryHere;
-    this.noArticlesInCategoryWhichCategoryInput = noArticlesInCategoryWhichCategoryHere;
-    this.loadNoMore = loadNoMoreHere; // << N.B. *NO* "...Input" naming convention.
-
-  } // /updateDrawRedrawHereArticlesCategorizer
-
 
   getArticlesLoadMore(offsetNumberHere: number): void {
 // NO LONGER CALLED ***********
@@ -632,4 +439,4 @@ Here is hoping.  See below instead.
   } // /getArticlesLoadMore() // NO LONGER CALLED ***********
 
 
-} // /CategorizerComponent {}
+} // /CategorizerTwoComponent {}
