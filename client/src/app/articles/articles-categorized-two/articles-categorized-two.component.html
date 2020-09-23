@@ -1,7 +1,11 @@
 <div class="component-label">ARTICLES-CATEGORIZED-TWO.COMPONENT</div>
 <!--  INITIAL SNAPSHOT COPY MADE 19/SEP/20. TODAY 22/SEP/20.  -->
+<!--  SECOND/FINAL SNAPSHOT COPY MADE 23/SEP/20. TODAY 23/SEP/20.  -->
 <mat-nav-list role="navigation">
-    <app-categorizer
+    <!-- CATEGORIZER "TOP" -->
+    <app-categorizer-two
+            bind-topOrBottomInputName="'top'"
+
             bind-articlesCountInputName="updateArticlesCount"
             bind-offsetPageSizeInputName="updateOffsetPageSize"
             bind-offsetNumberInputName="updateOffsetNumber"
@@ -15,16 +19,31 @@
 
             bind-noArticlesInCategoryInputName="updateNoArticlesInCategory"
 
+            bind-noArticlesInCategoryWhichCategoryInputName="updateNoArticlesInCategoryWhichCategory"
+
+            bind-articlesInCategoryWhichCategoryInputName="updateArticlesInCategoryWhichCategory"
+
+            bind-loadNoMoreInputName="loadNoMoreForChild"
+
             on-categorizerGetArticlesLoadMoreEvent="getArticlesLoadMore(
             $event.offsetNumberOutput,
             $event.filterIsOnParam,
-            $event.filterCategory
+            $event.filterCategory,
+            $event.loadNoMore
             )"
 
             on-articlesToDisplayOutputEvent="assignArticlesToDisplayFromCategorizer(
-            $event.articlesToDisplayOutputArray
+            $event.articlesToDisplayOutputArray,
+            $event.categoryViewValueOutput
             )"
-    ></app-categorizer>
+    ></app-categorizer-two>
+    <!-- /CATEGORIZER "TOP" -->
+<!-- Not used anymore:
+    <hr />
+    <div>Top above, Bottom (TEMP) below</div>
+    <hr />
+-->
+
     <!-- O la - not using I hope: *ngIf="categorizerReadyToShow"
     -->
     <!--    Hopefully (?) not going to use? we'll see.
@@ -67,89 +86,25 @@
                 )"
         ></app-categorizer>
     -->
-    <mat-card class="spacing">
-        <!-- TOP CATEGORY BUTTONS ROW -->
-        <mat-card-subtitle>
-            <span>Count (All Articles): {{ articlesCountAllInCollection }}</span>
-            |
-            <span>Retrieved: Articles 1 - {{ articlesRetrievedNumber }}</span>
-        </mat-card-subtitle>
-        <mat-card-content>
-            <div>
-                <h1>{{ articlesInCategoryWhichCategory }} <span class="tiny">Category count: {{ articlesCount }}</span></h1>
-            </div>
-            <span
-                    *ngFor="let oneCategory of categories"
-            >
-                <!-- span wrapper allows that following '|' to be part of each displayed bit  -->
-                <button
-                        mat-raised-button
-                        color="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'accent' : 'primary' }}"
-
-                        style="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'cursor: none;' : 'cursor: pointer' }}"
-                        type="button"
-                        class="my-smaller-button"
-                        on-click="letUsFilterByCategory(oneCategory.viewValue)"
-                >
-
-                    {{ oneCategory.viewValue }}
-                </button> |
-            </span>
-            <!-- Couple of necessary exception-case manual entries: -->
-            <button
-                    mat-raised-button
-                    color="{{articlesInCategoryWhichCategory === 'No Category Assigned' ? 'accent' : ''}}"
-                    type="button"
-                    class="my-smaller-button"
-                    on-click="letUsFilterByCategory('No Category (thx Service!)')"
-            >
-                No Category Assigned
-            </button>
-            <!-- re: above
-&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-const NO_CATEGORY         = 'No Category (thx Service!)';
-const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
-&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-            -->
-            |
-            <button
-                    mat-raised-button
-                    color="{{articlesInCategoryWhichCategory === 'All Categories' ? 'accent' : ''}}"
-                    type="button"
-                    class="my-smaller-button"
-                    on-click="letUsFilterByCategory('ALL')"
-            >
-                <i>All Categories</i>
-            </button>
-            |
-            <button
-                    mat-raised-button
-                    color="warn"
-                    type="button"
-                    class="my-smaller-button"
-                    on-click="getArticlesLoadMore(offsetNumber, true, 'COMPONENT_OVERRIDE')"
-                    bind-disabled="loadNoMore"
-            >
-                <strong> >> Load More << </strong>
-            </button>
-        </mat-card-content>
-    </mat-card>
-
+<!-- No Longer Done Here In Parent. See Child CategorizerComponent instead.
     <div
             *ngIf="noArticlesInCategory"
             style="margin: 15px 0px 15px 15px;"
     >
-        No articles in the "{{noArticlesInCategoryWhichCategory}}" category. Consider <a routerLink="../add" class="blue-link">adding</a> one!
+        ARTICLES-CATEGORIZED. PARENT. No articles in the "{{noArticlesInCategoryWhichCategory}}" category. Consider <a routerLink="../add" class="blue-link">adding</a> one!
     </div>
+-->
 
-    <!-- TODO mat-progress-spinner -->
+
+<!-- No Longer Done Here In Parent. See Child CategorizerComponent instead.
+         TODONE mat-progress-spinner
     <mat-progress-spinner
             *ngIf="myUIIsLoadingStore$ | async"
             mode="indeterminate"
             bind-diameter="20"
     >
     </mat-progress-spinner>
-
+-->
 
 
     <app-article
@@ -157,78 +112,46 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
             *ngFor="let article of articlesToDisplay"
             bind-articleToSendDownName="article"
     ></app-article>
-    <!--
+    <!-- re: above
         "You can add mat-list-item as the directive to your app-car-item component..."
         https://stackoverflow.com/questions/58477720/how-to-use-in-angular-material-list-an-item-component
         -->
-    <mat-card class="spacing"
-              *ngIf="articlesCount > 3"
-    >
-        <!-- BOTTOM CATEGORY BUTTONS ROW
-        Magic number of '3' (kinda arbitrary) -
-        Only show bottom repeat buttons row
-         if there are 4 or more Articles in this Category...
-        -->
-        <mat-card-subtitle>
-            <span>Count (ALL Articles): {{ articlesCountAllInCollection }}</span>
-            |
-            <span>Showing: Articles: 1 - {{ articlesRetrievedNumber }}</span>
-        </mat-card-subtitle>
-        <mat-card-content>
-            <div>
-                <h2>{{ articlesInCategoryWhichCategory }} <span class="tiny">Count: {{ articlesCount }}</span></h2>
-            </div>
-            <span
-                    *ngFor="let oneCategory of categories"
-            >
-                <button
-                        mat-raised-button
-                        color="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'accent' : 'primary' }}"
-                        type="button"
-                        class="my-smaller-button"
-                        on-click="letUsFilterByCategory(oneCategory.viewValue)"
-                >
-                    {{ oneCategory.viewValue }}
-                </button> |
-            </span>
-            <!-- Couple of necessary exception-case manual entries: -->
-            <button
-                    mat-raised-button
-                    color="{{articlesInCategoryWhichCategory === 'No Category Assigned' ? 'accent' : ''}}"
-                    type="button"
-                    class="my-smaller-button"
-                    on-click="letUsFilterByCategory('No Category (thx Service!)')"
-            >
-                No Category Assigned
-            </button>
-            <!-- re: above
-&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-const NO_CATEGORY         = 'No Category (thx Service!)';
-const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
-&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-            -->
-            |
-            <button
-                    mat-raised-button
-                    color="{{articlesInCategoryWhichCategory === 'ALL Categories' ? 'accent' : ''}}"
-                    type="button"
-                    class="my-smaller-button"
-                    on-click="letUsFilterByCategory('ALL')"
-            >
-                <i>All Categories</i>
-            </button>
-            |
-            <button
-                    mat-raised-button
-                    color="warn"
-                    type="button"
-                    class="my-smaller-button"
-                    on-click="getArticlesLoadMore(offsetNumber, false, 'COMPONENT_OVERRIDE')"
-                    bind-disabled="loadNoMore"
-            >
-                <strong> >> Load More << </strong>
-            </button>
-        </mat-card-content>
-    </mat-card>
+
+    <!-- CATEGORIZER "BOTTOM" -->
+    <app-categorizer-two
+            bind-topOrBottomInputName="'bottom'"
+
+            bind-articlesCountInputName="updateArticlesCount"
+            bind-offsetPageSizeInputName="updateOffsetPageSize"
+            bind-offsetNumberInputName="updateOffsetNumber"
+
+
+            bind-articlesCountAllInCollectionInputName="updateArticlesCountAllInCollection"
+
+            bind-articlesRetrievedNumberInputName="updateArticlesRetrievedNumber"
+
+            bind-articlesInputName="articles"
+
+            bind-noArticlesInCategoryInputName="updateNoArticlesInCategory"
+
+            bind-noArticlesInCategoryWhichCategoryInputName="updateNoArticlesInCategoryWhichCategory"
+
+            bind-articlesInCategoryWhichCategoryInputName="updateArticlesInCategoryWhichCategory"
+
+            bind-loadNoMoreInputName="loadNoMoreForChild"
+
+            on-categorizerGetArticlesLoadMoreEvent="getArticlesLoadMore(
+            $event.offsetNumberOutput,
+            $event.filterIsOnParam,
+            $event.filterCategory,
+            $event.loadNoMore
+            )"
+
+            on-articlesToDisplayOutputEvent="assignArticlesToDisplayFromCategorizer(
+            $event.articlesToDisplayOutputArray,
+            $event.categoryViewValueOutput
+            )"
+    ></app-categorizer-two>
+    <!-- /CATEGORIZER "BOTTOM" -->
 
 </mat-nav-list>

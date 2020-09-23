@@ -50,7 +50,9 @@ import {RouterModule} from "@angular/router"; // << Auto by WebStorm
         InputFocusDirective,
         ScrollTopComponent,
         PaginatorComponent,
-        CategorizerComponent, // << ng g component did NOT place this line here. Needed it. Interesting. I guess.
+        CategorizerComponent,
+        CategorizerTwoComponent,
+        // << ng g component did NOT place this line here. Needed it. Interesting. I guess.
         /* bit odd. upon ng g component for CategorizerTwoComponent, at first,
         WebStorm IDE *did* complain it "was in no Angular module"
         After short bit, close, re-open file, IDE complaint just went away. Hmm.

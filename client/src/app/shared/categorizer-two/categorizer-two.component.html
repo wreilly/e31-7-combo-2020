@@ -1,6 +1,19 @@
 <div class="component-label">CATEGORIZER-TWO.COMPONENT</div>
 <!--  INITIAL SNAPSHOT COPY MADE 19/SEP/20. TODAY 22/SEP/20.  -->
-<mat-card class="spacing">
+<!--  SECOND/FINAL SNAPSHOT COPY MADE 23/SEP/20. TODAY 23/SEP/20.  -->
+<mat-card
+        class="spacing"
+        *ngIf="!((topOrBottomInput === 'bottom') && (articlesCountInput < 4))"
+>
+    <!-- TODONE maybe "Top" v. "Bottom" (cf. PaginatorComponent)
+        <mat-card class="spacing"
+              *ngIf="articlesCount > 3"
+    >
+        BOTTOM CATEGORIZER COMPONENT
+        Magic number of '4' (kinda arbitrary) -
+        Only show bottom repeated row of buttons
+        if there are 4 or more Articles in this Category...
+    -->
     <mat-card-subtitle>
         <span>Count (All Articles): {{ articlesCountAllInCollectionInput }}
             <!--            << articlesCountAllInCollection-->
@@ -12,12 +25,30 @@
     </mat-card-subtitle>
     <mat-card-content>
         <div>
-            <h1>{{ articlesInCategoryWhichCategory }}
+            <!-- Below, kind of just showing off (sorta)
+            We use <h1> on TOP Categorizer, and <h3> on BOTTOM Categorizer.
+            Just for demo purpose & Etc.
+            -->
+            <span
+                    *ngIf="topOrBottomInput === 'top'"
+            >
+            <h1>{{ articlesInCategoryWhichCategoryInput }}
                 <!--                << articlesInCategoryWhichCategory -->
                 <span class="tiny">Category count: {{ articlesCountInput }}
                     <!--                    << articlesCountInput-->
                 </span>
             </h1>
+            </span>
+            <span
+                    *ngIf="topOrBottomInput === 'bottom'"
+            >
+            <h3>{{ articlesInCategoryWhichCategoryInput }}
+                <!--                << articlesInCategoryWhichCategory -->
+                <span class="teeny">Category count: {{ articlesCountInput }}
+                    <!--                    << articlesCountInput-->
+                </span>
+            </h3>
+            </span>
         </div>
         <span
                 *ngFor="let oneCategory of categories"
@@ -25,8 +56,8 @@
                             <!-- span wrapper allows that following '|' to be part of each displayed bit  -->
             <button
                     mat-raised-button
-                    color="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'accent' : 'primary' }}"
-                    style="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'cursor: none;' : 'cursor: pointer;' }}"
+                    color="{{ oneCategory.viewValue === articlesInCategoryWhichCategoryInput ? 'accent' : 'primary' }}"
+                    style="{{ oneCategory.viewValue === articlesInCategoryWhichCategoryInput ? 'cursor: none;' : 'cursor: pointer;' }}"
                     type="button"
                     class="my-smaller-button"
                     on-click="letUsFilterByCategory(oneCategory.viewValue)"
@@ -53,7 +84,7 @@ style="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'cursor: n
         <!-- Couple of necessary exception-case manual entries: -->
         <button
                 mat-raised-button
-                color="{{articlesInCategoryWhichCategory === 'No Category Assigned' ? 'accent' : ''}}"
+                color="{{articlesInCategoryWhichCategoryInput === 'No Category Assigned' ? 'accent' : ''}}"
                 type="button"
                 class="my-smaller-button"
                 on-click="letUsFilterByCategory('No Category (thx Service!)')"
@@ -69,7 +100,7 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
         |
         <button
                 mat-raised-button
-                color="{{articlesInCategoryWhichCategory === 'All Categories' ? 'accent' : ''}}"
+                color="{{articlesInCategoryWhichCategoryInput === 'All Categories' ? 'accent' : ''}}"
                 type="button"
                 class="my-smaller-button"
                 on-click="letUsFilterByCategory('ALL')"
@@ -87,24 +118,42 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
         >
             <strong> >> Load More << </strong>
         </button>
-        <!-- Debug. Done.
-                <span> | {{ offsetNumberInput }}
-                    << offsetNumberInput
-                </span>
-                <span> | {{ offsetNumberInCategorizer }} << offsetNumberInCategorizer - Always 20.</span>
-                &lt;!&ndash; This was unchanging 20. hmm
-                on-click="emitCallGetArticlesLoadMore(offsetNumberInCategorizer)"
-                &ndash;&gt;
-                <span> | {{ offsetPageSizeInput }} << offsetPageSizeInput Q. Always 20 ? A. Yes.</span>
+        <!--
+        DEBUG. Done With.
+        =====================================
+        <span> | {{ offsetNumberInput }}
+            << offsetNumberInput
+        </span>
+        <span> | {{ offsetNumberInCategorizer }} << offsetNumberInCategorizer - Always 20.</span>
+        < -- This was unchanging 20. hmm
+        on-click="emitCallGetArticlesLoadMore(offsetNumberInCategorizer)"
+        -- >
+        <span> | {{ offsetPageSizeInput }} << offsetPageSizeInput Q. Always 20 ? A. Yes.</span>
+        /DEBUG DONE With
+        =====================================
         -->
 
+        <!-- Pretty crazy.
+        We show/hide message below in 2 divs, depending:
+        - For both divs, yeah, if noArticlesInCategory then we want to show...
+        - 2nd test though is: Are we at end of ALL Articles? "loadNoMore"
+        We have different message if we've exhausted entire Articles Collection,
+        vs. if we are still able to "Load More" and thus keep looking for
+        your Category.
+        cheers.
+        -->
         <div
-                *ngIf="noArticlesInCategoryInput"
+                *ngIf="noArticlesInCategoryInput && !loadNoMore"
                 style="margin: 15px 0px 15px 15px;"
         >
-            No articles in the "{{noArticlesInCategoryWhichCategory}}" category. Consider <a routerLink="../add" class="blue-link">adding</a> one!
+            No articles (so far) in the "{{noArticlesInCategoryWhichCategoryInput}}" category. <span on-click="emitCallGetArticlesLoadMore(offsetNumberInput)" style="cursor: pointer; color: #00B7FF;">Load More</span>, or consider <a routerLink="../add">Adding</a> one!
         </div>
-
+        <div
+                *ngIf="noArticlesInCategoryInput && loadNoMore"
+                style="margin: 15px 0px 15px 15px;"
+        >
+            No articles (whatsoever!) in the "{{noArticlesInCategoryWhichCategoryInput}}" category. Consider <a routerLink="../add">Adding</a> one!
+        </div>
 
         <mat-progress-spinner
                 *ngIf="myUIIsLoadingStore$ | async"
@@ -117,4 +166,3 @@ https://stackblitz.com/edit/overlay-progress-spinner-8o275a?file=app%2Foverlay%2
 -->
     </mat-card-content>
 </mat-card>
-

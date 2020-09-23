@@ -159,7 +159,7 @@ We'll do init:
       private myArticleService: ArticleService,
       private myFilterSortService: FilterSortService,
       private myStore: Store,
-      private myChangeDetectorRef: ChangeDetectorRef, // << Will I use? hmm. SEEMS NOPE. good.
+      private myChangeDetectorRef: ChangeDetectorRef, // << Will I use? hmm. SEEMS NOPE. good. << YES! we DO use it. sheesh.
   ) { }
 
   ngOnInit(): void {
