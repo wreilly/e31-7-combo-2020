@@ -88,9 +88,11 @@ NO>>  @Input('articlesCountAllInCollectionInitialInputName')
   @Output()
   categorizerGetArticlesLoadMoreEvent = new EventEmitter<{
     offsetNumberOutput: number,
+/* NO MORE. Filter information now held by Parent
     filterIsOnParam: boolean,
     filterCategory: string,
     loadNoMore: boolean, // ? Maybe name w. '__Output' ? t.b.d.
+ */
   }>();
 
   /* ##################################
@@ -99,9 +101,15 @@ NO>>  @Input('articlesCountAllInCollectionInitialInputName')
      * Rename to categoryViewValueSelectedOutputEvent
      * No More sending Article[] << No.
    */
+/*
   @Output()
   articlesToDisplayOutputEvent = new EventEmitter<{
     articlesToDisplayOutputArray: Article[],
+    categoryViewValueOutput: string,
+  }>();
+*/
+  @Output()
+  categoryViewValueSelectedOutputEvent = new EventEmitter<{
     categoryViewValueOutput: string,
   }>();
   /* This is the "click on a Category button" event.
@@ -139,12 +147,20 @@ NO>>  @Input('articlesCountAllInCollectionInitialInputName')
   articlesCountAllInCollection: number; // in entire MongoDB Collection
 
 
+  /* ####### MIGRATION TO "-TWO" VERSION  ########
+  Going Away - filter info here on CategorizerTwoComponent.
+  Remove from Update() too.
+   */
+/* GOING AWAY
   filterIsOn = false; // init
+*/
   // filterCategory: string; // init ? ''; NO not up here.
   /* Had not been initializing till letUsFilter() etc.
   But now may need to from start.
   We'll do so in ngOnInit()  Better. */
+/* GOING AWAY
   filterCategory: string; // 'All Categories'; // : string; // init ? '';
+*/
 
   /* ? should init value be 'ALL Articles'
   (or 'ALL Categories' for that matter) ?
@@ -212,7 +228,9 @@ We'll do init:
 
     this.categories = this.myArticleService.getCategoriesInService();
 
+/* GOING AWAY.
     this.filterCategory = ''; // = 'All Categories'; // hmm ? // '' empty string ? seems to be best initialize here now
+*/
 
 
     this.offsetNumberInCategorizer = this.offsetPageSizeInput;
@@ -311,9 +329,9 @@ https://stackoverflow.com/questions/34364880/expression-has-changed-after-it-was
     /* Hmm. needs to increment: 20, 40, 60...
     Yes. this is incrementing: 20, 40, 60
      */
-    console.log('CTGZ-04B - emitCallGetArticlesLoadMore() this.filterIsOn ', this.filterIsOn); // Yes. e.g. true, false
+    // NO MORE console.log('CTGZ-04B - emitCallGetArticlesLoadMore() this.filterIsOn ', this.filterIsOn); // Yes. e.g. true, false
 
-    console.log('CTGZ-04C - emitCallGetArticlesLoadMore() this.filterCategory ', this.filterCategory); // Yes. e.g. 'U.S.' or 'No Category (thx Service!)'  Also will show: 'All Categories' (although the above boolean will be false)
+    // NO MORE console.log('CTGZ-04C - emitCallGetArticlesLoadMore() this.filterCategory ', this.filterCategory); // Yes. e.g. 'U.S.' or 'No Category (thx Service!)'  Also will show: 'All Categories' (although the above boolean will be false)
 
     console.log('emitCallGetArticlesLoadMore 00 this.articlesCountAllInCollectionInput ', this.articlesCountAllInCollectionInput);
     console.log('emitCallGetArticlesLoadMore 00A this.offsetNumberInput ', this.offsetNumberInput);
@@ -331,7 +349,9 @@ https://stackoverflow.com/questions/34364880/expression-has-changed-after-it-was
       console.log('emitCallGetArticlesLoadMore 01A this.offsetNumberInput ', this.offsetNumberInput);
       // Yes. e.g. 120
 
+/* GOING AWAY. MIGRATION. Happens now on Parent, in
       this.loadNoMore = true; // << Yes, set to true correctly. (But, OTHER Categorizer needs to hear about it!)
+*/
     } else {
       console.log('emitCallGetArticlesLoadMore 02 this.articlesCountAllInCollectionInput ', this.articlesCountAllInCollectionInput); // undefined
       console.log('emitCallGetArticlesLoadMore 02A this.offsetNumberInput ', this.offsetNumberInput); // yes. 40, 60 ...but goes above 100, 120, 140
@@ -345,9 +365,11 @@ https://stackoverflow.com/questions/34364880/expression-has-changed-after-it-was
     // I moved the .emit() to AFTER the logic above, re: loadNoMore
     this.categorizerGetArticlesLoadMoreEvent.emit( {
           offsetNumberOutput: offsetNumberToEmit,
+/* GOING AWAY. MIGRATION.
           filterIsOnParam: this.filterIsOn,
           filterCategory: this.filterCategory,
           loadNoMore: this.loadNoMore,
+ */
           /* Naming Convention notes:
           1) RHS - No '__Input' on 'this.loadNoMore' (y not; experiment)
           2) LHS - perhaps should do '__Output' on 'loadNoMore' i.e., 'loadNoMoreOutput' = t.b.d.
@@ -362,11 +384,16 @@ https://stackoverflow.com/questions/34364880/expression-has-changed-after-it-was
   /* ##################################
      *  MIGRATION to -Two Version
      ##################################
-     * Rename to emitCategoryViewValueSelected()
+     * Rename emitArticlesToDisplayOutput() to emitCategoryViewValueSelected()
      * No More sending in up Article [] << No.
    */
+/*
   emitArticlesToDisplayOutput(
       articlesToDisplayPassedIn: Article[],
+      categoryViewValuePassedIn: string,
+  ) {
+*/
+  emitCategoryViewValueSelected(
       categoryViewValuePassedIn: string,
   ) {
 
@@ -382,21 +409,27 @@ https://stackoverflow.com/questions/34364880/expression-has-changed-after-it-was
      ##################################
      * Rename this EventEmitter: categoryViewValueSelectedOutputEvent
      */
+/*
       this.articlesToDisplayOutputEvent.emit({
         articlesToDisplayOutputArray: articlesToDisplayPassedIn,
         categoryViewValueOutput: categoryViewValuePassedIn,
       });
-    } // /emitArticlesToDisplayOutput()
+*/
+    this.categoryViewValueSelectedOutputEvent.emit({
+      categoryViewValueOutput: categoryViewValuePassedIn,
+    });
+
+  } // /emitCategoryViewValueSelected()   WAS: /emitArticlesToDisplayOutput()
 
 
     /* ##################################
      *  MIGRATION to -Two Version
-     ##################################
+     ##################################≤
      * WILL NO LONGER BE USED
      * NON-D.R.Y.
      * Instead, Parent will run its "letUsFilterByCategory()"
     */
-  letUsFilterByCategory(categoryViewValuePassedIn: string): void {
+  letUsFilterByCategory(categoryViewValuePassedIn: string): void { // <<  NOT CALLED ANY MORE !!!
     /*  :void  Doesn't return anything.
         Just sets values for use in display logic.
 
@@ -463,8 +496,10 @@ N.B. That one value stands in for BOTH:
           N.B. string 'ALL' is hard-coded on that button
       */
 
-      this.filterIsOn = false;
-      this.filterCategory = 'All Categories'; // '';  // ? should it be 'ALL Articles' 'All Categories' ? Seemingly not necessary
+      /* NO LONGER CALLED. Filtering done on Parent now
+            this.filterIsOn = false;
+            this.filterCategory = 'All Categories'; // '';  // ? should it be 'ALL Articles' 'All Categories' ? Seemingly not necessary
+      */
 
       // this.articlesToDisplay = this.articles; // << Nope
       // WR__ TEMP this.articlesToDisplay = this.articlesInput;
@@ -479,7 +514,9 @@ articleUrl_name: "https://www.nytimes.com/2020/09/17/us/politics/trump-america.h
        */
 
       this.articlesInCategoryWhichCategoryInput = 'All Categories';
+/* GOING AWAY.
       this.filterCategory = 'All Categories';
+*/
       /*
       TODO something redundantly being repeated and done twice here. don't know what it is; need to find out what it is I tell you.
        */
@@ -506,27 +543,28 @@ cheers.
       */
 
 
+      /* NO LONGER CALLED. Filtering done on Parent now
+            this.filterIsOn = true;
+            this.filterCategory = 'No Category (thx Service!)';
+      */
 
-      this.filterIsOn = true;
-      this.filterCategory = 'No Category (thx Service!)';
+            let articlesNoCategorySpecialFilteredFromService: Article[];
+            articlesNoCategorySpecialFilteredFromService = this.myFilterSortService.mySpecialFilter(
+                this.articlesInput,
+                'articleCategory_name',
+                categoryViewValuePassedIn,
+            );
+            /* e.g. the 3rd parameter categoryViewValuePassedIn
+            is going to be:  'No Category (thx Service!)'
+              That's what is actually passed in (from that user button click)
 
-      let articlesNoCategorySpecialFilteredFromService: Article[];
-      articlesNoCategorySpecialFilteredFromService = this.myFilterSortService.mySpecialFilter(
-          this.articlesInput,
-          'articleCategory_name',
-          categoryViewValuePassedIn,
-      );
-      /* e.g. the 3rd parameter categoryViewValuePassedIn
-      is going to be:  'No Category (thx Service!)'
-        That's what is actually passed in (from that user button click)
-
-        Then, triggered by the above string
-        of 'No Category (thx Service!)', we,
-        over in the FilterService
-        HARD-CODE in to test ALSO for this
-        string of 'No Correct Category (thx Service!)'
-        cheers.
-       */
+              Then, triggered by the above string
+              of 'No Category (thx Service!)', we,
+              over in the FilterService
+              HARD-CODE in to test ALSO for this
+              string of 'No Correct Category (thx Service!)'
+              cheers.
+             */
 
       // WR__ TEMP this.articlesToDisplay = articlesNoCategorySpecialFilteredFromService;
 
@@ -544,43 +582,45 @@ cheers.
       */
       // A proper Category, from our approved list :)
 
-      this.filterIsOn = true;
-      this.filterCategory = categoryViewValuePassedIn;
+      /* NO LONGER CALLED. Filtering done on Parent now
+            this.filterIsOn = true;
+            this.filterCategory = categoryViewValuePassedIn;
+      */
 
-      let articlesFilteredFromService: Article[];
-      articlesFilteredFromService = this.myFilterSortService.myFilter(
-          this.articlesInput,
-          'articleCategory_name',
-          categoryViewValuePassedIn,
-      );
+            let articlesFilteredFromService: Article[];
+            articlesFilteredFromService = this.myFilterSortService.myFilter(
+                this.articlesInput,
+                'articleCategory_name',
+                categoryViewValuePassedIn,
+            );
 
-      // WR__ TEMP  this.articlesToDisplay = articlesFilteredFromService;
+            // WR__ TEMP  this.articlesToDisplay = articlesFilteredFromService;
 
-      this.articlesInCategoryWhichCategoryInput = categoryViewValuePassedIn;
+            this.articlesInCategoryWhichCategoryInput = categoryViewValuePassedIn;
 
-    } // /# 03 Proper Category
+          } // /# 03 Proper Category
 
-    this.articlesCountInput = this.articlesToDisplay.length;
-    console.log('CTGZ-03 - letUsFilterByCategory() this.articlesCountInput ', this.articlesCountInput); // Yes.  e.g. 3, 25, 0 etc.
+          this.articlesCountInput = this.articlesToDisplay.length;
+          console.log('CTGZ-03 - letUsFilterByCategory() this.articlesCountInput ', this.articlesCountInput); // Yes.  e.g. 3, 25, 0 etc.
 
-    if (this.articlesCountInput === 0) {
-      // No articles under, e.g. 'Arts' (sigh)
-      this.noArticlesInCategoryInput = true;
-      this.noArticlesInCategoryWhichCategory = categoryViewValuePassedIn;
-    } else {
-      // OK - There's at least ONE Article in this Category!
-      console.log('CTGZ-05c letUsFilter() this.articlesToDisplay ', this.articlesToDisplay);
-      console.log('CTGZ-06c letUsFilter() this.articlesToDisplay[0].articleCategory_name ', this.articlesToDisplay[0].articleCategory_name);
-      console.log('CTGZ-07c letUsFilter() this.articlesToDisplay[0].articleTitle_name ', this.articlesToDisplay[0].articleTitle_name);
-    }
+          if (this.articlesCountInput === 0) {
+            // No articles under, e.g. 'Arts' (sigh)
+            this.noArticlesInCategoryInput = true;
+            this.noArticlesInCategoryWhichCategory = categoryViewValuePassedIn;
+          } else {
+            // OK - There's at least ONE Article in this Category!
+            console.log('CTGZ-05c letUsFilter() this.articlesToDisplay ', this.articlesToDisplay);
+            console.log('CTGZ-06c letUsFilter() this.articlesToDisplay[0].articleCategory_name ', this.articlesToDisplay[0].articleCategory_name);
+            console.log('CTGZ-07c letUsFilter() this.articlesToDisplay[0].articleTitle_name ', this.articlesToDisplay[0].articleTitle_name);
+          }
 
-    /*
-    LAST THING WE DO HERE -
-    Having used above logic to filter
-    and arrive at 'articlesToDisplay',
-    we invoke method that invokes the .emit() of that array,
-    which passes it up to the Parent ArticlesCategorized.
-     */
+          /*
+          LAST THING WE DO HERE -
+          Having used above logic to filter
+          and arrive at 'articlesToDisplay',
+          we invoke method that invokes the .emit() of that array,
+          which passes it up to the Parent ArticlesCategorized.
+           */
     /*
     Update. Need to ALSO pass up the Category (string, name)
      */
@@ -589,7 +629,14 @@ cheers.
 
     this.emitArticlesToDisplayOutput(this.articlesToDisplay, categoryViewValuePassedIn);
 */
+
+/*  ############ MIGRATION  ####
+    No Longer Calling from here at bottom of
+    (no-longer-called) letUsFilterByCategory()
+
     this.emitArticlesToDisplayOutput(this.articlesToDisplay, this.articlesInCategoryWhichCategoryInput);
+*/
+
 
   } // /letUsFilterByCategory(): void
 
@@ -648,7 +695,10 @@ After That:
     this.articlesCountAllInCollectionInput = articlesCountAllInCollectionHere;
     this.articlesRetrievedNumberInput = articlesRetrievedNumberHere;
     this.articlesInCategoryWhichCategoryInput = articlesInCategoryWhichCategoryHere;
+
+/* GOING AWAY. MIGRATION. Filtering done on Parent now.
     this.filterCategory = articlesInCategoryWhichCategoryHere; // << Q. BUG FIX I HOPE ( ! )? A. YEAH!
+*/
     /* Yes, did fix major bug (great).
     Introduced an edge case bug (o well). << At least, I think it is here ... t.b.d.
     BACKGROUND
@@ -665,6 +715,7 @@ After That:
          That is *not* going to match anything in our "letUsFilter()" logic.
          Fix is to go hack that in...
      */
+
     this.noArticlesInCategoryWhichCategoryInput = noArticlesInCategoryWhichCategoryHere;
     this.loadNoMore = loadNoMoreHere; // << N.B. *NO* "...Input" naming convention.
 
@@ -686,12 +737,14 @@ After That:
     Till you CLICK 'All Categories' button. THEN you get: 'All Categories'. hmmph.
      */
 
+/* GOING AWAY
     if (articlesInCategoryWhichCategoryHere !== 'All Categories')  {
       this.filterIsOn = true;
       console.log('00010 update() NOT All Categories? articlesInCategoryWhichCategoryHere ', articlesInCategoryWhichCategoryHere);
     } else {
       console.log('00011 update() All Categories? articlesInCategoryWhichCategoryHere ', articlesInCategoryWhichCategoryHere);
     }
+*/
 
   } // /updateDrawRedrawHereArticlesCategorizer()
 
@@ -749,6 +802,7 @@ After That:
           cheers.
            */
 
+/* GOING AWAY
           if (this.filterIsOn) {
             // re-apply filter to the new "load more"
             // now larger set of articles
@@ -757,9 +811,10 @@ After That:
             // No need. All set.
             // We must be on "All Categories" - no filtering needed
           }
-          /*
+          /!*
           Final bit of business (above)
-           */
+           *!/
+*/
 
         }
     ); // /.subscribe() SERVICE.listArticlesLoadMore()

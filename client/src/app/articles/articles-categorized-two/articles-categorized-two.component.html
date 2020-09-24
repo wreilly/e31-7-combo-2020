@@ -26,14 +26,10 @@
             bind-loadNoMoreInputName="loadNoMoreForChild"
 
             on-categorizerGetArticlesLoadMoreEvent="getArticlesLoadMore(
-            $event.offsetNumberOutput,
-            $event.filterIsOnParam,
-            $event.filterCategory,
-            $event.loadNoMore
+            $event.offsetNumberOutput
             )"
 
-            on-articlesToDisplayOutputEvent="assignArticlesToDisplayFromCategorizer(
-            $event.articlesToDisplayOutputArray,
+            on-categoryViewValueSelectedOutputEvent="assignCategoryViewValueFromCategorizer(
             $event.categoryViewValueOutput
             )"
     ></app-categorizer-two>
@@ -43,17 +39,21 @@
     ##################################
     * Can keep same name: on-categorizerGetArticlesLoadMoreEvent
     * But, (Probably ?!?) No More sending up:
-    * - filterIsOnParam
-    * - filterCategory
-    * - loadNoMore
+    * - filterIsOnParam << XXX No
+    * - filterCategory << XXX No
+    * - loadNoMore << XXX NO. Not coming up from Child. True that Parent needs to inform (both) Children of status of this.
     */
+Removed:
+                $event.filterIsOnParam,
+            $event.filterCategory,
+
     -->
     <!--
     ##################################
      *  MIGRATION to -Two Version
      ##################################
-     * LHS: Rename above to on-categoryViewValueSelectedOutputEvent
-     * RHS: Also Rename : assignCategoryViewValueFromCategorizer()
+     * LHS: Rename above on-articlesToDisplayOutputEvent to on-categoryViewValueSelectedOutputEvent
+     * RHS: Also Rename : assignArticlesToDisplayFromCategorizer to assignCategoryViewValueFromCategorizer()
      * No more Article[] << No.
     -->
     <!-- /CATEGORIZER "TOP" -->
@@ -161,17 +161,26 @@
             bind-loadNoMoreInputName="loadNoMoreForChild"
 
             on-categorizerGetArticlesLoadMoreEvent="getArticlesLoadMore(
-            $event.offsetNumberOutput,
-            $event.filterIsOnParam,
-            $event.filterCategory,
-            $event.loadNoMore
+            $event.offsetNumberOutput
             )"
 
-            on-articlesToDisplayOutputEvent="assignArticlesToDisplayFromCategorizer(
+            on-categoryViewValueSelectedOutputEvent="assignCategoryViewValueFromCategorizer(
+            $event.categoryViewValueOutput
+            )"
+
+    ></app-categorizer-two>
+    <!-- MIGRATION
+removing:
+                on-articlesToDisplayOutputEvent="assignArticlesToDisplayFromCategorizer(
             $event.articlesToDisplayOutputArray,
             $event.categoryViewValueOutput
             )"
-    ></app-categorizer-two>
+
+Removed:
+            $event.filterIsOnParam,
+            $event.filterCategory,
+            $event.loadNoMore
+    -->
     <!-- /CATEGORIZER "BOTTOM" -->
 
 </mat-nav-list>

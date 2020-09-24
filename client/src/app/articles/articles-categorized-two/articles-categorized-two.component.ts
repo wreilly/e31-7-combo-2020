@@ -101,9 +101,6 @@ export class ArticlesCategorizedTwoComponent implements OnInit {
 
   myUIIsLoadingStore$: Observable<boolean>;
 
-  categorizerReadyToShow: boolean;
-
-
 
   constructor(
       private myArticleService: ArticleService,
@@ -112,8 +109,6 @@ export class ArticlesCategorizedTwoComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
-    this.categorizerReadyToShow = false; // wait till asynch call done, below, getArticlesLoadMore()
 
     this.myUIIsLoadingStore$ = this.myStore.select(fromRoot.getIsLoading);
 
@@ -126,7 +121,10 @@ export class ArticlesCategorizedTwoComponent implements OnInit {
      */
 
     // this.getArticles();
+    this.getArticlesLoadMore(this.offsetNumber);
+/* NO
     this.getArticlesLoadMore(this.offsetNumber, false, 'All Categories', this.loadNoMoreForChild);
+*/
     /* init with offsetNumber of 20, not 0. (Get first twenty --> 0-19).
     Also, default 'ALL' category to begin. << ? 'All Categories'? --OR-- '' (empty)?
      */
@@ -143,11 +141,17 @@ export class ArticlesCategorizedTwoComponent implements OnInit {
 * - filterCategory
 * - loadNoMore
 */
+
+  getArticlesLoadMore(offsetNumberHere) { // initially WAS: emitted << no longer used
+/* No Longer these 4 params. Just 1.
   getArticlesLoadMore(offsetNumberHere, filterIsOnParam, filterCategoryParam, loadNoMoreParam) { // initially WAS: emitted << no longer used
+*/
     /*
     offsetNumberHere is variable: 20, 40, 60...
      */
+/* NO MORE
     console.log('0001 - getLoadMore filterCategoryParam: ', filterCategoryParam);
+*/
 
     // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     /* SPINNER triggered from here, arguably.
@@ -175,7 +179,6 @@ _id: "5f58ae8d4d2835ae66510f4a"
               this.articles = loadMoreArticlesWeGot.articlesLoadMoreFromServer.map(
                   this.myArticleService.myMapBEArticlesToFEArticles
               );
-
 
               this.articlesToDisplay = this.articles; // whamma-jamma the current "LoadMore" # of them (e.g. 20, or 40, or 60 ...)
 
@@ -279,12 +282,14 @@ Update another possibly redundant value here re: currently selected Category:
 e.g. 'U.S.' or 'No Category (thx Service!)'
 Also will show: 'All Categories' (although the 'filterIsOn' boolean will be false)
  */
+/* GOING AWAY.
               console.log('0002 - getLoadMore filterCategoryParam: ', filterCategoryParam); // << GOING AWAY
               console.log('0002A - getLoadMore filterIsOnParam: ', filterIsOnParam); // << GOING AWAY
+*/
 /* NO. Don't overwrite this Parent property, with what was passed up from Child.
               this.articlesInCategoryWhichCategory = filterCategoryParam; // << GOING AWAY
 */
-              console.log('0003 - getLoadMore articlesInCategoryWhichCategory: ', this.articlesInCategoryWhichCategory); // << GOING AWAY
+              console.log('0003 - getLoadMore articlesInCategoryWhichCategory: ', this.articlesInCategoryWhichCategory);
 
               /* ##################################
                *  MIGRATION to -Two Version
@@ -323,29 +328,6 @@ Also will show: 'All Categories' (although the 'filterIsOn' boolean will be fals
               } else { // << GOING AWAY
                 // all set. we're on "All Categories" - no filtering needed
               }
-
-
-              this.categorizerReadyToShow = true; // << GOING AWAY (not used etc. yeesh.)
-              /* QUESTION
-              Do I even need above any longer?
-              Will find out.
-               */
-              /* NO LONGER doing this T/F check.
-              In fact, "stealing" that boolean parameter f.k.a. "emitted"
-              to now be instead "filterIsOn". Hah!
-
-                            if (emitted) {
-                              this.categorizerReadyToShow = true;
-                              console.log('EMIT => TRUE this.categorizerReadyToShow ', this.categorizerReadyToShow);
-                            } else {
-                              /!*
-                              ATTENTION! (en francais)
-                              TODO ? is ths ok? Artificially setting to TRUE - REGARDLESS! o la.
-                               *!/
-                              this.categorizerReadyToShow = true;
-                              console.log('ARTIFICIAL TO TRUE YE GODS - EMIT => FALSE this.categorizerReadyToShow ', this.categorizerReadyToShow);
-                            }
-              */
 
               this.updateArticlesControlledCategorizer (
                   this.offsetNumber,
@@ -420,18 +402,19 @@ IS NOW: this.offsetNumber  << I hope this is right
   ##################################
   *  MIGRATION to -Two Version
   ##################################
-  * Rename to assignCategoryViewValueFromCategorizer()
+  * Rename assignArticlesToDisplayFromCategorizer() to assignCategoryViewValueFromCategorizer()
   * No more Article[] << No.
 */
-  assignArticlesToDisplayFromCategorizer(
-      articlesToDisplayOutputArrayPassedIn: Article[],
+  assignCategoryViewValueFromCategorizer(
       categoryViewValueOutputPassedIn: string,
   ) {
     /*
-    Update: We now use this to also get the category name,
-    up from the Child Categorizer component.
+    Update: We now use this to XXalsoXX *only* get the category name,
+            up from the Child Categorizer component.
      */
 
+    // These "resets" prob ought go further below, in "if()" logic re: count is 0 or not .... t.b.d.
+    // prob can benignly stay right here ...
     this.noArticlesInCategory = false; // reset
     this.noArticlesInCategoryWhichCategory = ''; // reset
 
@@ -445,14 +428,17 @@ IS NOW: this.offsetNumber  << I hope this is right
     * we will do the Filtering on Category,
     * to get the "this.articlesToDisplay"
 */
-    console.log('assignArticlesToDisplayFromCategorizer articlesToDisplayOutputArrayPassedIn: ', articlesToDisplayOutputArrayPassedIn);
-    this.articlesToDisplay = articlesToDisplayOutputArrayPassedIn; // << GOING AWAY
-    this.articlesCount = this.articlesToDisplay.length; // << GOING AWAY
+    // NO MORE Article[]   console.log('assignArticlesToDisplayFromCategorizer articlesToDisplayOutputArrayPassedIn: ', articlesToDisplayOutputArrayPassedIn);
+    // this.articlesToDisplay = articlesToDisplayOutputArrayPassedIn; // << GOING AWAY
+    // this.articlesCount = this.articlesToDisplay.length; // << GOING AWAY
     /* ############################### */
 
     this.articlesInCategoryWhichCategory = categoryViewValueOutputPassedIn;
 
-    // ###  NEW  ###
+    /* ###  NEW : MIGRATION ###
+     * Execute this method to "Filter" from here in Parent now.
+     * (Filtering used to be done down on the Child, who used to pass up the resultant Article[]. No more.)
+     */
     this.letUsFilterByCategory(this.articlesInCategoryWhichCategory);
     /*
     Returns void
@@ -468,14 +454,14 @@ IS NOW: this.offsetNumber  << I hope this is right
       this.noArticlesInCategoryWhichCategory = categoryViewValueOutputPassedIn;
     }
 
-    /*
+    /* OLDER NOTE:
     Note:
-    - When this method only received the Article[ ], no need to
+    - At first, when this method only received the Article[ ], there was no need to
     run the .update() method to communicate to other (Children)
     components. Could just locally, immediately, render those Articles. ok.
-    - Now with 2nd param, we must run .update() to actually SEND OUT
+    - Then, with 2nd param of Category (string), we must run .update() to actually SEND OUT
     that new param data, in particular to the "Other" Child,
-    the CategorizerComponent (be it "Top" or "Bottom") that
+    namely the other CategorizerComponent (be it "Top" or "Bottom") that
     did NOT pass in this Category info. That "other" one needs
     to hear, from Parent, about what Category its sibling now is
     using - to be in sync.
@@ -496,7 +482,7 @@ IS NOW: this.offsetNumber  << I hope this is right
         this.loadNoMoreForChild,
     )
   } // /assignArticlesToDisplayFromCategorizer()
-  // renaming to: assignCategoryViewValueFromCategorizer()
+  // renaming to: /assignCategoryViewValueFromCategorizer()
 
 
   letUsFilterByCategory (categoryViewValuePassedIn: string): void {

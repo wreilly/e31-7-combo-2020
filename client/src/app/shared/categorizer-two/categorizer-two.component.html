@@ -60,8 +60,18 @@
                     style="{{ oneCategory.viewValue === articlesInCategoryWhichCategoryInput ? 'cursor: none;' : 'cursor: pointer;' }}"
                     type="button"
                     class="my-smaller-button"
-                    on-click="letUsFilterByCategory(oneCategory.viewValue)"
+                    on-click="emitCategoryViewValueSelected(oneCategory.viewValue)"
             >
+<!-- /* #######################
+      * MIGRATION TO "TWO-" VERSION
+      * Revise letUsFilterByCategory() to instead directly go to: emitCategoryViewValueSelected()
+      * 2 points:
+      * 1). New emitCategoryViewValueSelected() replaces existing emitArticlesToDisplayOutput()
+      * 2). Here on Child, we will omit/skip any Local,
+            NON-D.R.Y. "letUsFilterByCategory"
+            Now that filtering is done only on Parent)
+        #########################
+-->
 <!--  "About that red squiggle..."
 (That WebStorm IDE places beneath the "?" in the ternary conditional statement above.)
 
@@ -87,7 +97,7 @@ style="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'cursor: n
                 color="{{articlesInCategoryWhichCategoryInput === 'No Category Assigned' ? 'accent' : ''}}"
                 type="button"
                 class="my-smaller-button"
-                on-click="letUsFilterByCategory('No Category (thx Service!)')"
+                on-click="emitCategoryViewValueSelected('No Category (thx Service!)')"
         >
             No Category Assigned
         </button>
@@ -103,7 +113,7 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
                 color="{{articlesInCategoryWhichCategoryInput === 'All Categories' ? 'accent' : ''}}"
                 type="button"
                 class="my-smaller-button"
-                on-click="letUsFilterByCategory('ALL')"
+                on-click="emitCategoryViewValueSelected('ALL')"
         >
             <i>All Categories</i>
         </button>
