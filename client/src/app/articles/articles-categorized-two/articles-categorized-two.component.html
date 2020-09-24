@@ -37,7 +37,27 @@
             $event.categoryViewValueOutput
             )"
     ></app-categorizer-two>
+    <!--
+    /* ##################################
+    *  MIGRATION to -Two Version
+    ##################################
+    * Can keep same name: on-categorizerGetArticlesLoadMoreEvent
+    * But, (Probably ?!?) No More sending up:
+    * - filterIsOnParam
+    * - filterCategory
+    * - loadNoMore
+    */
+    -->
+    <!--
+    ##################################
+     *  MIGRATION to -Two Version
+     ##################################
+     * LHS: Rename above to on-categoryViewValueSelectedOutputEvent
+     * RHS: Also Rename : assignCategoryViewValueFromCategorizer()
+     * No more Article[] << No.
+    -->
     <!-- /CATEGORIZER "TOP" -->
+
 <!-- Not used anymore:
     <hr />
     <div>Top above, Bottom (TEMP) below</div>

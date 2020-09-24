@@ -134,6 +134,15 @@ export class ArticlesCategorizedTwoComponent implements OnInit {
   } // /ngOnInit()
 
 
+/* ##################################
+*  MIGRATION to -Two Version
+##################################
+* Can keep same name: getArticlesLoadMore()
+* But, (Probably ?!?) No More sending up:
+* - filterIsOnParam
+* - filterCategory
+* - loadNoMore
+*/
   getArticlesLoadMore(offsetNumberHere, filterIsOnParam, filterCategoryParam, loadNoMoreParam) { // initially WAS: emitted << no longer used
     /*
     offsetNumberHere is variable: 20, 40, 60...
@@ -210,18 +219,42 @@ Incremented to 40, 60, 80...
               smaller, and show that.
                */
 
-              /* UPDATE
+
+              /* UPDATE UPDATE
+              Change of mind. Now, YES we'll do this calculation in Parent.
+               */
+              /* ###################################
+                 *  MIGRATION TO "-TWO" VERSION
+                 * Do not do this if() test down in Child.
+                 * Just pass the offsetNumber up here to Parent.
+                 * Here in Parent we'll do this same if() test instead, and update loadNoMore as appropriate.
+                 * cheers.
+               */
+/* Child had:
+              if (this.offsetNumberInput >= this.articlesCountAllInCollectionInput) {
+                this.loadNoMore = true;
+*/
+              /* UPDATE << SUPERSEDED. see above, below
               I think we should no longer (re-)calculate
               this boolean "loadNoMore-biz" in Parent.
               Just let Child-01 report it "up", and have
               Parent pass it back "down" to Child-02.
                */
-              this.loadNoMoreForChild = loadNoMoreParam; // << from "Child-01"
-              /* No Longer: (see Comment above)
-                            if (this.articlesRetrievedNumber === this.articlesCountAllInCollection) {
-                              this.loadNoMoreForChild = true;
-                            }
-              */
+/* MIGRATION TO "-TWO" VERSION
+No longer using this param, from Child.
+
+              this.loadNoMoreForChild = loadNoMoreParam; // << GOING AWAY // << from "Child-01"
+*/
+              /* UPDATE UPDATE. Yes, we're putting this BACK IN.    No Longer: (see Comment above) */
+              if (this.articlesRetrievedNumber === this.articlesCountAllInCollection) {
+                /* N.B. Child had: For consideration ...
+                if (this.offsetNumberInput >= this.articlesCountAllInCollectionInput) {
+                 */
+                this.loadNoMoreForChild = true; // << very nice.
+                /* This one param from parent will be bound down to both/all Categorizer components.
+                   No need for "Child-01-to-Parent-to-Child-02" communication.
+                 */
+              }
               /* Final bit of business (above)
               (Couldn't get into the terse ternary above)
               Disable that Load More button, if we've
@@ -229,19 +262,45 @@ Incremented to 40, 60, 80...
               cheers.
                */
 
-              /*
+
+/* ##################################
+*  MIGRATION to -Two Version
+   ##################################
+* Here in getArticlesLoadMore() ...
+* But, (Probably ?!?) No More using:
+* - filterIsOnParam // << ? may not need. Can derive from this.articlesInCategoryWhichCategory
+* - filterCategory // << We have here in Parent: this.articlesInCategoryWhichCategory
+* - loadNoMore // << We have here in Parent: this.loadNoMoreForChild
+*/
+              /*  (older Comment)
 Don't forget. (Guess I had.) (How did I miss this ??)
 Update another possibly redundant value here re: currently selected Category:
 
 e.g. 'U.S.' or 'No Category (thx Service!)'
 Also will show: 'All Categories' (although the 'filterIsOn' boolean will be false)
  */
-              console.log('0002 - getLoadMore filterCategoryParam: ', filterCategoryParam);
-              console.log('0002A - getLoadMore filterIsOnParam: ', filterIsOnParam);
-              this.articlesInCategoryWhichCategory = filterCategoryParam;
-              console.log('0003 - getLoadMore articlesInCategoryWhichCategory: ', this.articlesInCategoryWhichCategory);
+              console.log('0002 - getLoadMore filterCategoryParam: ', filterCategoryParam); // << GOING AWAY
+              console.log('0002A - getLoadMore filterIsOnParam: ', filterIsOnParam); // << GOING AWAY
+/* NO. Don't overwrite this Parent property, with what was passed up from Child.
+              this.articlesInCategoryWhichCategory = filterCategoryParam; // << GOING AWAY
+*/
+              console.log('0003 - getLoadMore articlesInCategoryWhichCategory: ', this.articlesInCategoryWhichCategory); // << GOING AWAY
 
-              if (filterIsOnParam) {
+              /* ##################################
+               *  MIGRATION to -Two Version
+                 ##################################
+                 * Won't need this if() logic I believe.
+                 * Am keeping the structure for this first pass.
+                 * Will remove.
+                 * Basically next line is simply:
+                   this.letUsFilterByCategory(this.articlesInCategoryWhichCategory);
+                 * Q. Why does that work?
+                 * A. Because that method can handle 'ALL' or 'All Categories' just fine.
+                 *    (No need to test "is there any filter on, or not?")
+                 * MBU
+               */
+              if (true) { // we're just "going in!"
+              // if (filterIsOnParam) { // << GOING AWAY
                 // if (this.filterIsOn) {
                 // re-apply filter to new "load more" of articles
                 /* Worked fine, here within ArticlesCategorizedComponent
@@ -256,14 +315,17 @@ Also will show: 'All Categories' (although the 'filterIsOn' boolean will be fals
                 /* But now we're trying Child-to-Parent
                 communicating from Categorizer...
                  */
-                this.letUsFilterByCategory(filterCategoryParam);
+/*
+                this.letUsFilterByCategory(filterCategoryParam); // << GOING AWAY
+*/
+                this.letUsFilterByCategory(this.articlesInCategoryWhichCategory);
 
-              } else {
+              } else { // << GOING AWAY
                 // all set. we're on "All Categories" - no filtering needed
               }
 
 
-              this.categorizerReadyToShow = true;
+              this.categorizerReadyToShow = true; // << GOING AWAY (not used etc. yeesh.)
               /* QUESTION
               Do I even need above any longer?
               Will find out.
@@ -354,6 +416,13 @@ IS NOW: this.offsetNumber  << I hope this is right
   } // /updateArticlesControlledCategorizer()
 
 
+/*
+  ##################################
+  *  MIGRATION to -Two Version
+  ##################################
+  * Rename to assignCategoryViewValueFromCategorizer()
+  * No more Article[] << No.
+*/
   assignArticlesToDisplayFromCategorizer(
       articlesToDisplayOutputArrayPassedIn: Article[],
       categoryViewValueOutputPassedIn: string,
@@ -366,11 +435,33 @@ IS NOW: this.offsetNumber  << I hope this is right
     this.noArticlesInCategory = false; // reset
     this.noArticlesInCategoryWhichCategory = ''; // reset
 
+/*
+    ##################################
+    *  MIGRATION to -Two Version
+    ##################################
+    * REMOVE (No Longer Use) Article[]
+    * No more this.articlesToDisplay update here
+    * Instead of in the Child, here in the **Parent**,
+    * we will do the Filtering on Category,
+    * to get the "this.articlesToDisplay"
+*/
     console.log('assignArticlesToDisplayFromCategorizer articlesToDisplayOutputArrayPassedIn: ', articlesToDisplayOutputArrayPassedIn);
-    this.articlesToDisplay = articlesToDisplayOutputArrayPassedIn;
-    this.articlesCount = this.articlesToDisplay.length;
+    this.articlesToDisplay = articlesToDisplayOutputArrayPassedIn; // << GOING AWAY
+    this.articlesCount = this.articlesToDisplay.length; // << GOING AWAY
+    /* ############################### */
+
     this.articlesInCategoryWhichCategory = categoryViewValueOutputPassedIn;
 
+    // ###  NEW  ###
+    this.letUsFilterByCategory(this.articlesInCategoryWhichCategory);
+    /*
+    Returns void
+    Sets this.articlesToDisplay to desired filtered []. good.
+    Sets this.articlesCount (length of that [])
+    Sets the 2 "noArticles" properties as well (when count is 0)
+     */
+
+    // ### THESE LINES ARE GOING AWAY. SUPERSEDED by letUsFilter()...
     if (this.articlesCount === 0) {
       // No articles under, e.g., 'Arts' (sigh)
       this.noArticlesInCategory = true;
@@ -391,6 +482,7 @@ IS NOW: this.offsetNumber  << I hope this is right
     cheers.
      */
     console.log('0004 assignArticles...() about to update() this.articlesInCategoryWhichCategory ', this.articlesInCategoryWhichCategory);
+
     this.updateArticlesControlledCategorizer(
         // 4 (?) of 8 will be unchanged, but, we need that 5th and 6th and 7th and 8th (!)
         // << Have I got this right? << No! Ya VERY MUCH didn't!
@@ -404,9 +496,10 @@ IS NOW: this.offsetNumber  << I hope this is right
         this.loadNoMoreForChild,
     )
   } // /assignArticlesToDisplayFromCategorizer()
+  // renaming to: assignCategoryViewValueFromCategorizer()
 
 
-  letUsFilterByCategory (categoryStoredValuePassedIn: string): void {
+  letUsFilterByCategory (categoryViewValuePassedIn: string): void {
     /* :void
     Doesn't return anything. Just sets variables for use in display.
     In particular the this.articlesToDisplay
@@ -416,21 +509,36 @@ IS NOW: this.offsetNumber  << I hope this is right
     this.noArticlesInCategory = false; // reset
     this.noArticlesInCategoryWhichCategory = ''; // reset
 
-    if (categoryStoredValuePassedIn === 'ALL') {
+    if (
+        // categoryViewValuePassedIn === 'ALL' // << WAS JUST
+        categoryViewValuePassedIn === 'ALL'
+        ||
+        categoryViewValuePassedIn === 'All Categories' // << Now need to test also for this U/I Display value we use. Bit hacky.
+    ) {
       /*  *************
       01 - USER CLICK ON THE 'ALL' BUTTON
           *************
        */
       this.filterIsOn = false;
-      this.filterCategory = ''; // ? should it be 'ALL Articles' ?
+      this.filterCategory = ''; // ? should it be 'ALL Categories' ?
 
       this.articlesToDisplay = this.articles;
       this.articlesInCategoryWhichCategory = 'All Categories';
-    } else if (categoryStoredValuePassedIn === 'No Category (thx Service!)') {
+    } else if (
+        // categoryViewValuePassedIn === 'No Category (thx Service!)' // << WAS JUST
+        categoryViewValuePassedIn === 'No Category (thx Service!)'
+        ||
+        categoryViewValuePassedIn === 'No Category Assigned' // << NEED TO ALSO TEST FOR this U/I Display value we use. Bit hacky
+    ) {
       /*  *************
       02 - USER CLICK ON THE 'NO CATEGORY' BUTTON
           *************
       */
+      /* re: JavaScript '||' OR operator - SEE Notes @:
+      src/app/core/services/filter-sort.service.ts:251
+      Key Take-Away: "Need to do two *entire evaluation expressions*, and '||' those."
+      https://addyosmani.com/blog/exploring-javascripts-logical-or-operator/
+       */
 
       // << YES, actually passed in (from that user button click
 
@@ -449,7 +557,17 @@ cheers.
       this.filterCategory = 'No Category (thx Service!)';
 
       let articlesNoCategorySpecialFilteredFromService: any[];
-      articlesNoCategorySpecialFilteredFromService = this.myFilterSortService.mySpecialFilter(this.articles, 'articleCategory_name', categoryStoredValuePassedIn);
+      articlesNoCategorySpecialFilteredFromService = this.myFilterSortService.mySpecialFilter(this.articles, 'articleCategory_name', this.filterCategory);
+      /* Update. Bug (edge-ish case) Fix.
+      WAS: 3rd param was: categoryViewValuePassedIn // << This works ok for Use Case # 3 below, but not here on Use Case # 2.
+      FIX IS: 3rd param now is: this.filterCategory
+      Q. Why?
+      A. Because categoryViewValuePassedIn gets sort of manipulated to become
+         a U/I Display string: "No Category Assigned"
+         This is NO GOOD for subsequent data filtering, where the values
+         expected are 'No Category (thx Service!)' etc.
+         So we manipulate it back as it were to run the filter, in line above.
+       */
       /* e.g.
         No Category (thx Service!) // << YES, actually passed in (from that user button click)
         "5f3515d7dec9620d8d5fe63a"
@@ -479,14 +597,14 @@ cheers.
       // A proper Category, from our approved list :)
 
       this.filterIsOn = true;
-      this.filterCategory = categoryStoredValuePassedIn;
+      this.filterCategory = categoryViewValuePassedIn;
 
       let articlesFilteredFromService: any[];
-      articlesFilteredFromService = this.myFilterSortService.myFilter(this.articles, 'articleCategory_name', categoryStoredValuePassedIn);
+      articlesFilteredFromService = this.myFilterSortService.myFilter(this.articles, 'articleCategory_name', categoryViewValuePassedIn);
 
       this.articlesToDisplay = articlesFilteredFromService;
 
-      this.articlesInCategoryWhichCategory = categoryStoredValuePassedIn;
+      this.articlesInCategoryWhichCategory = categoryViewValuePassedIn;
 
     }
 
@@ -495,7 +613,7 @@ cheers.
     if (this.articlesCount === 0) {
       // No articles under, e.g., 'Arts' (sigh)
       this.noArticlesInCategory = true;
-      this.noArticlesInCategoryWhichCategory = categoryStoredValuePassedIn;
+      this.noArticlesInCategoryWhichCategory = categoryViewValuePassedIn;
     }
 
   } // /letUsFilterByCategory()
