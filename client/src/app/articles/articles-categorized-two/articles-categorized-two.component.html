@@ -1,19 +1,14 @@
 <div class="component-label">ARTICLES-CATEGORIZED-TWO.COMPONENT</div>
-<!--  INITIAL SNAPSHOT COPY MADE 19/SEP/20. TODAY 22/SEP/20.  -->
-<!--  SECOND/FINAL SNAPSHOT COPY MADE 23/SEP/20. TODAY 23/SEP/20.  -->
 <mat-nav-list role="navigation">
     <!-- CATEGORIZER "TOP" -->
     <app-categorizer-two
             bind-topOrBottomInputName="'top'"
 
             bind-articlesCountInputName="updateArticlesCount"
-            bind-offsetPageSizeInputName="updateOffsetPageSize"
+
             bind-offsetNumberInputName="updateOffsetNumber"
 
-
             bind-articlesCountAllInCollectionInputName="updateArticlesCountAllInCollection"
-
-            bind-articlesRetrievedNumberInputName="updateArticlesRetrievedNumber"
 
             bind-articlesInputName="articles"
 
@@ -33,45 +28,7 @@
             $event.categoryViewValueOutput
             )"
     ></app-categorizer-two>
-    <!--
-    /* ##################################
-    *  MIGRATION to -Two Version
-    ##################################
-    * Can keep same name: on-categorizerGetArticlesLoadMoreEvent
-    * But, (Probably ?!?) No More sending up:
-    * - filterIsOnParam << XXX No
-    * - filterCategory << XXX No
-    * - loadNoMore << XXX NO. Not coming up from Child. True that Parent needs to inform (both) Children of status of this.
-    */
-Removed:
-                $event.filterIsOnParam,
-            $event.filterCategory,
 
-    -->
-    <!--
-    ##################################
-     *  MIGRATION to -Two Version
-     ##################################
-     * LHS: Rename above on-articlesToDisplayOutputEvent to on-categoryViewValueSelectedOutputEvent
-     * RHS: Also Rename : assignArticlesToDisplayFromCategorizer to assignCategoryViewValueFromCategorizer()
-     * No more Article[] << No.
-    -->
-    <!-- /CATEGORIZER "TOP" -->
-
-<!-- Not used anymore:
-    <hr />
-    <div>Top above, Bottom (TEMP) below</div>
-    <hr />
--->
-
-    <!-- O la - not using I hope: *ngIf="categorizerReadyToShow"
-    -->
-    <!--    Hopefully (?) not going to use? we'll see.
-        NAH WE Ain'tL       bind-articlesCountAllInCollectionInitialInputName="initialArticlesCountAllInCollection"
-    -->
-    <!-- bind-offsetPageSizeInputName="updateOffsetPageSize"
-    // << I (believe?) this is constant as it were. Always 20. Hmm.
-    -->
     <!-- YA HAD IT ALL WRRROOONNNGGG!
     Missing "bind-" !!
 
@@ -89,66 +46,23 @@ Removed:
     2. Hopefully our FIX/ANSWER!
     3. "OK" means: No IDE complaint. But, doesn't really work. No binding. One-time (?) property value assignment, right ? Useless.
     4. "No" means: No IDE complaint. But, that "articlesCount" is merely a (meaningless) string. Nuttin' doin'.
-
-
-    WRRROOONNNGGG:
-        <app-categorizer
-                *ngIf="categorizerReadyToShow"
-                articlesCountInputName="{{articlesCount}}"
-                offsetPageSizeInputName="{{offsetPageSize}}"
-                articlesCountAllInCollectionInputName="{{articlesCountAllInCollection}}"
-                articlesRetrievedNumberInputName="{{articlesRetrievedNumber}}"
-
-                articlesInputName="{{articles}}"
-
-                on-categorizerGetArticlesLoadMoreEvent="getArticlesLoadMore(
-                $event.offsetNumberOutput, true
-                )"
-        ></app-categorizer>
     -->
-<!-- No Longer Done Here In Parent. See Child CategorizerComponent instead.
-    <div
-            *ngIf="noArticlesInCategory"
-            style="margin: 15px 0px 15px 15px;"
-    >
-        ARTICLES-CATEGORIZED. PARENT. No articles in the "{{noArticlesInCategoryWhichCategory}}" category. Consider <a routerLink="../add" class="blue-link">adding</a> one!
-    </div>
--->
-
-
-<!-- No Longer Done Here In Parent. See Child CategorizerComponent instead.
-         TODONE mat-progress-spinner
-    <mat-progress-spinner
-            *ngIf="myUIIsLoadingStore$ | async"
-            mode="indeterminate"
-            bind-diameter="20"
-    >
-    </mat-progress-spinner>
--->
-
 
     <app-article
             mat-list-item
             *ngFor="let article of articlesToDisplay"
             bind-articleToSendDownName="article"
     ></app-article>
-    <!-- re: above
-        "You can add mat-list-item as the directive to your app-car-item component..."
-        https://stackoverflow.com/questions/58477720/how-to-use-in-angular-material-list-an-item-component
-        -->
 
     <!-- CATEGORIZER "BOTTOM" -->
     <app-categorizer-two
             bind-topOrBottomInputName="'bottom'"
 
             bind-articlesCountInputName="updateArticlesCount"
-            bind-offsetPageSizeInputName="updateOffsetPageSize"
+
             bind-offsetNumberInputName="updateOffsetNumber"
 
-
             bind-articlesCountAllInCollectionInputName="updateArticlesCountAllInCollection"
-
-            bind-articlesRetrievedNumberInputName="updateArticlesRetrievedNumber"
 
             bind-articlesInputName="articles"
 
@@ -169,18 +83,6 @@ Removed:
             )"
 
     ></app-categorizer-two>
-    <!-- MIGRATION
-removing:
-                on-articlesToDisplayOutputEvent="assignArticlesToDisplayFromCategorizer(
-            $event.articlesToDisplayOutputArray,
-            $event.categoryViewValueOutput
-            )"
-
-Removed:
-            $event.filterIsOnParam,
-            $event.filterCategory,
-            $event.loadNoMore
-    -->
     <!-- /CATEGORIZER "BOTTOM" -->
 
 </mat-nav-list>

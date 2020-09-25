@@ -1,5 +1,3 @@
-// <!--  INITIAL SNAPSHOT COPY MADE 19/SEP/20. TODAY 22/SEP/20.  -->
-// <!--  SECOND/FINAL SNAPSHOT COPY MADE 23/SEP/20. TODAY 23/SEP/20.  -->
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -15,92 +13,47 @@ import { FilterSortService } from '../../core/services/filter-sort.service';
 })
 export class ArticlesCategorizedTwoComponent implements OnInit {
 
-  articles: Article[]; // empty to begin
-  articlesToDisplay: Article[];
-  // Be that ALL, or Filtered
-
-  articlesCountAllInCollection: number;
-  articlesCount: number; // in a Category
-  articlesInCategoryWhichCategory = 'All Categories'; // init  // string; // e.g. 'Politics' when there ARE articles
-  updateArticlesInCategoryWhichCategory = 'All Categories'; // : string; // we don't init, do we? doubt it. << Mebbe we should.
-  updateNoArticlesInCategoryWhichCategory; // init ? ''
-
-  filterIsOn = false; // init
-  filterCategory: string; // init ? '';
-  /* ? should init value be 'ALL Articles'
-  (or 'ALL Categories' for that matter) ?
-  - Seems not necessary
-   */
-
-  // LOAD MORE
-  offsetPageSize = 20; // HARD-CODED. Matches BE
-  /*
-  routes/api/api-articles.js:145
-  const pageSize = 20; // hard-coded. 20 articles per "Load More" page.
-   */
-  updateOffsetNumber: number; // << Variable. I hope this is right
-  updateOffsetPageSize = this.offsetPageSize; // constant as it were - HARD-CODED 20. // : number;
-
-  offsetNumber = this.offsetPageSize; // VARIABLE. Initialized here to 20, not 0; // init. Also (re-)initialized in ngOnInit()
-  articlesRetrievedNumber: number;
-
-  loadNoMoreForChild: boolean; // Need to init false?? << disable when max articlesRetrievedNumber
-  /*
-  - 'loadNoMoreForChild'
-  Above new, for Parent Component, to simply store but not use
-  this boolean. It is passed up from one Child,
-  back down to the other.
-  Also - (y not) - trying new variation in naming convention.
-  NOT using the 'update___' prefix. we'll see...
-
-  - 'loadNoMore'
-  Below is now no-longer-used boolean for
-  when this Parent itself had the "Categorizer" template,
-  which we are in process of factoring out, to new Child Component.
-   */
-  loadNoMore: boolean; // << NO LONGER USING. disable when max articlesRetrievedNumber
-
-
-  updateArticlesCount: number;
-  updateArticlesCountAllInCollection: number;
-  updateArticlesRetrievedNumber: number;
-
-  offsetNumberNext: number; // << Not using (after all)
-  /* Update on Note below.
-  Changed my mind. Not using 'offsetNumberNext' any more.
-  Why?
-  On U/I to display "Showing: Articles 1 - 20" ( or 40, or 60),
-  this use of "next" was causing more trouble than worth.
-  Just "offsetNumber" better reflects the, well, offsetNumber.
-   */
-  /* Note: << SEE ABOVE UPDATE. Not doing this now.
-  We sort of don't need "offsetNumberNext".
-  We could just update "offsetNumber" (from 0, to 20, to 40, etc.)
-  The "next" naming I suppose helps (?) convey sense
-  of what that "number" figure is doing,
-  there on the click-button...
-
-  In any event, with this "next" variable,
-  we wind up leaving behind the initial "offsetNumber"
-  unchanged, unused, after first load of 20.
-  After that, it is "offsetNumberNext" that
-  continually gets updated.
-
-  Again, could have done all of above w. just
-  "offsetNumber". okay.
-   */
-
-
-
   categories: Category[];
 
-  updateNoArticlesInCategory: boolean; // init false ?
-  noArticlesInCategory = false; // init
-  noArticlesInCategoryWhichCategory: string;
-  // e.g. 'Arts' when there are 0 articles in Arts
+  articles: Article[];
+  articlesToDisplay: Article[]; // << Be that ALL, or Filtered
+
+  articlesCountAllInCollection: number;
+  updateArticlesCountAllInCollection: number;
+
+  articlesCount: number; // in a Category
+  updateArticlesCount: number;
+
+  articlesInCategoryWhichCategory = 'All Categories'; // init  // string; // e.g. 'Politics' when there ARE articles
+  updateArticlesInCategoryWhichCategory = 'All Categories'; // : string; // we don't init, do we? doubt it. << Mebbe we should.
+
+  noArticlesInCategory = false; // << e.g. false, when there are 0 articles in Arts
+  updateNoArticlesInCategory: boolean;
+
+  noArticlesInCategoryWhichCategory: string; // << e.g. 'Arts' when there are 0 articles in Arts
+  updateNoArticlesInCategoryWhichCategory: string;
+
+  // LOAD MORE
+  offsetPageSizeInParent = 20; // HARD-CODED.
+  /*
+  Matches Child CategorizerComponent. HARD-CODED.
+  Matches BE. HARD-CODED.
+
+  Child:
+    src/app/shared/categorizer-two/categorizer-two.component.ts:36
+    offsetPageSizeInCategorizer = 20; // HARD-CODED.
+
+  BE:
+    routes/api/api-articles.js:145
+    const pageSize = 20; // HARD-CODED. 20 articles per "Load More" page.
+   */
+  offsetNumber: number;
+  updateOffsetNumber: number;
+
+  loadNoMoreForChild: boolean;
+  // << disable when offsetNumber is >= articlesAllInCollection.
 
   myUIIsLoadingStore$: Observable<boolean>;
-
 
   constructor(
       private myArticleService: ArticleService,
@@ -112,48 +65,22 @@ export class ArticlesCategorizedTwoComponent implements OnInit {
 
     this.myUIIsLoadingStore$ = this.myStore.select(fromRoot.getIsLoading);
 
-    this.categories = this.myArticleService.getCategoriesInService(); // whamma-jamma
+    this.categories = this.myArticleService.getCategoriesInService();
 
-    this.offsetNumber = this.offsetPageSize; // 20, not 0
-    /* // be sure to re-initialize, here. bueno.
-    Hah. you don't want 0;
-    N.B. MongoDB limit(0) is same as NO limit. o la!
+    this.offsetNumber = this.offsetPageSizeInParent; // 20, not 0
+    /* Initialize
+       Don't want 0. MongoDB limit(0) is same as *NO* limit. o la!
      */
 
-    // this.getArticles();
     this.getArticlesLoadMore(this.offsetNumber);
-/* NO
-    this.getArticlesLoadMore(this.offsetNumber, false, 'All Categories', this.loadNoMoreForChild);
-*/
-    /* init with offsetNumber of 20, not 0. (Get first twenty --> 0-19).
-    Also, default 'ALL' category to begin. << ? 'All Categories'? --OR-- '' (empty)?
-     */
 
   } // /ngOnInit()
 
-
-/* ##################################
-*  MIGRATION to -Two Version
-##################################
-* Can keep same name: getArticlesLoadMore()
-* But, (Probably ?!?) No More sending up:
-* - filterIsOnParam
-* - filterCategory
-* - loadNoMore
-*/
-
-  getArticlesLoadMore(offsetNumberHere) { // initially WAS: emitted << no longer used
-/* No Longer these 4 params. Just 1.
-  getArticlesLoadMore(offsetNumberHere, filterIsOnParam, filterCategoryParam, loadNoMoreParam) { // initially WAS: emitted << no longer used
-*/
+  getArticlesLoadMore(offsetNumberHere) {
     /*
-    offsetNumberHere is variable: 20, 40, 60...
+    offsetNumberHere received here is being incremented: 20, 40, 60...
      */
-/* NO MORE
-    console.log('0001 - getLoadMore filterCategoryParam: ', filterCategoryParam);
-*/
 
-    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     /* SPINNER triggered from here, arguably.
        But spinner-related code is elsewhere:
     - Spinner ~dispatch.startLoading is over in ArticleService
@@ -169,6 +96,7 @@ export class ArticlesCategorizedTwoComponent implements OnInit {
             }) => {
               console.log('loadMoreArticlesWeGot ', loadMoreArticlesWeGot);
               /* [] of {} = OK  count: 20 first time, then 40, 60, 80 ...
+              "BE ARTICLES":
 articleCategory: "u.s."
 articleTitle: "Covid-19EDIT jjj kkk NAV ARTICLES Live Updates: a One More Vaccine Trial Is Halted After Patient Becomes Ill"
 articleUrl: "https://www.nytimes.com/2020/09/09/world/covid-19-coronavirus.html"
@@ -186,259 +114,78 @@ _id: "5f58ae8d4d2835ae66510f4a"
 
               this.articlesCount = this.articlesToDisplay.length;
 
-              /* INCREMENT offSetNumber
-              N.B. I should be doing this near/at bottom
-              of this method, rather than right here.
-              Doing increment here, in following lines of logic,
-              I need to (artificially) subtract it right back off!
-              d'oh. TODO refactor/fix
-               */
-              this.offsetNumber = offsetNumberHere + this.offsetPageSize;
-              /*
-offsetNumberHere is variable: 20, 40, 60...
-Incremented to 40, 60, 80...
- */
-
-              this.articlesRetrievedNumber = (
-                  ( this.offsetNumber - this.offsetPageSize )
-                  <= // less-than-or-equal
-                  this.articlesCountAllInCollection
-              )
-                  ? (this.offsetNumber - this.offsetPageSize)
-                  : this.articlesCountAllInCollection;
-              /* Two things fixed here in this ternary conditional expression:
-
-              1. To get correct upper number in the
-                 "1-20", "1-40", "1-60" etc.
-              - Kinda dumb but have to subtract our hard-coded 20
-               back off of 'offsetNumber' (because offsetNumber
-               has by now been incremented) o well it works.
-
-              2. The incrementing 20, 40...80, 100, 120, 140
-              was sailing up past the
-              Max Number in the Collection (e.g. 98).
-              So, with this "ternary" ? : we test for which
-              of these expressions above is
-              smaller, and show that.
-               */
-
-
-              /* UPDATE UPDATE
-              Change of mind. Now, YES we'll do this calculation in Parent.
-               */
-              /* ###################################
-                 *  MIGRATION TO "-TWO" VERSION
-                 * Do not do this if() test down in Child.
-                 * Just pass the offsetNumber up here to Parent.
-                 * Here in Parent we'll do this same if() test instead, and update loadNoMore as appropriate.
-                 * cheers.
-               */
-/* Child had:
-              if (this.offsetNumberInput >= this.articlesCountAllInCollectionInput) {
-                this.loadNoMore = true;
-*/
-              /* UPDATE << SUPERSEDED. see above, below
-              I think we should no longer (re-)calculate
-              this boolean "loadNoMore-biz" in Parent.
-              Just let Child-01 report it "up", and have
-              Parent pass it back "down" to Child-02.
-               */
-/* MIGRATION TO "-TWO" VERSION
-No longer using this param, from Child.
-
-              this.loadNoMoreForChild = loadNoMoreParam; // << GOING AWAY // << from "Child-01"
-*/
-              /* UPDATE UPDATE. Yes, we're putting this BACK IN.    No Longer: (see Comment above) */
-              if (this.articlesRetrievedNumber === this.articlesCountAllInCollection) {
-                /* N.B. Child had: For consideration ...
-                if (this.offsetNumberInput >= this.articlesCountAllInCollectionInput) {
-                 */
-                this.loadNoMoreForChild = true; // << very nice.
-                /* This one param from parent will be bound down to both/all Categorizer components.
-                   No need for "Child-01-to-Parent-to-Child-02" communication.
-                 */
+              if ( (this.offsetNumber) >= this.articlesCountAllInCollection) {
+                this.loadNoMoreForChild = true;
               }
-              /* Final bit of business (above)
-              (Couldn't get into the terse ternary above)
+              /*
               Disable that Load More button, if we've
               loaded ALL the Articles from the Collection.
               cheers.
                */
 
-
-/* ##################################
-*  MIGRATION to -Two Version
-   ##################################
-* Here in getArticlesLoadMore() ...
-* But, (Probably ?!?) No More using:
-* - filterIsOnParam // << ? may not need. Can derive from this.articlesInCategoryWhichCategory
-* - filterCategory // << We have here in Parent: this.articlesInCategoryWhichCategory
-* - loadNoMore // << We have here in Parent: this.loadNoMoreForChild
-*/
-              /*  (older Comment)
-Don't forget. (Guess I had.) (How did I miss this ??)
-Update another possibly redundant value here re: currently selected Category:
-
-e.g. 'U.S.' or 'No Category (thx Service!)'
-Also will show: 'All Categories' (although the 'filterIsOn' boolean will be false)
- */
-/* GOING AWAY.
-              console.log('0002 - getLoadMore filterCategoryParam: ', filterCategoryParam); // << GOING AWAY
-              console.log('0002A - getLoadMore filterIsOnParam: ', filterIsOnParam); // << GOING AWAY
-*/
-/* NO. Don't overwrite this Parent property, with what was passed up from Child.
-              this.articlesInCategoryWhichCategory = filterCategoryParam; // << GOING AWAY
-*/
-              console.log('0003 - getLoadMore articlesInCategoryWhichCategory: ', this.articlesInCategoryWhichCategory);
-
-              /* ##################################
-               *  MIGRATION to -Two Version
-                 ##################################
-                 * Won't need this if() logic I believe.
-                 * Am keeping the structure for this first pass.
-                 * Will remove.
-                 * Basically next line is simply:
-                   this.letUsFilterByCategory(this.articlesInCategoryWhichCategory);
-                 * Q. Why does that work?
-                 * A. Because that method can handle 'ALL' or 'All Categories' just fine.
-                 *    (No need to test "is there any filter on, or not?")
-                 * MBU
+              /*
+               INCREMENT offSetNumber, by (hard-coded) pageSize.
                */
-              if (true) { // we're just "going in!"
-              // if (filterIsOnParam) { // << GOING AWAY
-                // if (this.filterIsOn) {
-                // re-apply filter to new "load more" of articles
-                /* Worked fine, here within ArticlesCategorizedComponent
+              this.offsetNumber = offsetNumberHere + this.offsetPageSizeInParent;
 
-                                this.letUsFilterByCategory(this.filterCategory);
-
-                CRAZY NOTE:
-                We are considering sorta using 'COMPONENT_OVERRIDE' here. hmm. maybe not.
-                but see it also in the HTML. bit of mixed bag
-                going on here. be right back.
-                */
-                /* But now we're trying Child-to-Parent
-                communicating from Categorizer...
-                 */
-/*
-                this.letUsFilterByCategory(filterCategoryParam); // << GOING AWAY
-*/
-                this.letUsFilterByCategory(this.articlesInCategoryWhichCategory);
-
-              } else { // << GOING AWAY
-                // all set. we're on "All Categories" - no filtering needed
-              }
+              /* This method can handle every possible Category value, including
+                 *  'ALL' or 'All Categories'
+                 *  (No need any longer to test "is there any filter on, or not?")
+               */
+              this.letUsFilterByCategory(this.articlesInCategoryWhichCategory);
 
               this.updateArticlesControlledCategorizer (
                   this.offsetNumber,
                   this.articlesCount,
                   this.articlesCountAllInCollection,
-                  this.articlesRetrievedNumber,
-                  this.articlesInCategoryWhichCategory, // << 'All Categories' initially
+                  this.articlesInCategoryWhichCategory,
                   this.noArticlesInCategory,
                   this.noArticlesInCategoryWhichCategory,
                   this.loadNoMoreForChild,
               );
-              /* 1st param:
-WAS: this.offsetPageSize
-IS NOW: this.offsetNumber  << I hope this is right
- */
 
             } // /next() == ( inside .subscribe() )
 
         ) // /.subscribe()
+
   } // /getArticlesLoadMore()
 
   updateArticlesControlledCategorizer (
       offsetNumber,
       articlesCount,
       articlesCountAllInCollection,
-      articlesRetrievedNumber,
       articlesInCategoryWhichCategoryHere,
       noArticlesInCategoryHere,
       noArticlesInCategoryWhichCategoryHere,
       loadNoMoreForChildHere,
   ) {
-    /* LATE-BREAKING FIX (hmm, t.b.d.)
-    We need to send down Article[ ] on INITIAL getArticles()
-     */
-    /* 1st param:
-    WAS: offsetPageSize
-    IS NOW: offsetNumber  << I hope this is right
-     */
-    /*
-            bind-articlesCountInputName="articlesCount" // << count in Category, within current RetrievedNumber
-            bind-offsetPageSizeInputName="offsetPageSize" // << constant, really. 20.
-            bind-articlesCountAllInCollectionInputName="articlesCountAllInCollection"
-            bind-articlesRetrievedNumberInputName="articlesRetrievedNumber"
-     */
 
-    this.updateOffsetNumber = offsetNumber; // << I hope this is right
-    /* No need to update. This (I think?) is a constant HARD-CODED 20.
-        this.updateOffsetPageSize = offsetPageSize; // << No.
-    */
+    this.updateOffsetNumber = offsetNumber;
 
     this.updateArticlesCount = articlesCount;
+
     this.updateArticlesCountAllInCollection = articlesCountAllInCollection;
-    this.updateArticlesRetrievedNumber = articlesRetrievedNumber;
 
     this.updateNoArticlesInCategory = this.noArticlesInCategory;
 
     this.updateArticlesInCategoryWhichCategory = articlesInCategoryWhichCategoryHere;
-
-    console.log('0005 update() this.articlesInCategoryWhichCategory ', this.updateArticlesInCategoryWhichCategory);
 
     this.updateNoArticlesInCategory = noArticlesInCategoryHere;
 
     this.updateNoArticlesInCategoryWhichCategory = noArticlesInCategoryWhichCategoryHere;
 
     this.loadNoMoreForChild = loadNoMoreForChildHere;
-    // N.B. Trying naming convention with *NO* 'update___' (y not)
+    // N.B. Naming convention with *no* 'update___' (y not) (works fine)
 
   } // /updateArticlesControlledCategorizer()
 
 
-/*
-  ##################################
-  *  MIGRATION to -Two Version
-  ##################################
-  * Rename assignArticlesToDisplayFromCategorizer() to assignCategoryViewValueFromCategorizer()
-  * No more Article[] << No.
-*/
   assignCategoryViewValueFromCategorizer(
       categoryViewValueOutputPassedIn: string,
   ) {
-    /*
-    Update: We now use this to XXalsoXX *only* get the category name,
-            up from the Child Categorizer component.
-     */
-
-    // These "resets" prob ought go further below, in "if()" logic re: count is 0 or not .... t.b.d.
-    // prob can benignly stay right here ...
-    this.noArticlesInCategory = false; // reset
-    this.noArticlesInCategoryWhichCategory = ''; // reset
-
-/*
-    ##################################
-    *  MIGRATION to -Two Version
-    ##################################
-    * REMOVE (No Longer Use) Article[]
-    * No more this.articlesToDisplay update here
-    * Instead of in the Child, here in the **Parent**,
-    * we will do the Filtering on Category,
-    * to get the "this.articlesToDisplay"
-*/
-    // NO MORE Article[]   console.log('assignArticlesToDisplayFromCategorizer articlesToDisplayOutputArrayPassedIn: ', articlesToDisplayOutputArrayPassedIn);
-    // this.articlesToDisplay = articlesToDisplayOutputArrayPassedIn; // << GOING AWAY
-    // this.articlesCount = this.articlesToDisplay.length; // << GOING AWAY
-    /* ############################### */
 
     this.articlesInCategoryWhichCategory = categoryViewValueOutputPassedIn;
 
-    /* ###  NEW : MIGRATION ###
-     * Execute this method to "Filter" from here in Parent now.
-     * (Filtering used to be done down on the Child, who used to pass up the resultant Article[]. No more.)
-     */
     this.letUsFilterByCategory(this.articlesInCategoryWhichCategory);
     /*
     Returns void
@@ -447,56 +194,26 @@ IS NOW: this.offsetNumber  << I hope this is right
     Sets the 2 "noArticles" properties as well (when count is 0)
      */
 
-    // ### THESE LINES ARE GOING AWAY. SUPERSEDED by letUsFilter()...
-    if (this.articlesCount === 0) {
-      // No articles under, e.g., 'Arts' (sigh)
-      this.noArticlesInCategory = true;
-      this.noArticlesInCategoryWhichCategory = categoryViewValueOutputPassedIn;
-    }
-
-    /* OLDER NOTE:
-    Note:
-    - At first, when this method only received the Article[ ], there was no need to
-    run the .update() method to communicate to other (Children)
-    components. Could just locally, immediately, render those Articles. ok.
-    - Then, with 2nd param of Category (string), we must run .update() to actually SEND OUT
-    that new param data, in particular to the "Other" Child,
-    namely the other CategorizerComponent (be it "Top" or "Bottom") that
-    did NOT pass in this Category info. That "other" one needs
-    to hear, from Parent, about what Category its sibling now is
-    using - to be in sync.
-    cheers.
-     */
-    console.log('0004 assignArticles...() about to update() this.articlesInCategoryWhichCategory ', this.articlesInCategoryWhichCategory);
-
     this.updateArticlesControlledCategorizer(
-        // 4 (?) of 8 will be unchanged, but, we need that 5th and 6th and 7th and 8th (!)
-        // << Have I got this right? << No! Ya VERY MUCH didn't!
         this.offsetNumber,
-        this.articlesCount, // << needed updating (done)
+        this.articlesCount,
         this.articlesCountAllInCollection,
-        this.articlesRetrievedNumber,
-        this.articlesInCategoryWhichCategory, // << we just got this :)
-        this.noArticlesInCategory, // << needed updating (done)
-        this.noArticlesInCategoryWhichCategory, // << needed updating (done)
+        this.articlesInCategoryWhichCategory,
+        this.noArticlesInCategory,
+        this.noArticlesInCategoryWhichCategory,
         this.loadNoMoreForChild,
     )
-  } // /assignArticlesToDisplayFromCategorizer()
-  // renaming to: /assignCategoryViewValueFromCategorizer()
+  } // /assignCategoryViewValueFromCategorizer()
 
 
   letUsFilterByCategory (categoryViewValuePassedIn: string): void {
     /* :void
     Doesn't return anything. Just sets variables for use in display.
-    In particular the this.articlesToDisplay
      */
-    // Hmm. Is it "StoredValue" ? ('arts') << No it ain't. (How tum called "Stored"? Hmm.)
-    // I think it's viewValue ('Arts') << YEAH!
     this.noArticlesInCategory = false; // reset
     this.noArticlesInCategoryWhichCategory = ''; // reset
 
     if (
-        // categoryViewValuePassedIn === 'ALL' // << WAS JUST
         categoryViewValuePassedIn === 'ALL'
         ||
         categoryViewValuePassedIn === 'All Categories' // << Now need to test also for this U/I Display value we use. Bit hacky.
@@ -505,13 +222,9 @@ IS NOW: this.offsetNumber  << I hope this is right
       01 - USER CLICK ON THE 'ALL' BUTTON
           *************
        */
-      this.filterIsOn = false;
-      this.filterCategory = ''; // ? should it be 'ALL Categories' ?
-
       this.articlesToDisplay = this.articles;
       this.articlesInCategoryWhichCategory = 'All Categories';
     } else if (
-        // categoryViewValuePassedIn === 'No Category (thx Service!)' // << WAS JUST
         categoryViewValuePassedIn === 'No Category (thx Service!)'
         ||
         categoryViewValuePassedIn === 'No Category Assigned' // << NEED TO ALSO TEST FOR this U/I Display value we use. Bit hacky
@@ -526,8 +239,6 @@ IS NOW: this.offsetNumber  << I hope this is right
       https://addyosmani.com/blog/exploring-javascripts-logical-or-operator/
        */
 
-      // << YES, actually passed in (from that user button click
-
       /* COMBO HERE
 Looking to account for both:
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -539,11 +250,26 @@ That is, user click on "No Category Assigned" button
 yields both No Category, and No Correct Category.
 cheers.
  */
-      this.filterIsOn = true; // somewhat odd filter, but, a filter.
-      this.filterCategory = 'No Category (thx Service!)';
+
+      /* TEMPORARY ASSIGNMENT, for sending a correct, expected string value to the SpecialFilter
+      This gets "re-set" below.
+      Essentially, if the value passed in is that U/I Display value of
+      'No Category Assigned', that value would fail on our SpecialFilter.
+
+      Why fail?
+      Because the SpecialFilter actually compares the string to actual data values
+      in the Article[] "category" property. Our Articles may have NC or NCC, but they will *not* have NCA.
+      NC: No Category (thx Service!)
+      NCC: No Correct Category (thx Service!)
+      NCA: No Category Assigned // << this is just a U/I Display string we sort of overload in hacky way o well.
+
+      So we temporarily put on a value that does work on the SpecialFilter.
+       */
+      this.articlesInCategoryWhichCategory = 'No Category (thx Service!)';
 
       let articlesNoCategorySpecialFilteredFromService: any[];
-      articlesNoCategorySpecialFilteredFromService = this.myFilterSortService.mySpecialFilter(this.articles, 'articleCategory_name', this.filterCategory);
+      articlesNoCategorySpecialFilteredFromService = this.myFilterSortService.mySpecialFilter(this.articles, 'articleCategory_name', this.articlesInCategoryWhichCategory);
+
       /* Update. Bug (edge-ish case) Fix.
       WAS: 3rd param was: categoryViewValuePassedIn // << This works ok for Use Case # 3 below, but not here on Use Case # 2.
       FIX IS: 3rd param now is: this.filterCategory
@@ -571,6 +297,7 @@ cheers.
 
       this.articlesToDisplay = articlesNoCategorySpecialFilteredFromService;
 
+      // PUT (BACK) THE U/I DISPLAY VALUE:  (this sort of overloading: not ideal)
       this.articlesInCategoryWhichCategory = 'No Category Assigned'; // << To show on U/I
       // Accounts for both: No C., No Correct C.
 
@@ -582,15 +309,13 @@ cheers.
       */
       // A proper Category, from our approved list :)
 
-      this.filterIsOn = true;
-      this.filterCategory = categoryViewValuePassedIn;
+      this.articlesInCategoryWhichCategory = categoryViewValuePassedIn;
 
       let articlesFilteredFromService: any[];
-      articlesFilteredFromService = this.myFilterSortService.myFilter(this.articles, 'articleCategory_name', categoryViewValuePassedIn);
+
+      articlesFilteredFromService = this.myFilterSortService.myFilter(this.articles, 'articleCategory_name', this.articlesInCategoryWhichCategory);
 
       this.articlesToDisplay = articlesFilteredFromService;
-
-      this.articlesInCategoryWhichCategory = categoryViewValuePassedIn;
 
     }
 
@@ -603,50 +328,5 @@ cheers.
     }
 
   } // /letUsFilterByCategory()
-
-
-  // ///////////////////////////////////
-  getArticles() { // << NO LONGER CALLED. NOW "LOAD MORE"
-    this.myArticleService.listArticles()
-        .subscribe(
-            (allArticlesWeGot: []) => {
-              console.log('allArticlesWeGot ', allArticlesWeGot);
-              /* [] of {} = OK
-articleCategory: "u.s."
-articleTitle: "Covid-19EDIT jjj kkk NAV ARTICLES Live Updates: a One More Vaccine Trial Is Halted After Patient Becomes Ill"
-articleUrl: "https://www.nytimes.com/2020/09/09/world/covid-19-coronavirus.html"
-__v: 0
-_id: "5f58ae8d4d2835ae66510f4a"
-               */
-
-              /* Hmm. Error:
-"core.js:6228 ERROR TypeError: allArticlesWeGot.map is not a function"
-
-              (allArticlesWeGot: [
-                { // "BE Article"
-                  _id: string,
-                  articleTitle: string,
-                  articleUrl: string,
-                  articleCategory: string, // << BE 'value' e.g. 'u.s.'
-                }
-              ]) => {
-*/
-
-              // HMM. this.articlesCount = allArticlesWeGot.length;
-
-              /* HMM. */
-              this.articles = allArticlesWeGot.map(
-                  this.myArticleService.myMapBEArticlesToFEArticles
-              );
-
-
-              this.articlesToDisplay = this.articles; // whamma-jamma
-
-              this.articlesCount = this.articlesToDisplay.length;
-
-            }
-        ) // /.subscribe()
-  } // /getArticles() // << NO LONGER CALLED.
-
 
 } // /ArticlesCategorizedTwoComponent {}

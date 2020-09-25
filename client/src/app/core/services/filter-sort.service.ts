@@ -111,12 +111,27 @@ articleUrl_name: "https://www.nytimes.com/2020/09/12/health/fires-air-california
         Looking to get back all 64.
         WUL.
          */
+        /* NEW. BRIGHT. SHINY. << Hmm. I think this was Not Needed At All. But, I think it can benignly sit here. Hmm.
+        O boy.
+        We have Yet Another wrinkle to our "No category biz".
+        1) We have the two described above: NC, and NCC, obtained from our logic handling the Articles (with no-or-wrong Category). OK
+        2) NOW we also need to work with a U/I Display string that I introduced, possibly bit unwittingly: 'No Category Assigned'
+        That value also does come back from the Child to the Parent when user clicks
+        on the 'No Category Assigned' button, then the Load More button. Hmm. Less than ideal, maybe. But we can deal with it.
+        We just test here in the Special Filter for ALL THREE string possibilities now:
+        NC
+        NCC
+        NCA 'No Category Assigned'
+         */
 
         let localSpecialVariableForNcc = 'No Correct Category (thx Service!)';
+        let localSpecialVariableForNca = 'No Category Assigned'; // << Hmm. I think this was Not Needed At All. But, I think it can benignly sit here. Hmm.
         /*
         We have a variable for NC: valuePassedIn
         Let's use one too for NCC. Avoid use of string in "if( a || b )" test below.
         (Turns out not needed, but, not bad practice, get away from string)
+
+        See "SHINY. BRIGHT" comment above re: Nca
          */
 
         // NON-D.R.Y. I know, I know, I haven't refactored this out of the myFilter() above o well.
@@ -161,7 +176,7 @@ articleUrl_name: "https://www.nytimes.com/2020/09/12/health/fires-air-california
                               'articleCategory_name' property.
                               cheers.
                              */
-                        }
+                        } // /if() hard-coded id test
 
                         /* *** TESTING  *****
                         JavaScript Logical OR || Operator Madness
@@ -192,6 +207,8 @@ articleUrl_name: "https://www.nytimes.com/2020/09/12/health/fires-air-california
                                 myItem[myKey] === valuePassedIn
                                  ||
                                 myItem[myKey] === localSpecialVariableForNcc
+                                 ||
+                                myItem[myKey] === localSpecialVariableForNca
                             ) {
                                 // console.log('AAAA-03 DOUBLE-EXPRESSION COMBO mySpecialFilteredArray:  valuePassedIn ', valuePassedIn);
                                 /* *** YES ***
@@ -209,6 +226,8 @@ articleUrl_name: "https://www.nytimes.com/2020/09/12/health/fires-air-california
                                 myItem[myKey] === valuePassedIn
                                  ||
                                 myItem[myKey] === localSpecialVariableForNcc
+                                ||
+                                myItem[myKey] === localSpecialVariableForNca // << hmm not needed? can benignly sit here? hmm.
                             )
                         ) {
 /* ^^^^^^^^^^^^^^^^^^^^

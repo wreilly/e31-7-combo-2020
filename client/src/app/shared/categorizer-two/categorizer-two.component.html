@@ -1,41 +1,35 @@
 <div class="component-label">CATEGORIZER-TWO.COMPONENT</div>
-<!--  INITIAL SNAPSHOT COPY MADE 19/SEP/20. TODAY 22/SEP/20.  -->
-<!--  SECOND/FINAL SNAPSHOT COPY MADE 23/SEP/20. TODAY 23/SEP/20.  -->
 <mat-card
         class="spacing"
         *ngIf="!((topOrBottomInput === 'bottom') && (articlesCountInput < 4))"
 >
-    <!-- TODONE maybe "Top" v. "Bottom" (cf. PaginatorComponent)
-        <mat-card class="spacing"
-              *ngIf="articlesCount > 3"
-    >
-        BOTTOM CATEGORIZER COMPONENT
+    <!-- TODONE "Top" v. "Bottom" (cf. PaginatorComponent)
+        For the BOTTOM CATEGORIZER COMPONENT
         Magic number of '4' (kinda arbitrary) -
-        Only show bottom repeated row of buttons
+        - Only show bottom repeated row of buttons
         if there are 4 or more Articles in this Category...
     -->
     <mat-card-subtitle>
         <span>Count (All Articles): {{ articlesCountAllInCollectionInput }}
-            <!--            << articlesCountAllInCollection-->
         </span>
         |
-        <span>Retrieved: Articles 1 - {{ articlesRetrievedNumberInput }}
-            <!--            << articlesRetrievedNumberInput-->
+        <span>Retrieved: Articles 1 - {{
+            ( (offsetNumberInput - offsetPageSizeInCategorizer) >= articlesCountAllInCollectionInput)
+                ? articlesCountAllInCollectionInput
+                : (offsetNumberInput - offsetPageSizeInCategorizer) }}
         </span>
     </mat-card-subtitle>
     <mat-card-content>
         <div>
             <!-- Below, kind of just showing off (sorta)
             We use <h1> on TOP Categorizer, and <h3> on BOTTOM Categorizer.
-            Just for demo purpose & Etc.
+            Also "teeny" vs. "tiny".  Just for demo purpose & Etc.
             -->
             <span
                     *ngIf="topOrBottomInput === 'top'"
             >
             <h1>{{ articlesInCategoryWhichCategoryInput }}
-                <!--                << articlesInCategoryWhichCategory -->
                 <span class="tiny">Category count: {{ articlesCountInput }}
-                    <!--                    << articlesCountInput-->
                 </span>
             </h1>
             </span>
@@ -43,9 +37,7 @@
                     *ngIf="topOrBottomInput === 'bottom'"
             >
             <h3>{{ articlesInCategoryWhichCategoryInput }}
-                <!--                << articlesInCategoryWhichCategory -->
                 <span class="teeny">Category count: {{ articlesCountInput }}
-                    <!--                    << articlesCountInput-->
                 </span>
             </h3>
             </span>
@@ -53,7 +45,7 @@
         <span
                 *ngFor="let oneCategory of categories"
         >
-                            <!-- span wrapper allows that following '|' to be part of each displayed bit  -->
+           <!-- span wrapper allows that following '|' to be part of each displayed bit  -->
             <button
                     mat-raised-button
                     color="{{ oneCategory.viewValue === articlesInCategoryWhichCategoryInput ? 'accent' : 'primary' }}"
@@ -62,27 +54,17 @@
                     class="my-smaller-button"
                     on-click="emitCategoryViewValueSelected(oneCategory.viewValue)"
             >
-<!-- /* #######################
-      * MIGRATION TO "TWO-" VERSION
-      * Revise letUsFilterByCategory() to instead directly go to: emitCategoryViewValueSelected()
-      * 2 points:
-      * 1). New emitCategoryViewValueSelected() replaces existing emitArticlesToDisplayOutput()
-      * 2). Here on Child, we will omit/skip any Local,
-            NON-D.R.Y. "letUsFilterByCategory"
-            Now that filtering is done only on Parent)
-        #########################
--->
 <!--  "About that red squiggle..."
 (That WebStorm IDE places beneath the "?" in the ternary conditional statement above.)
 
 Q. What's up with that?
 A. I believe it's benign.
 To get the active Category button un-clickable or at least appearing to be so...
-01. NOPE.
+01. NOPE:
 Too strong. "Works," but unacceptable. Color turns gray.
 disabled="{{ oneCategory.viewValue === articlesInCategoryWhichCategory }}"
 
-02. OK.
+02. OK:
 Odd. Works, but WebStorm IDE "complains" w. red squiggle under the ternary "?". Hmm.
 "Good enough."
 style="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'cursor: none;' : 'cursor: pointer;' }}"
@@ -101,12 +83,6 @@ style="{{ oneCategory.viewValue === articlesInCategoryWhichCategory ? 'cursor: n
         >
             No Category Assigned
         </button>
-        <!-- re: above
-&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-const NO_CATEGORY         = 'No Category (thx Service!)';
-const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
-&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-        -->
         |
         <button
                 mat-raised-button
@@ -124,24 +100,10 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
                 type="button"
                 class="my-smaller-button"
                 on-click="emitCallGetArticlesLoadMore(offsetNumberInput)"
-                bind-disabled="loadNoMore"
+                bind-disabled="loadNoMoreInput"
         >
             <strong> >> Load More << </strong>
         </button>
-        <!--
-        DEBUG. Done With.
-        =====================================
-        <span> | {{ offsetNumberInput }}
-            << offsetNumberInput
-        </span>
-        <span> | {{ offsetNumberInCategorizer }} << offsetNumberInCategorizer - Always 20.</span>
-        < -- This was unchanging 20. hmm
-        on-click="emitCallGetArticlesLoadMore(offsetNumberInCategorizer)"
-        -- >
-        <span> | {{ offsetPageSizeInput }} << offsetPageSizeInput Q. Always 20 ? A. Yes.</span>
-        /DEBUG DONE With
-        =====================================
-        -->
 
         <!-- Pretty crazy.
         We show/hide message below in 2 divs, depending:
@@ -153,13 +115,13 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
         cheers.
         -->
         <div
-                *ngIf="noArticlesInCategoryInput && !loadNoMore"
+                *ngIf="noArticlesInCategoryInput && !loadNoMoreInput"
                 style="margin: 15px 0px 15px 15px;"
         >
             No articles (so far) in the "{{noArticlesInCategoryWhichCategoryInput}}" category. <span on-click="emitCallGetArticlesLoadMore(offsetNumberInput)" style="cursor: pointer; color: #00B7FF;">Load More</span>, or consider <a routerLink="../add">Adding</a> one!
         </div>
         <div
-                *ngIf="noArticlesInCategoryInput && loadNoMore"
+                *ngIf="noArticlesInCategoryInput && loadNoMoreInput"
                 style="margin: 15px 0px 15px 15px;"
         >
             No articles (whatsoever!) in the "{{noArticlesInCategoryWhichCategoryInput}}" category. Consider <a routerLink="../add">Adding</a> one!
@@ -170,9 +132,6 @@ const NO_CORRECT_CATEGORY = 'No Correct Category (thx Service!)';
                 mode="indeterminate"
                 bind-diameter="20"
         ></mat-progress-spinner>
-        <!-- Ok. works. let's see if we can make it an overlay. (whoa)
-https://stackoverflow.com/questions/42963444/angular-2-material-progress-spinner-display-as-overlay
-https://stackblitz.com/edit/overlay-progress-spinner-8o275a?file=app%2Foverlay%2Foverlay.service.ts
--->
+
     </mat-card-content>
 </mat-card>
