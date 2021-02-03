@@ -1,5 +1,20 @@
 require('dotenv').config();
 
+// WR__ 2021
+const myAppAndHostnamePseudoModule = {};
+/*
+Above is v. kludgy thing-y so I can do
+modules.export of more than just the Express app itself.
+I wish to use the "dotenv" .env file
+to hold environment-specific parameters re:
+HOSTNAME_IN_ENV=0.0.0.0
+PORT_IN_ENV=8089
+# PORT_IN_ENV=8080 // @ AWS
+# HOSTNAME_IN_ENV=ec2-100-26-170-247.compute-1.amazonaws.com
+
+See bottom of file for more info.
+ */
+
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -109,4 +124,14 @@ app.get('/*', (req, res, next) => {
     res.render('index');
 });
 
-module.exports = app;
+const portFromEnv = `${process.env.PORT_IN_ENV}`;
+// e.g. 8089 -- OR -- 8080 (AWS)
+const hostnameFromEnv = `${process.env.HOSTNAME_IN_ENV}`;
+// e.g. 0.0.0.0  -- OR -- 'ec2-100-26-170-247.compute-1.amazonaws.com'
+
+myAppAndHostnamePseudoModule.myPort = portFromEnv;
+myAppAndHostnamePseudoModule.myHostname = hostnameFromEnv;
+myAppAndHostnamePseudoModule.myApp = app;
+
+module.exports = myAppAndHostnamePseudoModule;
+// WR__ 2021 module.exports = app;

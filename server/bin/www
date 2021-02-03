@@ -1,12 +1,29 @@
 #!/usr/bin/env node
 
-const appFromAppJs = require('../app');
+// WR__ 2021 const appFromAppJs = require('../app');
+const appPseudoModuleFromAppJs = require('../app');
+/*
+See Comment in ../app.js re: this "pseudoModule"
+used to get a couple of .env parameters passed to
+this script (for Port, Hostname). cheers.
+*/
 
-const port = 8089;
+const appHereInWWW = appPseudoModuleFromAppJs.myApp;
+const portHereInWWW = appPseudoModuleFromAppJs.myPort;
+const hostnameHereInWWW = appPseudoModuleFromAppJs.myHostname;
+
+// Now getting PORT from .env file instead.
+// WR__ 2021 const port = 8089;
+// const port = 8080; // An open port on AWS EC2
 
 const appName = 'wr-app-some-times-rest-api-2020';
 
-appFromAppJs.listen(port, () => {
-  console.log(appName + ' is listening on: ' + port);
+// WR__ 2021 appFromAppJs.listen(port, () => {
+appHereInWWW.listen(portHereInWWW, hostnameHereInWWW, () => {
+
+// WR__ 2021  console.log(appName + ' is listening on: ' + port);
+
+  console.log('The app named: ' + appName + ' is on hostname: ' + hostnameHereInWWW + ' and is listening on port number: ' + portHereInWWW);
+
 //  console.log('ADD\'L INFO: btw you should type \n nohup npm run start & \n to run this server continuously (even after closing the terminal window). Cheers \n Also, remember to start your Angular Client separately: \n npm run start --> ng serve (:4206)...')');
   });
