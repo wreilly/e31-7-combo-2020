@@ -34,7 +34,7 @@ export class ArticleService {
 
       /* PLAN B. NGRX for SPINNER */
       return this.myHttp.post(
-          'http://0.0.0.0:8089/api/v1/articles/',
+          '${environment.sometimes.apiUrl}:${environment.sometimes.apiPort}/${environment.sometimes.apiVersion}/articles/',
           myFormFieldsAndFiles
       ).pipe( // instead of: subscribe(
           tap(
@@ -100,7 +100,7 @@ _id: "5f593f744d2835ae66510f4d"}
           /* PLAN A. WORKS GREAT. */
               // DON'T FORGET THAT BLOODY 'return' !!! !!! !!!
               return this.myHttp.post(
-                  'http://0.0.0.0:8089/api/v1/articles/', // << TODO environment Url Stub!
+                  '${environment.sometimes.apiUrl}:${environment.sometimes.apiPort}/${environment.sometimes.apiVersion}/articles/', // << TODO environment Url Stub!
                   myFormFieldsAndFiles // << Just 2 fields for now
               );
 
@@ -159,7 +159,7 @@ So we need to make small change to our "editedArticle" object, before sending to
          */
 
         // DON'T FORGET!  PUT 'return' AT FRONT OF THIS LINE:
-        return this.myHttp.put(`http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`, editedArticle)
+        return this.myHttp.put(`${environment.sometimes.apiUrl}:${environment.sometimes.apiPort}/${environment.sometimes.apiVersion}/articles/${idPassedIn}`, editedArticle)
             .pipe(
                 tap(
                     (whatWeGotBackFromUpdateHereInPipe) => {
@@ -227,7 +227,7 @@ Content-Disposition: form-data; name="articleCategory_name"
 
     deleteArticle(idPassedIn) {
       return this.myHttp.delete(
-          `http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`
+          `${environment.sometimes.apiUrl}:${environment.sometimes.apiPort}/${environment.sometimes.apiVersion}/articles/${idPassedIn}`
       );
     } // /deleteArticle()
 
@@ -251,7 +251,7 @@ Content-Disposition: form-data; name="articleCategory_name"
     // GET ALL Articles
     // DON'T FORGET THAT BLOODY 'return' !!! !!! !!!
     return this.myHttp.get(
-        'http://0.0.0.0:8089/api/v1/articles/',
+        '${environment.sometimes.apiUrl}:${environment.sometimes.apiPort}/${environment.sometimes.apiVersion}/articles/',
     );
   } // /listArticles()
 
@@ -351,7 +351,7 @@ cheers.
 
         // YES. DON'T FORGET THAT BLOODY 'return' !!! !!! !!!
         return this.myHttp.get<{message: string, articlesLoadMore: any, maxArticles: number}>(
-            `http://0.0.0.0:8089/api/v1/articles/more?offset=${offsetNumber}`,
+            `${environment.sometimes.apiUrl}:${environment.sometimes.apiPort}/${environment.sometimes.apiVersion}/articles/more?offset=${offsetNumber}`,
         )
             .pipe(
                 tap(
@@ -404,13 +404,13 @@ cheers.
 
     getArticle(idPassedIn) {
     return this.myHttp.get(
-        `http://0.0.0.0:8089/api/v1/articles/${idPassedIn}`
+        `${environment.sometimes.apiUrl}:${environment.sometimes.apiPort}/${environment.sometimes.apiVersion}/articles/${idPassedIn}`
     );
   } // /getArticle()
 
   getArticleMostRecent() {
     return this.myHttp.get(
-        `http://0.0.0.0:8089/api/v1/articles/recent`
+        `${environment.sometimes.apiUrl}:${environment.sometimes.apiPort}/${environment.sometimes.apiVersion}/articles/recent`
     );
   }
 
