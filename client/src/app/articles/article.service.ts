@@ -8,6 +8,8 @@ import * as UIActions from '../shared/store/ui.actions';
 // import { ArticleAddComponent } from './article-add/article-add.component'; // << ?? used here ? re: categories fixer hmm.
 import { Category } from './article.model';
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -273,7 +275,23 @@ Content-Disposition: form-data; name="articleCategory_name"
 
         // YES. DON'T FORGET THAT BLOODY 'return' !!! !!! !!!
         return this.myHttp.get<{message: string, articlesPaginated: any, maxArticles: number}>(
+
+            `${environment.sometimes.apiUrl}:${environment.sometimes.apiPort}/${environment.sometimes.apiVersion}/articles/paginated?page=${page}&pagesize=${pagesize}`,
+
+/* YES WORKED :)
+            `http://ec2-100-26-170-247.compute-1.amazonaws.com:8080/api/v1/articles/paginated?page=${page}&pagesize=${pagesize}`
+*/
+
+/* WR__ 2021
+We'll test making this LOCAL SPA get data
+from the AWS EC2 Node Server (which in turn
+gets data from SAME cloud-based MongoDB
+as the LOCAL Node Server does). Cheers.
+
+            `${sometimes.apiUrl}:${sometimes.apiPort}/{$sometimes.apiVersion}/articles/paginated?page=${page}&pagesize=${pagesize}`,
+
             `http://0.0.0.0:8089/api/v1/articles/paginated?page=${page}&pagesize=${pagesize}`,
+*/
         )
             .pipe(
                 tap(
