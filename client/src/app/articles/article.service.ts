@@ -34,7 +34,12 @@ export class ArticleService {
 
       /* PLAN B. NGRX for SPINNER */
       return this.myHttp.post(
-          '${environment.sometimes.apiUrl}:${environment.sometimes.apiPort}/${environment.sometimes.apiVersion}/articles/',
+        /* 2021 (July)
+        Hello! This was BREAKING. Needs ` ticks, not ' single-quotes. Yeesh!
+        (How the Sam Hay did/was this working, when last reviewed?? (Feb 2021? Sep 2020?) O la.
+         */
+        // '${environment.sometimes.apiUrl}:${environment.sometimes.apiPort}/${environment.sometimes.apiVersion}/articles/',
+        `${environment.sometimes.apiUrl}:${environment.sometimes.apiPort}/${environment.sometimes.apiVersion}/articles/`,
           myFormFieldsAndFiles
       ).pipe( // instead of: subscribe(
           tap(
