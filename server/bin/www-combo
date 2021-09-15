@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+
+// WR__ 2021 const appFromAppJs = require('../app');
+const appComboPseudoModuleFromAppComboJs = require('../app-combo');
+
+const appHereInWWWCombo = appComboPseudoModuleFromAppComboJs.myApp;
+const portHereInWWWCombo = appComboPseudoModuleFromAppComboJs.myPort;
+const hostnameHereInWWWCombo = appComboPseudoModuleFromAppComboJs.myHostname;
+
+// Now getting PORT from .env file instead.
+// WR__ 2021 const port = 8089;
+// const port = 8080; // An open port on AWS EC2
+
+const appName = 'wr-app-some-times-rest-api-2020';
+
+// WR__ 2021
+appHereInWWWCombo.listen(portHereInWWWCombo, hostnameHereInWWWCombo, () => {
+
+    console.log('The app named: ' + appName + ' is on hostname: ' + hostnameHereInWWWCombo + ' and is listening on port number: ' + portHereInWWWCombo);
+
+//  console.log('ADD\'L INFO: btw you should type \n nohup npm run start & \n to run this server continuously (even after closing the terminal window). Cheers')');
+});
